@@ -1,0 +1,3998 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Mapa de Ocupação · Pousada · 2026</title>
+<style>
+:root {
+  --bg: #fafaf8;
+  --surface: #ffffff;
+  --surface-2: #f1efe8;
+  --text: #1a1a18;
+  --text-2: #5f5e5a;
+  --text-3: #888780;
+  --border: rgba(0,0,0,0.1);
+  --border-strong: rgba(0,0,0,0.28);
+  --accent: #185FA5;
+  --radius: 8px;
+  --radius-lg: 12px;
+
+  /* Cores de status — fortes e saturadas */
+  --st-livre-bg: #FFFFFF;
+  --st-livre-border: #B8B5A8;
+  --st-livre-text: #1a1a18;
+
+  --st-entrar-bg: #FFC700;
+  --st-entrar-border: #8C6A00;
+  --st-entrar-text: #2D1F00;
+
+  --st-quarto-bg: #1E6FD9;
+  --st-quarto-border: #0C3D7F;
+  --st-quarto-text: #FFFFFF;
+
+  --st-sair-bg: #F26C2D;
+  --st-sair-border: #8A2E00;
+  --st-sair-text: #FFFFFF;
+
+  --st-saiu-bg: #7C3AED;
+  --st-saiu-border: #4C1D95;
+  --st-saiu-text: #FFFFFF;
+
+  --st-manut-bg: #4B5563;
+  --st-manut-border: #1F2937;
+  --st-manut-text: #FFFFFF;
+
+  --st-noshow-bg: #DC2626;
+  --st-noshow-border: #7F1D1D;
+  --st-noshow-text: #FFFFFF;
+
+  /* Pagamento */
+  --pay-pago-bg: #15803D;
+  --pay-pago-text: #FFFFFF;
+  --pay-parcial-bg: #EAB308;
+  --pay-parcial-text: #422006;
+  --pay-pendente-bg: #B91C1C;
+  --pay-pendente-text: #FFFFFF;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+body { padding: 14px; max-width: 1100px; margin: 0 auto; padding-bottom: 120px; }
+h1 { font-size: 22px; font-weight: 700; margin: 0; letter-spacing: -0.3px; }
+.sub { font-size: 13px; color: var(--text-2); margin-top: 2px; font-weight: 500; }
+.header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+.header .right { display: flex; gap: 8px; align-items: center; }
+
+/* Tabs de mês — scroll horizontal */
+.month-tabs { display: flex; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: var(--radius); overflow-x: auto; scrollbar-width: none; margin-bottom: 8px; }
+.month-tabs::-webkit-scrollbar { display: none; }
+.month-tab { border: none; padding: 10px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; background: transparent; color: var(--text-2); font-family: inherit; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+.month-tab.active { background: var(--text); color: var(--bg); }
+
+/* Faixa de dias — scroll horizontal */
+.day-strip { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 4px 0 8px; margin-bottom: 14px; scroll-snap-type: x mandatory; }
+.day-strip::-webkit-scrollbar { display: none; }
+.day-pill { flex-shrink: 0; min-width: 58px; padding: 8px 10px; border-radius: 10px; border: 1.5px solid var(--border-strong); background: var(--surface); cursor: pointer; text-align: center; font-family: inherit; font-size: 12px; color: var(--text-2); scroll-snap-align: start; transition: all 0.15s; }
+.day-pill:active { transform: scale(0.95); }
+.day-pill.active { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 700; transform: scale(1.05); }
+.day-pill.today { box-shadow: 0 0 0 2px var(--accent); }
+.day-pill .dow { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.75; font-weight: 600; }
+.day-pill .dnum { font-size: 18px; font-weight: 700; line-height: 1.1; margin-top: 2px; }
+.day-pill.weekend { background: #FFF6DD; border-color: #D4A800; }
+.day-pill.holiday { background: #FFE0B2; border-color: #E65100; box-shadow: inset 0 -3px 0 #E65100; }
+.day-pill.emenda  { background: #FFF1D6; border-color: #C77700; box-shadow: inset 0 -3px 0 #C77700; }
+.day-pill.evento  { box-shadow: inset 0 3px 0 #15803D; }
+.day-pill.evento.holiday { box-shadow: inset 0 -3px 0 #E65100, inset 0 3px 0 #15803D; }
+.day-pill.evento.emenda  { box-shadow: inset 0 -3px 0 #C77700, inset 0 3px 0 #15803D; }
+.day-pill .star { display: block; font-size: 9px; color: #B45309; margin-top: 1px; line-height: 1; }
+.day-pill .evento-ico { position: absolute; top: 2px; right: 3px; font-size: 9px; line-height: 1; }
+.day-pill { position: relative; }
+.day-pill.weekend.active,
+.day-pill.holiday.active,
+.day-pill.emenda.active,
+.day-pill.evento.active { background: var(--text); color: var(--bg); border-color: var(--text); box-shadow: 0 0 0 2px var(--accent); }
+.day-pill.weekend.active .star,
+.day-pill.holiday.active .star,
+.day-pill.emenda.active .star { color: #FFD580; }
+
+/* Card de relatório */
+.report-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 14px; }
+.report-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-2); margin: 0 0 10px; font-weight: 700; }
+.report-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.report-item { padding: 10px 12px; border-radius: var(--radius); background: var(--surface-2); }
+.report-item.ocup { background: #C9DEF5; }
+.report-item.ocup .ri-label { color: #0A3461; }
+.report-item.ocup .ri-value { color: #052449; }
+.report-item.highlight { background: #DCD4F8; }
+.report-item.highlight .ri-label { color: #3C2C8C; }
+.report-item.highlight .ri-value { color: #1F1559; }
+.report-item.checkin { background: #C8E5A8; }
+.report-item.checkin .ri-label { color: #2A5E08; }
+.report-item.checkin .ri-value { color: #122B03; }
+.report-item.checkout { background: #F8C5A8; }
+.report-item.checkout .ri-label { color: #7A2C0E; }
+.report-item.checkout .ri-value { color: #3E1505; }
+.report-item.noshow { background: #FCA5A5; }
+.report-item.noshow .ri-label { color: #7F1D1D; }
+.report-item.noshow .ri-value { color: #4A0808; }
+.report-item.financeiro { background: #BBF7D0; }
+.report-item.financeiro .ri-label { color: #14532D; }
+.report-item.financeiro .ri-value { color: #052E14; font-size: 16px; }
+.ri-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-2); margin: 0; font-weight: 700; }
+.ri-value { font-size: 22px; font-weight: 700; margin: 2px 0 0; line-height: 1; }
+.ri-sub { font-size: 10px; color: var(--text-3); margin: 2px 0 0; font-weight: 500; }
+
+.section { margin-bottom: 18px; }
+.section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-2); margin: 0 0 8px; font-weight: 700; }
+
+.grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+
+.card { padding: 10px 8px; border-radius: var(--radius); cursor: pointer; text-align: left; min-height: 92px; display: flex; flex-direction: column; justify-content: space-between; font-family: inherit; transition: transform 0.1s; border-style: solid; border-width: 2px; position: relative; overflow: hidden; }
+.card:active { transform: scale(0.97); }
+.card-label { font-size: 15px; font-weight: 800; line-height: 1; }
+.card-status { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+.card-pax { font-size: 10px; opacity: 0.9; margin-top: 2px; font-weight: 600; }
+.card-guest { font-size: 11px; opacity: 1; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 700; }
+.card-icons { display: flex; gap: 3px; align-items: center; font-size: 11px; opacity: 0.9; }
+.pay-mini { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 800; line-height: 1.3; }
+.pay-mini.pago { background: var(--pay-pago-bg); color: var(--pay-pago-text); }
+.pay-mini.parcial { background: var(--pay-parcial-bg); color: var(--pay-parcial-text); }
+.pay-mini.pendente { background: var(--pay-pendente-bg); color: var(--pay-pendente-text); }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+@keyframes syncPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.7; } }
+
+/* Canal de origem */
+.canal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 4px; }
+.canal-btn { padding: 8px 6px; border: 2px solid transparent; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; opacity: 0.55; transition: opacity 0.15s, transform 0.1s; text-align: center; }
+.canal-btn:hover { opacity: 0.85; }
+.canal-btn.selected { opacity: 1; border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.15); transform: scale(1.02); }
+.canal-mini { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; vertical-align: middle; line-height: 1.4; }
+.crianca-btn.selected, .pet-btn.selected { background: #1a1a18 !important; color: #fff !important; border-color: #1a1a18 !important; }
+.regime-btn.selected { background: #15803D !important; color: #fff !important; border-color: #15803D !important; }
+.servico-btn { padding: 12px 8px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; font-family: inherit; font-weight: 700; color: #fff; }
+
+/* === Tabs de Vista (Mapa | Financeiro) === */
+.view-tabs { display: flex; gap: 0; margin: 16px 0 14px; border-bottom: 2px solid #B8B5A8; }
+.view-tab { flex: 1; padding: 12px; background: transparent; border: none; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; color: #6B6B66; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+.view-tab.active { color: #1a1a18; border-bottom-color: #1a1a18; }
+
+/* === Painel Financeiro === */
+.fin-card { background: #fff; border: 1.5px solid #D4C9A8; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+.fin-card-title { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #1a1a18; margin: 0 0 12px; }
+.fin-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.fin-kpi { padding: 12px; border-radius: 8px; background: #FAF8F2; }
+.fin-kpi-label { font-size: 11px; color: #6B6B66; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin: 0 0 6px; }
+.fin-kpi-value { font-size: 22px; font-weight: 800; margin: 0; line-height: 1.1; }
+.fin-kpi-sub { font-size: 11px; color: #888; margin: 4px 0 0; }
+.fin-section { margin-bottom: 24px; }
+.fin-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 8px; margin-bottom: 6px; background: #FAF8F2; gap: 8px; }
+.fin-row-cat { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.fin-row-ico { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 18px; color: #fff; flex-shrink: 0; }
+.fin-row-info { min-width: 0; flex: 1; }
+.fin-row-desc { font-weight: 700; font-size: 13px; color: #1a1a18; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fin-row-meta { font-size: 11px; color: #6B6B66; margin-top: 2px; }
+.fin-row-valor { font-weight: 800; font-size: 14px; white-space: nowrap; }
+.fin-status-badge { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+.fin-badge-pago { background: #DCFCE7; color: #15803D; }
+.fin-badge-a-pagar { background: #FEF3C7; color: #92400E; }
+.fin-badge-atrasado { background: #FEE2E2; color: #B91C1C; animation: pulse 1.5s infinite; }
+.fin-badge-recorrente { background: #DBEAFE; color: #1E40AF; margin-left: 4px; }
+.alerta-financeiro { padding: 12px 14px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; font-weight: 600; }
+.alerta-vermelho { background: #FEE2E2; border: 1.5px solid #DC2626; color: #7F1D1D; }
+.alerta-amarelo { background: #FEF3C7; border: 1.5px solid #D97706; color: #78350F; }
+.alerta-azul { background: #DBEAFE; border: 1.5px solid #2563EB; color: #1E40AF; }
+.fluxo-bar { height: 24px; background: #E7E5E0; border-radius: 4px; overflow: hidden; display: flex; margin: 4px 0 12px; }
+.fluxo-bar-segment { height: 100%; }
+.cat-grid-modal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.cat-btn-modal { padding: 10px 4px; border-radius: 6px; border: 2px solid transparent; cursor: pointer; font-family: inherit; font-weight: 700; color: #fff; font-size: 11px; text-align: center; opacity: 0.55; transition: opacity 0.15s; }
+.cat-btn-modal.selected { opacity: 1; border-color: #000; }
+.fin-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+.fin-filter { padding: 6px 10px; border: 1.5px solid #B8B5A8; border-radius: 6px; background: #fff; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.fin-filter.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+.card-special { grid-column: span 6; padding: 14px 16px; border-width: 2.5px !important; }
+
+.legend { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; font-size: 11px; color: var(--text-2); margin: 14px 0; padding: 10px 12px; background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border); }
+.legend-item { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; }
+.legend-swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 1.5px solid rgba(0,0,0,0.2); }
+
+/* Modal */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 100; }
+.modal-backdrop.open { display: block; }
+.modal { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-radius: 16px 16px 0 0; padding: 16px 20px 24px; z-index: 101; transform: translateY(100%); transition: transform 0.25s ease-out; max-height: 92vh; overflow-y: auto; }
+.modal.open { transform: translateY(0); }
+.modal-handle { width: 40px; height: 4px; background: var(--border-strong); border-radius: 2px; margin: 0 auto 12px; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.modal-title { font-size: 18px; font-weight: 700; margin: 0; }
+.modal-spec { font-size: 12px; color: var(--text-2); margin: 0 0 14px; font-weight: 500; }
+.modal-close { background: transparent; border: none; cursor: pointer; padding: 4px 8px; color: var(--text-2); font-size: 22px; line-height: 1; }
+
+.field-label { font-size: 11px; color: var(--text-2); display: block; margin-bottom: 6px; margin-top: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+input[type=text], input[type=number], input[type=date] { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-strong); border-radius: var(--radius); font-size: 15px; font-family: inherit; background: var(--surface); color: var(--text); font-weight: 500; }
+input:focus { outline: none; border-color: var(--accent); border-width: 2px; }
+
+.estado-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.estado-btn { padding: 12px 10px; border-radius: 8px; border: 2px solid var(--border-strong); cursor: pointer; font-size: 13px; font-family: inherit; text-align: left; line-height: 1.3; font-weight: 600; }
+.estado-btn.selected { outline: 3px solid var(--text); outline-offset: -3px; font-weight: 800; }
+.estado-emoji { font-size: 16px; margin-right: 6px; }
+
+.pay-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pay-btn { padding: 14px 8px; border-radius: 8px; border: 2px solid var(--border-strong); cursor: pointer; font-size: 13px; font-family: inherit; text-align: center; line-height: 1.2; font-weight: 700; transition: transform 0.1s; }
+.pay-btn:active { transform: scale(0.96); }
+.pay-btn.selected { outline: 3px solid var(--text); outline-offset: -3px; }
+.pay-btn.pago { background: var(--pay-pago-bg); color: var(--pay-pago-text); border-color: #0A4D24; }
+.pay-btn.parcial { background: var(--pay-parcial-bg); color: var(--pay-parcial-text); border-color: #854D0E; }
+.pay-btn.pendente { background: var(--pay-pendente-bg); color: var(--pay-pendente-text); border-color: #7F1D1D; }
+
+.pax-control { display: flex; align-items: center; gap: 12px; }
+.pax-btn { width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--border-strong); background: var(--surface); font-size: 22px; cursor: pointer; font-family: inherit; color: var(--text); font-weight: 700; }
+.pax-btn:disabled { opacity: 0.3; }
+.pax-display { font-size: 26px; font-weight: 800; min-width: 40px; text-align: center; }
+.pax-max { font-size: 12px; color: var(--text-2); font-weight: 500; }
+
+.btn { padding: 12px 18px; border-radius: 8px; border: 1.5px solid var(--border-strong); background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer; font-family: inherit; font-weight: 700; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent); color: white; border-color: #0F4174; }
+.btn-danger { background: #DC2626; color: white; border-color: #7F1D1D; }
+.btn-warning { background: #F1EFE8; color: #2C2C2A; border-color: #B4B2A9; }
+.btn-block { width: 100%; }
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.modal-actions .btn { flex: 1; min-width: 120px; }
+
+.actions-bottom { display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-top: 20px; padding: 16px; background: var(--surface); border-radius: var(--radius-lg); border: 0.5px solid var(--border); }
+
+.reserva-info { background: var(--surface-2); padding: 12px 14px; border-radius: var(--radius); margin-bottom: 12px; }
+.reserva-info-row { display: flex; justify-content: space-between; font-size: 13px; margin: 5px 0; gap: 8px; }
+.reserva-info-label { color: var(--text-2); font-weight: 600; }
+.reserva-info-value { font-weight: 700; text-align: right; }
+
+.pay-info { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; }
+.pay-info.pago { background: var(--pay-pago-bg); color: var(--pay-pago-text); }
+.pay-info.parcial { background: var(--pay-parcial-bg); color: var(--pay-parcial-text); }
+.pay-info.pendente { background: var(--pay-pendente-bg); color: var(--pay-pendente-text); }
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(120px); background: var(--text); color: var(--bg); padding: 12px 20px; border-radius: 8px; font-size: 14px; z-index: 200; transition: transform 0.3s; box-shadow: 0 4px 16px rgba(0,0,0,0.25); font-weight: 600; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+.btn-today { padding: 9px 16px; border-radius: 8px; border: 2px solid var(--accent); background: var(--accent); color: white; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 700; }
+
+@media (max-width: 600px) {
+  body { padding: 10px; padding-bottom: 120px; }
+  h1 { font-size: 18px; }
+  .report-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .ri-value { font-size: 18px; }
+  .report-item.financeiro .ri-value { font-size: 13px; }
+  .ri-label { font-size: 9px; }
+  .grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .card { min-height: 84px; padding: 8px 6px; }
+  .card-label { font-size: 14px; }
+  .estado-grid { grid-template-columns: 1fr; }
+  .pay-grid { grid-template-columns: 1fr; }
+  .month-tab { padding: 8px 12px; font-size: 12px; }
+  .day-pill { min-width: 52px; padding: 7px 8px; }
+  .day-pill .dnum { font-size: 16px; }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a18; --surface: #2c2c2a; --surface-2: #3a3a37;
+    --text: #f1efe8; --text-2: #b4b2a9; --text-3: #888780;
+    --border: rgba(255,255,255,0.15); --border-strong: rgba(255,255,255,0.32);
+  }
+}
+</style>
+  <!-- Firebase SDK (compat — funciona sem bundler) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ============= LOGIN OVERLAY ============= -->
+<div id="login-overlay" style="position:fixed;inset:0;background:linear-gradient(135deg,#1a1a18 0%,#3a2f1e 100%);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:32px 28px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.35);text-align:center;">
+    <div style="font-size:40px;margin-bottom:8px;">🏨</div>
+    <h1 style="font-size:20px;font-weight:800;margin:0 0 6px;color:#1a1a18;">Mapa de Ocupação</h1>
+    <p style="color:#888;font-size:13px;margin:0 0 22px;">Acesso restrito</p>
+    <input type="password" id="login-pwd" placeholder="Senha"
+      style="width:100%;box-sizing:border-box;padding:12px 14px;border:1.5px solid #B8B5A8;border-radius:10px;font-size:15px;font-family:inherit;margin-bottom:12px;"
+      autofocus autocomplete="off" />
+    <button id="login-btn"
+      style="width:100%;padding:12px;background:#1a1a18;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:0.3px;">
+      Entrar
+    </button>
+    <p id="login-err" style="color:#DC2626;font-size:13px;font-weight:600;margin:12px 0 0;display:none;">⚠️ Senha incorreta</p>
+  </div>
+</div>
+
+<!-- ============= SYNC OVERLAY ============= -->
+<div id="sync-overlay" style="position:fixed;inset:0;background:rgba(255,255,255,0.96);z-index:9000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;">
+  <div style="font-size:36px;animation:syncPulse 1.4s ease-in-out infinite;">☁️</div>
+  <p style="color:#555;font-size:14px;font-weight:600;margin:0;">Sincronizando com a nuvem...</p>
+</div>
+
+<!-- ============= APP CONTENT (aparece após login) ============= -->
+<div id="app-content" style="display:none;">
+
+<div class="header">
+  <div>
+    <h1>Pousada das Cores · v14</h1>
+    <p class="sub">35 unidades · 119 pax cap. · Mai → Dez 2026</p>
+  </div>
+  <div class="right">
+    <button class="btn-today" id="btn-today">📍 Hoje</button>
+  </div>
+</div>
+
+<!-- Tabs de Vista (Mapa | Financeiro | RH) -->
+<div class="view-tabs">
+  <button class="view-tab active" data-view="mapa">🗓️ Mapa</button>
+  <button class="view-tab" data-view="financeiro">💰 Financeiro</button>
+  <button class="view-tab" data-view="rh">👥 RH</button>
+</div>
+
+<!-- Alertas críticos (sempre visível em todas as vistas) -->
+<div id="alertas-criticos"></div>
+
+<!-- VISTA MAPA -->
+<div id="vista-mapa">
+
+<div class="month-tabs" id="month-tabs"></div>
+<div class="day-strip" id="day-strip"></div>
+
+<div class="report-card">
+  <p class="report-title">Relatório · <span id="report-day">—</span></p>
+  <div class="report-grid">
+    <div class="report-item ocup">
+      <p class="ri-label">Ocupados</p>
+      <p class="ri-value" id="r-ocupados">0</p>
+      <p class="ri-sub">de 35 unidades</p>
+    </div>
+    <div class="report-item">
+      <p class="ri-label">Livres</p>
+      <p class="ri-value" id="r-livres">35</p>
+      <p class="ri-sub" id="r-ocup-pct">0% ocupação</p>
+    </div>
+    <div class="report-item highlight">
+      <p class="ri-label">Hóspedes</p>
+      <p class="ri-value" id="r-pessoas">0</p>
+      <p class="ri-sub">pessoas hospedadas</p>
+    </div>
+    <div class="report-item checkin">
+      <p class="ri-label">Check-ins</p>
+      <p class="ri-value" id="r-checkins">0</p>
+      <p class="ri-sub">entradas hoje</p>
+    </div>
+    <div class="report-item checkout">
+      <p class="ri-label">Check-outs</p>
+      <p class="ri-value" id="r-checkouts">0</p>
+      <p class="ri-sub">saídas hoje</p>
+    </div>
+    <div class="report-item noshow">
+      <p class="ri-label">No-shows</p>
+      <p class="ri-value" id="r-noshow">0</p>
+      <p class="ri-sub">não compareceram</p>
+    </div>
+    <div class="report-item financeiro" style="grid-column: span 3;">
+      <p class="ri-label">Financeiro do dia (estadias ativas)</p>
+      <p class="ri-value"><span id="r-recebido">R$ 0</span> recebido · <span id="r-receber" style="color:#7F1D1D;">R$ 0</span> a receber</p>
+    </div>
+    <div class="report-item" style="grid-column: span 3; background:#F5F1E8; border:1.5px solid #D4C9A8;">
+      <p class="ri-label">Origem das reservas ativas hoje</p>
+      <div id="r-canais" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">—</div>
+    </div>
+  </div>
+</div>
+
+<div id="sections-container"></div>
+
+<div class="legend">
+  <span class="legend-item"><span class="legend-swatch" style="background:#FFFFFF;border-color:#B8B5A8;"></span>Livre</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:#FFC700;border-color:#8C6A00;"></span>Vai entrar</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:#1E6FD9;border-color:#0C3D7F;"></span>No quarto</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:#F26C2D;border-color:#8A2E00;"></span>Vai sair</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:#7C3AED;border-color:#4C1D95;"></span>Já saiu</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:#4B5563;border-color:#1F2937;"></span>Manutenção</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:#DC2626;border-color:#7F1D1D;"></span><b style="color:#7F1D1D;">Não compareceu</b></span>
+  <span class="legend-item" style="margin-left:auto;">❄ Frigobar · 🛋 Sofá-cama · <b style="font-size:10px;">S</b> só solteiros</span>
+  <span class="legend-item"><span class="pay-mini pago">✓</span> Pago · <span class="pay-mini parcial">½</span> Parcial · <span class="pay-mini pendente">!</span> Pendente</span>
+</div>
+
+<div class="actions-bottom">
+  <button class="btn btn-warning" id="btn-reset">↻ Limpar tudo</button>
+  <button class="btn" id="btn-import">📥 Importar pendentes</button>
+  <button class="btn" id="btn-export">📋 Copiar relatório do dia</button>
+  <button class="btn" id="btn-camareira" style="background:#0EA5E9;color:#fff;border-color:#0EA5E9;">🧹 Relatório Camareira</button>
+  <button class="btn" id="btn-restaurante" style="background:#15803D;color:#fff;border-color:#15803D;">🍽 Relatório Restaurante</button>
+  <button class="btn" id="btn-novo-servico" style="background:#7C3AED;color:#fff;border-color:#7C3AED;">+ Novo Serviço (Day Use/Cavalo/Cachoeira)</button>
+</div>
+
+<div id="servicos-dia-container"></div>
+
+</div><!-- /#vista-mapa -->
+
+<!-- VISTA FINANCEIRO -->
+<div id="vista-financeiro" style="display:none;">
+  <div id="painel-financeiro"></div>
+</div>
+
+<!-- VISTA RH -->
+<div id="vista-rh" style="display:none;">
+  <div id="painel-rh"></div>
+</div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modal-backdrop"></div>
+<div class="modal" id="modal">
+  <div class="modal-handle"></div>
+  <div class="modal-header">
+    <p class="modal-title" id="modal-title">Unidade</p>
+    <button class="modal-close" id="modal-close">✕</button>
+  </div>
+  <p class="modal-spec" id="modal-spec"></p>
+  <div id="modal-content"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== FIREBASE CONFIG =====
+const firebaseConfig = {
+  apiKey: "AIzaSyCPoBjYptX3ppsfV5TPgQgkwBvyz3UVKfg",
+  authDomain: "mapapousada.firebaseapp.com",
+  databaseURL: "https://mapapousada-default-rtdb.firebaseio.com",
+  projectId: "mapapousada",
+  storageBucket: "mapapousada.firebasestorage.app",
+  messagingSenderId: "705283214984",
+  appId: "1:705283214984:web:d43af3c5baa52fd870d93d",
+  measurementId: "G-VM9P8E93RH"
+};
+// ====== VERIFICAÇÃO DO FIREBASE SDK ======
+// Se o Firebase não carregou (ex: arquivo aberto direto via file:// ou sem internet),
+// mostra mensagem amigável em vez de quebrar feio com "firebase is not defined"
+if (typeof firebase === 'undefined') {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.innerHTML = `
+      <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a18 0%,#3a2f1e 100%);padding:20px;font-family:-apple-system,system-ui,sans-serif;">
+        <div style="background:#fff;border-radius:16px;padding:32px 24px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.35);">
+          <div style="font-size:48px;text-align:center;margin-bottom:12px;">⚠️</div>
+          <h1 style="font-size:20px;font-weight:800;text-align:center;margin:0 0 12px;color:#7F1D1D;">Sistema não pode iniciar</h1>
+          <p style="font-size:14px;color:#444;line-height:1.5;margin:0 0 16px;">O sistema precisa estar conectado à internet pelo <b>link oficial online</b>. Você não pode abrir o arquivo direto do celular ou computador.</p>
+          <div style="background:#DBEAFE;border-left:4px solid #1E40AF;padding:12px;border-radius:6px;margin-bottom:16px;">
+            <p style="font-size:13px;font-weight:700;color:#1E40AF;margin:0 0 6px;">✅ Use este link:</p>
+            <a href="https://cecpousada-oss.github.io/mapa-pousada/" style="color:#0C3D7F;font-weight:700;font-size:14px;word-break:break-all;text-decoration:underline;">cecpousada-oss.github.io/mapa-pousada/</a>
+          </div>
+          <div style="background:#FEE2E2;border-left:4px solid #DC2626;padding:12px;border-radius:6px;margin-bottom:16px;">
+            <p style="font-size:13px;font-weight:700;color:#7F1D1D;margin:0 0 6px;">❌ Possíveis causas:</p>
+            <ul style="font-size:12px;color:#7F1D1D;margin:4px 0 0 16px;padding:0;line-height:1.6;">
+              <li>Você abriu o arquivo HTML direto (file://)</li>
+              <li>Sem conexão com a internet</li>
+              <li>Firewall/proxy bloqueando o Firebase</li>
+            </ul>
+          </div>
+          <p style="font-size:12px;color:#888;text-align:center;margin:0;">Salve o link nos favoritos do navegador para evitar este problema.</p>
+        </div>
+      </div>
+    `;
+  });
+  throw new Error('Firebase SDK não disponível — acesse pelo link online cecpousada-oss.github.io/mapa-pousada/');
+}
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const reservasRef = db.ref('reservas');
+const servicosRef = db.ref('servicos');
+const despesasRef = db.ref('despesas');
+const funcionariosRef = db.ref('funcionarios');
+
+// ===== AUTH (senha local — opção B) =====
+const APP_PASSWORD = 'pousada2026';
+const STORAGE_KEY_LEGACY = 'pousada-reservas-v11'; // mantido para referência
+
+// ===== CANAIS DE ORIGEM DA RESERVA =====
+const CANAIS = [
+  { id: 'whatsapp', nome: 'WhatsApp',     icone: '💬', cor: '#25D366', textCor: '#fff', comissaoPct: 0  },
+  { id: 'booking',  nome: 'Booking.com',  icone: '🔵', cor: '#003580', textCor: '#fff', comissaoPct: 15 },
+  { id: 'airbnb',   nome: 'Airbnb',       icone: '🏠', cor: '#FF5A5F', textCor: '#fff', comissaoPct: 14 },
+  { id: 'decolar',  nome: 'Decolar.com',  icone: '✈️', cor: '#9333EA', textCor: '#fff', comissaoPct: 22 },
+  { id: 'expedia',  nome: 'Expedia',      icone: '🌐', cor: '#FBC02D', textCor: '#000', comissaoPct: 18 },
+  { id: 'site',     nome: 'Site Próprio', icone: '🌹', cor: '#7C3AED', textCor: '#fff', comissaoPct: 0  },
+  { id: 'direto',   nome: 'Direto/Outro', icone: '📞', cor: '#6B7280', textCor: '#fff', comissaoPct: 0  }
+];
+const CANAL_MAP = Object.fromEntries(CANAIS.map(c => [c.id, c]));
+function canalInfo(id){ return CANAL_MAP[id] || CANAL_MAP['direto']; }
+
+// ===== REGIME DE PENSÃO (refeições inclusas) =====
+const REGIMES_PENSAO = [
+  { id: 'sem',         nome: 'Sem refeição',         icone: '🚫', refeicoes: [] },
+  { id: 'cafe',        nome: 'Só café da manhã',     icone: '☕', refeicoes: ['cafe_manha'] },
+  { id: 'meia',        nome: 'Meia pensão (C+A)',    icone: '🍽',  refeicoes: ['cafe_manha','almoco'] },
+  { id: 'simples',     nome: 'Pensão simples (C+A+J)', icone: '🍴', refeicoes: ['cafe_manha','almoco','jantar'] },
+  { id: 'completa',    nome: 'Pensão completa',      icone: '🍱', refeicoes: ['cafe_manha','almoco','cafe_tarde','jantar'] }
+];
+const REGIME_MAP = Object.fromEntries(REGIMES_PENSAO.map(r => [r.id, r]));
+const REFEICAO_NOMES = {
+  cafe_manha: '☕ Café da manhã',
+  almoco:     '🍽 Almoço',
+  cafe_tarde: '🍰 Café da tarde',
+  jantar:     '🍴 Jantar'
+};
+function regimeInfo(id){ return REGIME_MAP[id] || REGIME_MAP['sem']; }
+
+// ===== TIPOS DE SERVIÇO EXTRA =====
+// Reservas que não ocupam unidade física: Day Use, Passeios, etc.
+const SERVICOS = [
+  { id: 'dayuse',           nome: 'Day Use',             icone: '🌞', cor: '#F59E0B', valorPadrao: 0,  apenasHospedes: false },
+  { id: 'passeio_cavalo',   nome: 'Passeio a Cavalo',    icone: '🐴', cor: '#92400E', valorPadrao: 0,  apenasHospedes: false },
+  { id: 'visita_cachoeira', nome: 'Visita à Cachoeira',  icone: '💧', cor: '#0EA5E9', valorPadrao: 50, apenasHospedes: true }
+];
+const SERVICO_MAP = Object.fromEntries(SERVICOS.map(s => [s.id, s]));
+function servicoInfo(id){ return SERVICO_MAP[id]; }
+
+// ===== CATEGORIAS DE DESPESAS (Contas a Pagar) =====
+const CATEGORIAS_DESPESA = [
+  { id: 'luz',         nome: 'Energia Elétrica',   icone: '⚡', cor: '#F59E0B', diaVencPadrao: 15 },
+  { id: 'agua',        nome: 'Água/Esgoto',        icone: '💧', cor: '#0EA5E9', diaVencPadrao: 10 },
+  { id: 'gas',         nome: 'Gás',                icone: '🔥', cor: '#DC2626', diaVencPadrao: 20 },
+  { id: 'internet',    nome: 'Internet/Telefone',  icone: '📶', cor: '#7C3AED', diaVencPadrao: 25 },
+  { id: 'aluguel',     nome: 'Aluguel',            icone: '🏠', cor: '#1E40AF', diaVencPadrao: 5  },
+  { id: 'iptu',        nome: 'IPTU',               icone: '🧾', cor: '#9333EA', diaVencPadrao: 10 },
+  { id: 'impostos',    nome: 'Impostos (Simples/INSS)', icone: '📋', cor: '#7F1D1D', diaVencPadrao: 20 },
+  { id: 'folha',       nome: 'Folha de Pagamento', icone: '👔', cor: '#15803D', diaVencPadrao: 5  },
+  { id: 'prolabore',   nome: 'Pró-labore',         icone: '💼', cor: '#0F766E', diaVencPadrao: 5  },
+  { id: 'manutencao',  nome: 'Manutenção',         icone: '🔧', cor: '#6B7280', diaVencPadrao: 0  },
+  { id: 'insumos',     nome: 'Insumos (Café/Limpeza)', icone: '🛒', cor: '#92400E', diaVencPadrao: 0  },
+  { id: 'lavanderia',  nome: 'Lavanderia',         icone: '🧺', cor: '#4F46E5', diaVencPadrao: 0  },
+  { id: 'comissao',    nome: 'Comissão OTA',       icone: '💸', cor: '#BE185D', diaVencPadrao: 30 },
+  { id: 'marketing',   nome: 'Marketing/Anúncios', icone: '📣', cor: '#EA580C', diaVencPadrao: 0  },
+  { id: 'outros',      nome: 'Outros',             icone: '💰', cor: '#52525B', diaVencPadrao: 0  }
+];
+const CAT_DESPESA_MAP = Object.fromEntries(CATEGORIAS_DESPESA.map(c => [c.id, c]));
+function categoriaInfo(id){ return CAT_DESPESA_MAP[id] || CAT_DESPESA_MAP['outros']; }
+
+// ===== DADOS PARA VOUCHER =====
+const POUSADA_INFO = {
+  nome: 'POUSADA DAS CORES',
+  subtitulo: 'Refúgio Boutique · Ouro Preto · MG',
+  endereco: 'Ouro Preto, Minas Gerais',
+  telefone: '(31) — solicitar contato',
+  email: 'reservas@pousadadascores.com.br',
+  checkinHora: '14:00',
+  checkoutHora: '12:00',
+  pixChave: 'CONSULTAR NO ATO DO PAGAMENTO'
+};
+
+const POLITICA_CANCELAMENTO_TEXTO = [
+  'POLÍTICA DE CANCELAMENTO:',
+  '',
+  '1. CANCELAMENTO ATÉ 14 DIAS ANTES DO CHECK-IN:',
+  '   Reembolso de 90% do valor pago. 10% retidos para custos administrativos.',
+  '',
+  '2. CANCELAMENTO COM MENOS DE 14 DIAS DO CHECK-IN:',
+  '   Sem direito a reembolso. Valor pago é integralmente retido.',
+  '',
+  '3. NO-SHOW (NAO COMPARECIMENTO):',
+  '   Cobranca integral da diaria, sem possibilidade de reembolso.',
+  '',
+  '4. ALTERACAO DE DATAS:',
+  '   Sujeita a disponibilidade e diferenca tarifaria. Solicitar com antecedencia.'
+];
+
+// ===== GERAR VOUCHER PDF =====
+function gerarVoucherPDF(reserva){
+  if(typeof window.jspdf === 'undefined'){
+    alert('Biblioteca de PDF nao carregou. Verifique sua conexao com internet.');
+    return;
+  }
+  const { jsPDF } = window.jspdf;
+  const unit = UNIT_MAP[reserva.unitId];
+  if(!unit){ alert('Unidade nao encontrada'); return; }
+
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const W = 210, H = 297;
+  let y = 0;
+
+  // === CABEÇALHO ===
+  doc.setFillColor(26, 26, 24);
+  doc.rect(0, 0, W, 38, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(22);
+  doc.text(POUSADA_INFO.nome, W/2, 16, { align: 'center' });
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.text(POUSADA_INFO.subtitulo, W/2, 23, { align: 'center' });
+  doc.setFontSize(8);
+  doc.text(POUSADA_INFO.endereco + '  ·  ' + POUSADA_INFO.email, W/2, 30, { align: 'center' });
+
+  // Faixa dourada decorativa
+  doc.setFillColor(212, 169, 0);
+  doc.rect(0, 38, W, 2, 'F');
+
+  // === TÍTULO VOUCHER ===
+  y = 52;
+  doc.setTextColor(26, 26, 24);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.text('VOUCHER DE RESERVA', W/2, y, { align: 'center' });
+
+  y += 6;
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(120, 120, 120);
+  doc.text('Codigo da reserva: ' + (reserva.id || '').toUpperCase(), W/2, y, { align: 'center' });
+
+  y += 4;
+  doc.text('Emitido em ' + new Date().toLocaleString('pt-BR'), W/2, y, { align: 'center' });
+
+  // === DADOS DO HÓSPEDE ===
+  y += 10;
+  doc.setFillColor(245, 241, 232);
+  doc.rect(15, y, W-30, 8, 'F');
+  doc.setTextColor(26, 26, 24);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text('DADOS DO HOSPEDE', 18, y + 5.5);
+
+  y += 12;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  doc.text('Nome:', 18, y);
+  doc.setFont('helvetica', 'bold');
+  doc.text(String(reserva.hospede || '-'), 40, y);
+
+  y += 6;
+  doc.setFont('helvetica', 'normal');
+  doc.text('Pessoas:', 18, y);
+  doc.setFont('helvetica', 'bold');
+  const adultos = (reserva.numPessoas || 0) - (reserva.numCriancas || 0);
+  let paxTxt = String(reserva.numPessoas || 0) + ' pax';
+  if(reserva.numCriancas > 0) paxTxt += ' (' + adultos + ' adulto' + (adultos>1?'s':'') + ' + ' + reserva.numCriancas + ' crianca' + (reserva.numCriancas>1?'s':'') + ')';
+  doc.text(paxTxt, 40, y);
+
+  if(reserva.temPet){
+    y += 6;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Pet:', 18, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Sim — pet acompanha o hospede', 40, y);
+  }
+
+  // === DADOS DA ESTADIA ===
+  y += 10;
+  doc.setFillColor(245, 241, 232);
+  doc.rect(15, y, W-30, 8, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text('DETALHES DA ESTADIA', 18, y + 5.5);
+
+  // Conta noites
+  let noites = 0;
+  let cur = reserva.dataEntrada;
+  while(cur < reserva.dataSaida){ noites++; cur = addDays(cur, 1); }
+
+  const formatDataLonga = (d) => {
+    const dt = parseDate(d);
+    const dow = ['Domingo','Segunda','Terca','Quarta','Quinta','Sexta','Sabado'][dt.getDay()];
+    return dow + ', ' + dt.getDate() + ' de ' + ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'][dt.getMonth()] + ' de ' + dt.getFullYear();
+  };
+
+  y += 12;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  doc.text('Unidade:', 18, y);
+  doc.setFont('helvetica', 'bold');
+  doc.text(unit.label + ' (' + (unit.type || 'Quarto') + ')', 40, y);
+
+  y += 6;
+  doc.setFont('helvetica', 'normal');
+  doc.text('Check-in:', 18, y);
+  doc.setFont('helvetica', 'bold');
+  doc.text(formatDataLonga(reserva.dataEntrada) + '   a partir de ' + POUSADA_INFO.checkinHora, 40, y);
+
+  y += 6;
+  doc.setFont('helvetica', 'normal');
+  doc.text('Check-out:', 18, y);
+  doc.setFont('helvetica', 'bold');
+  doc.text(formatDataLonga(reserva.dataSaida) + '   ate as ' + POUSADA_INFO.checkoutHora, 40, y);
+
+  y += 6;
+  doc.setFont('helvetica', 'normal');
+  doc.text('Diarias:', 18, y);
+  doc.setFont('helvetica', 'bold');
+  doc.text(noites + ' noite' + (noites>1?'s':''), 40, y);
+
+  // Regime de pensão
+  if(reserva.regimePensao && reserva.regimePensao !== 'sem'){
+    y += 6;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Refeicoes:', 18, y);
+    doc.setFont('helvetica', 'bold');
+    const r = regimeInfo(reserva.regimePensao);
+    doc.text(r.nome, 40, y);
+  }
+
+  // === FINANCEIRO ===
+  y += 10;
+  doc.setFillColor(245, 241, 232);
+  doc.rect(15, y, W-30, 8, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text('VALORES E PAGAMENTO', 18, y + 5.5);
+
+  y += 12;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  doc.text('Valor total:', 18, y);
+  doc.setFont('helvetica', 'bold');
+  doc.text(formatBRL(reserva.valorTotal || 0), 60, y);
+
+  y += 6;
+  doc.setFont('helvetica', 'normal');
+  doc.text('Valor pago:', 18, y);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(21, 128, 61);
+  doc.text(formatBRL(reserva.valorPago || 0), 60, y);
+
+  const saldo = Math.max(0, (reserva.valorTotal || 0) - (reserva.valorPago || 0));
+  if(saldo > 0){
+    y += 6;
+    doc.setTextColor(185, 28, 28);
+    doc.setFont('helvetica', 'normal');
+    doc.text('SALDO A PAGAR:', 18, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text(formatBRL(saldo), 60, y);
+  }
+
+  // Status pagamento - retângulo destacado
+  y += 8;
+  doc.setTextColor(26, 26, 24);
+  let statusTxt = '';
+  let statusBg = [220, 252, 231]; // verde claro
+  let statusFg = [21, 128, 61];
+  if(reserva.statusPagamento === 'pago'){
+    statusTxt = 'PAGAMENTO INTEGRALMENTE QUITADO  -  Sua reserva esta CONFIRMADA';
+    statusBg = [220, 252, 231]; statusFg = [21, 128, 61];
+  } else if(reserva.statusPagamento === 'parcial'){
+    statusTxt = 'PAGAMENTO PARCIAL  -  Saldo de ' + formatBRL(saldo) + ' devido no check-in';
+    statusBg = [254, 243, 199]; statusFg = [146, 64, 14];
+  } else {
+    statusTxt = 'AGUARDANDO PAGAMENTO  -  Reserva confirmada apos pagamento';
+    statusBg = [254, 226, 226]; statusFg = [185, 28, 28];
+  }
+  doc.setFillColor(...statusBg);
+  doc.rect(15, y, W-30, 10, 'F');
+  doc.setTextColor(...statusFg);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text(statusTxt, W/2, y + 6.5, { align: 'center' });
+
+  // Instruções de pagamento (se há saldo)
+  if(saldo > 0){
+    y += 14;
+    doc.setTextColor(60, 60, 60);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    const instrucoes = [
+      'FORMAS DE PAGAMENTO ACEITAS:',
+      '   - PIX (preferencial - solicitar chave por WhatsApp)',
+      '   - Cartao de credito (no ato do check-in)',
+      '   - Dinheiro (no ato do check-in)',
+      '   - Transferencia bancaria (solicitar dados)'
+    ];
+    instrucoes.forEach(linha => {
+      doc.text(linha, 18, y);
+      y += 4;
+    });
+  }
+
+  // === OBSERVAÇÕES ===
+  if(reserva.observacao && reserva.observacao.trim()){
+    y += 6;
+    doc.setFillColor(245, 241, 232);
+    doc.rect(15, y, W-30, 8, 'F');
+    doc.setTextColor(26, 26, 24);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text('OBSERVACOES', 18, y + 5.5);
+
+    y += 12;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    const obsLines = doc.splitTextToSize(reserva.observacao, W - 36);
+    obsLines.forEach(l => { doc.text(l, 18, y); y += 4; });
+  }
+
+  // === POLÍTICA DE CANCELAMENTO (sempre nova página se não couber) ===
+  if(y > 220) { doc.addPage(); y = 20; }
+  y += 8;
+  doc.setFillColor(127, 29, 29);
+  doc.rect(15, y, W-30, 8, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text('POLITICA DE CANCELAMENTO - LEIA COM ATENCAO', 18, y + 5.5);
+
+  y += 11;
+  doc.setTextColor(60, 60, 60);
+  doc.setFontSize(8.5);
+  POLITICA_CANCELAMENTO_TEXTO.forEach(linha => {
+    if(linha.endsWith(':') && linha !== 'POLITICA DE CANCELAMENTO:'){
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(127, 29, 29);
+    } else if(linha === 'POLITICA DE CANCELAMENTO:'){
+      // Pula - já está no header
+      return;
+    } else {
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(60, 60, 60);
+    }
+    doc.text(linha, 18, y);
+    y += 4.2;
+  });
+
+  // === REGRAS DE CHECK-IN/OUT ===
+  y += 6;
+  doc.setFillColor(245, 241, 232);
+  doc.rect(15, y, W-30, 8, 'F');
+  doc.setTextColor(26, 26, 24);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text('INFORMACOES IMPORTANTES', 18, y + 5.5);
+
+  y += 11;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(60, 60, 60);
+  const infos = [
+    '- Apresentar documento de identidade com foto no check-in',
+    '- Check-in apos as ' + POUSADA_INFO.checkinHora + ' / Check-out ate as ' + POUSADA_INFO.checkoutHora,
+    '- Estacionamento gratuito sujeito a disponibilidade',
+    '- Wi-Fi gratuito em todas as areas',
+    '- Crianças sob responsabilidade dos pais/responsaveis',
+    '- Pets aceitos mediante aviso previo (consultar regras)',
+    '- Proibido fumar nas areas internas'
+  ];
+  infos.forEach(l => { doc.text(l, 18, y); y += 4.2; });
+
+  // === RODAPÉ ===
+  const rodapeY = H - 25;
+  doc.setDrawColor(212, 169, 0);
+  doc.setLineWidth(0.5);
+  doc.line(15, rodapeY, W-15, rodapeY);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(26, 26, 24);
+  doc.text(POUSADA_INFO.nome, W/2, rodapeY + 5, { align: 'center' });
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(120, 120, 120);
+  doc.text('Aguardamos sua chegada. Sera um prazer recebe-lo!', W/2, rodapeY + 10, { align: 'center' });
+  doc.text('Em caso de duvidas, entre em contato: ' + POUSADA_INFO.email, W/2, rodapeY + 14, { align: 'center' });
+  doc.text('Este voucher e o comprovante oficial da sua reserva. Imprima e leve no check-in.', W/2, rodapeY + 18, { align: 'center' });
+
+  // Salva
+  const nomeSafe = (reserva.hospede || 'hospede').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);
+  const dataSafe = (reserva.dataEntrada || '').replace(/-/g, '');
+  const nomeArquivo = 'Voucher_' + nomeSafe + '_' + dataSafe + '.pdf';
+  doc.save(nomeArquivo);
+  showToast('📄 Voucher gerado! Envie pelo WhatsApp do cliente.');
+}
+window.gerarVoucherPDF = gerarVoucherPDF;
+
+function gerarVoucherPorId(id){
+  const r = state.reservas.find(x => x.id === id);
+  if(r) gerarVoucherPDF(r);
+}
+window.gerarVoucherPorId = gerarVoucherPorId;
+const FUNCOES_SUGERIDAS = [
+  'Gerente', 'Recepção', 'Camareira', 'Governança',
+  'Cozinheiro(a)', 'Auxiliar Cozinha', 'Garçom/Garçonete',
+  'Manutenção', 'Jardineiro', 'Lavanderia', 'Concierge',
+  'Spa/Terapeuta', 'Segurança', 'Faxineiro(a)', 'Outros'
+];
+const TIPOS_VINCULO = [
+  { id: 'fixo',     nome: 'CLT/Fixo',     icone: '📋', cor: '#15803D' },
+  { id: 'diarista', nome: 'Diarista',     icone: '📅', cor: '#F59E0B' },
+  { id: 'pj',       nome: 'PJ/Autônomo',  icone: '💼', cor: '#7C3AED' }
+];
+const STATUS_FUNC = [
+  { id: 'ativo',       nome: 'Ativo',         cor: '#15803D' },
+  { id: 'ferias',      nome: 'Em férias',     cor: '#F59E0B' },
+  { id: 'afastado',    nome: 'Afastado',      cor: '#6B7280' },
+  { id: 'desligado',   nome: 'Desligado',     cor: '#B91C1C' }
+];
+const BENEFICIOS_SUGERIDOS = [
+  { nome: 'Vale Refeição (VR)', icone: '🍽' },
+  { nome: 'Vale Transporte (VT)', icone: '🚌' },
+  { nome: 'Plano de Saúde', icone: '🏥' },
+  { nome: 'Vale Alimentação (VA)', icone: '🛒' },
+  { nome: 'Auxílio Creche', icone: '👶' },
+  { nome: 'Insalubridade', icone: '⚠️' },
+  { nome: 'Outros', icone: '➕' }
+];
+// Encargos estimados sobre salário para CLT (INSS patronal + FGTS + provisões)
+const ENCARGOS_CLT_PCT = 32; // aproximação conservadora total
+
+// ===== SEED: RESERVAS IMPORTADAS DO PAINEL =====
+// Importadas em 02/06/2026 — apenas check-ins de hoje em diante.
+// Aplicadas automaticamente na 1ª carga, ou via botão "Importar pendentes" (idempotente por ID).
+const SEED_RESERVAS = [
+  {
+    id: 'imp-00068',
+    unitId: 'Q10A',
+    tipo: 'reserva',
+    hospede: 'Vigilato Rodrigues Neto',
+    numPessoas: 4,
+    dataEntrada: '2026-06-12',
+    dataSaida: '2026-06-14',
+    observacao: '#00068 · Tel 31996506368 · 4 pax (alocado Q10A por capacidade) · Valor original R$ 3,00 — verificar',
+    statusPagamento: 'pago',
+    valorTotal: 3.00,
+    valorPago: 3.00,
+    canal: 'booking',
+    estadoPorDia: {}
+  },
+  {
+    id: 'imp-00042',
+    unitId: 'Q1',
+    tipo: 'reserva',
+    hospede: 'Mariana dos Santos Macedo',
+    numPessoas: 3,
+    dataEntrada: '2026-07-23',
+    dataSaida: '2026-07-24',
+    observacao: '#00042 · Tel 31984634410 · Cartão Crédito',
+    statusPagamento: 'pago',
+    valorTotal: 139.21,
+    valorPago: 139.21,
+    canal: 'booking',
+    estadoPorDia: {}
+  },
+  {
+    id: 'imp-00130',
+    unitId: 'Q23',
+    tipo: 'reserva',
+    hospede: 'Renato Bafi',
+    numPessoas: 1,
+    dataEntrada: '2026-08-09',
+    dataSaida: '2026-08-10',
+    observacao: '#00130 · Tel 15996892067 · PIX · Cobrar restante R$ 107,50 no check-in · (Atenção: reserva #00129 é duplicata e foi descartada)',
+    statusPagamento: 'parcial',
+    valorTotal: 215.00,
+    valorPago: 107.50,
+    canal: 'whatsapp',
+    estadoPorDia: {}
+  },
+  {
+    id: 'imp-osber-a03',
+    unitId: 'A03',
+    tipo: 'reserva',
+    hospede: 'Osber',
+    numPessoas: 1,
+    dataEntrada: '2026-05-24',
+    dataSaida: '2026-12-31',
+    observacao: 'Entrada REAL: 22/04/2026 (anterior ao início do mapa) · Ocupação contínua · BLOQUEIO LONGA DURAÇÃO · Hóspede residente · Diária R$ 215 · Faturamento mensal com emissão de NF · NÃO disponibilizar',
+    statusPagamento: 'pendente',
+    valorTotal: 0,
+    valorPago: 0,
+    canal: 'direto',
+    estadoPorDia: { '2026-05-24': 'no_quarto' },
+    tipoFaturamento: 'mensal_diaria',
+    diariaValor: 215,
+    dataInicioFaturamento: '2026-04-22',
+    emitirNF: true,
+    faturasEncerradas: []
+  }
+];
+
+// ===== SEED: EVENTOS GRUPAIS (bloqueio multi-unidade) =====
+// Cada evento é expandido em N reservas (uma por unidade) na carga.
+// IDs são determinísticos para garantir idempotência.
+const SEED_EVENTOS = [
+  {
+    id: 'evt-00069',
+    nome: 'Evento Apóstola · Grupo Igreja',
+    dataEntrada: '2026-06-12',
+    dataSaida: '2026-06-14',
+    paxTotal: 32,
+    valorTotal: 315.00,
+    statusPagamento: 'pendente',
+    canal: 'booking',
+    observacao: '#00069 · BLOQUEIO TOTAL DO GRUPO exceto A03 · 32 pax · Valor original R$315 — CONFIRMAR (provavelmente errado)',
+    excluirUnidades: ['A03']
+  }
+];
+
+// Expande SEED_EVENTOS em reservas individuais por unidade.
+// Para não duplicar valor financeiro no relatório, o valor total é registrado
+// apenas na unidade âncora (primeira); demais ficam com valor 0.
+function expandirEventos(){
+  const out = [];
+  SEED_EVENTOS.forEach(evt => {
+    const excluir = new Set(evt.excluirUnidades || []);
+    const unidades = ALL_UNITS.filter(u => !excluir.has(u.id));
+    unidades.forEach((u, idx) => {
+      const isAncora = idx === 0;
+      out.push({
+        id: evt.id + '-' + u.id,
+        unitId: u.id,
+        tipo: 'reserva',
+        hospede: evt.nome + (isAncora ? ' (âncora)' : ''),
+        numPessoas: isAncora ? evt.paxTotal : 0,
+        dataEntrada: evt.dataEntrada,
+        dataSaida: evt.dataSaida,
+        observacao: evt.observacao + ' · Unidade ' + (idx+1) + '/' + unidades.length + (isAncora ? ' · ÂNCORA FINANCEIRA' : ''),
+        statusPagamento: evt.statusPagamento,
+        valorTotal: isAncora ? evt.valorTotal : 0,
+        valorPago: 0,
+        canal: evt.canal || 'direto',
+        estadoPorDia: {}
+      });
+    });
+  });
+  return out;
+}
+
+function todasReservasDoSeed(){
+  return SEED_RESERVAS.concat(expandirEventos());
+}
+
+// ===== UTILITÁRIOS DE DATA =====
+function pad(n){ return n < 10 ? '0' + n : '' + n; }
+function dateKey(d){ return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+function parseDate(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+function addDays(s, n){ const d = parseDate(s); d.setDate(d.getDate() + n); return dateKey(d); }
+
+const MONTH_NAMES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const MONTH_NAMES_LONG = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DOW_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const DOW_LONG = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+
+const START_KEY = '2026-05-24';
+const END_KEY = '2026-12-31';
+
+// Constroi lista de todos os dias do período
+const ALL_DATES = [];
+{
+  let cur = START_KEY;
+  while(cur <= END_KEY){
+    ALL_DATES.push(cur);
+    cur = addDays(cur, 1);
+  }
+}
+
+// Agrupa por mês
+const MONTHS = [];
+ALL_DATES.forEach(d => {
+  const mk = d.substring(0, 7);
+  let m = MONTHS.find(x => x.key === mk);
+  if(!m){
+    const [y, mm] = mk.split('-').map(Number);
+    m = { key: mk, label: MONTH_NAMES[mm-1] + '/' + String(y).slice(2), longLabel: MONTH_NAMES_LONG[mm-1] + ' ' + y, days: [] };
+    MONTHS.push(m);
+  }
+  m.days.push(d);
+});
+
+function dayShort(d){
+  const dt = parseDate(d);
+  return DOW_SHORT[dt.getDay()] + ' ' + pad(dt.getDate()) + '/' + pad(dt.getMonth()+1);
+}
+function dayLabel(d){
+  const dt = parseDate(d);
+  return DOW_LONG[dt.getDay()] + ', ' + dt.getDate() + ' de ' + MONTH_NAMES_LONG[dt.getMonth()] + ' ' + dt.getFullYear();
+}
+function isWeekend(d){
+  const dow = parseDate(d).getDay();
+  return dow === 0 || dow === 5 || dow === 6; // Dom, Sex, Sáb
+}
+
+// ===== FERIADOS E EMENDAS =====
+// Nacionais + Estaduais MG + Municipais Ouro Preto, dentro do período do sistema.
+const FERIADOS = [
+  { data: '2026-06-04', nome: 'Corpus Christi' },
+  { data: '2026-07-08', nome: 'Revolta de Filipe dos Santos (OP)' },
+  { data: '2026-09-07', nome: 'Independência' },
+  { data: '2026-10-12', nome: 'Nsa Sra Aparecida' },
+  { data: '2026-11-02', nome: 'Finados' },
+  { data: '2026-11-15', nome: 'Proclamação da República' },
+  { data: '2026-11-20', nome: 'Consciência Negra' },
+  { data: '2026-12-08', nome: 'Nsa Sra Conceição (Padroeira OP)' },
+  { data: '2026-12-25', nome: 'Natal' }
+];
+
+// Mapa data → nome do feriado
+const FERIADO_MAP = Object.fromEntries(FERIADOS.map(f => [f.data, f.nome]));
+
+// Emendas automáticas: feriado em ter → segunda anterior; feriado em qui → sexta seguinte.
+// Quarta-feira não gera emenda automática (decisão caso-a-caso).
+const EMENDA_MAP = (() => {
+  const out = {};
+  FERIADOS.forEach(f => {
+    const dow = parseDate(f.data).getDay();
+    if(dow === 2){ // terça → segunda
+      out[addDays(f.data, -1)] = 'Emenda · ' + f.nome;
+    } else if(dow === 4){ // quinta → sexta
+      out[addDays(f.data, 1)] = 'Emenda · ' + f.nome;
+    }
+  });
+  return out;
+})();
+
+function isFeriado(d){ return !!FERIADO_MAP[d]; }
+function isEmenda(d){ return !!EMENDA_MAP[d]; }
+function isDiaEspecial(d){ return isWeekend(d) || isFeriado(d) || isEmenda(d); }
+function nomeDiaEspecial(d){
+  if(FERIADO_MAP[d]) return FERIADO_MAP[d];
+  if(EMENDA_MAP[d]) return EMENDA_MAP[d];
+  return '';
+}
+
+// ===== EVENTOS REGIONAIS =====
+// Eventos confirmados que trazem demanda de hospedagem para a região.
+// Categorias: 'copa' (Copa do Mundo 2026), 'esporte', 'regional' (festas locais), 'comemorativo'.
+const EVENTOS_REGIONAIS = [
+  // Copa do Mundo 2026 — Brasil no Grupo C
+  { data: '2026-06-11', nome: 'Abertura Copa · MEX x RSA · 16h', categoria: 'copa', icone: '⚽' },
+  { data: '2026-06-13', nome: '🇧🇷 BRA x Marrocos · 19h (Copa)', categoria: 'copa', icone: '⚽', destaque: true },
+  { data: '2026-06-19', nome: '🇧🇷 BRA x Haiti · 21h30 (Copa)', categoria: 'copa', icone: '⚽', destaque: true },
+  { data: '2026-06-24', nome: '🇧🇷 BRA x Escócia (Copa)', categoria: 'copa', icone: '⚽', destaque: true },
+  { data: '2026-07-18', nome: 'Copa · Disputa 3º lugar', categoria: 'copa', icone: '⚽' },
+  { data: '2026-07-19', nome: '🏆 FINAL Copa do Mundo · MetLife', categoria: 'copa', icone: '🏆', destaque: true },
+  // Comemorativos nacionais com peso turístico
+  { data: '2026-06-12', nome: 'Dia dos Namorados', categoria: 'comemorativo', icone: '💝', destaque: true },
+  // Eventos regionais confirmados
+  { data: '2026-06-24', nome: 'São João · Barão de Cocais (tradicional, confirmar PMBC)', categoria: 'regional', icone: '🎉' },
+  // Torneio Leiteiro Santa Bárbara (09-12/07)
+  { data: '2026-07-09', nome: 'Torneio Leiteiro Sta Bárbara · Abertura (Diego & Victor Hugo)', categoria: 'regional', icone: '🎉', destaque: true },
+  { data: '2026-07-10', nome: 'Torneio Leiteiro · Gusttavo Lima', categoria: 'regional', icone: '🎉', destaque: true },
+  { data: '2026-07-11', nome: 'Torneio Leiteiro · Clayton & Romário · Exaltasamba', categoria: 'regional', icone: '🎉', destaque: true },
+  { data: '2026-07-12', nome: 'Torneio Leiteiro · Hugo & Guilherme · Encerramento', categoria: 'regional', icone: '🎉', destaque: true }
+];
+
+// Eventos passados em 2026 — referência para planejamento 2027.
+// Não aparecem no mapa, mas ficam disponíveis via console e relatório.
+const EVENTOS_PASSADOS_2026 = [
+  { data: '2026-02-13', nome: 'Carnaval Barão de Cocais (CarnaBarão) · 13-17/02' },
+  { data: '2026-05-02', nome: 'Festa da Quitanda · Cocais · 02-03/05' },
+  { data: '2026-05-15', nome: 'Festa do Vinho · Catas Altas · 15-17/05 (XXV ed.)' },
+  { data: '2026-05-22', nome: 'Cambotas Trail Fest · 22-23/05 (5ª ed.)' }
+];
+
+const EVENTO_MAP = {};
+EVENTOS_REGIONAIS.forEach(e => {
+  if(!EVENTO_MAP[e.data]) EVENTO_MAP[e.data] = [];
+  EVENTO_MAP[e.data].push(e);
+});
+
+function eventosDoDia(d){ return EVENTO_MAP[d] || []; }
+function temEventoDestaque(d){ return eventosDoDia(d).some(e => e.destaque); }
+function temEvento(d){ return eventosDoDia(d).length > 0; }
+function todayKey(){
+  return dateKey(new Date());
+}
+
+// ===== INVENTÁRIO =====
+const QUARTOS = [];
+for(let i=1;i<=24;i++){
+  if(i===10 || i===20){
+    QUARTOS.push({id:'Q'+i, label:i.toString(), casal:1, solteiro:1, sofaCama:0, frigobar:false, pax:3});
+    QUARTOS.push({id:'Q'+i+'A', label:i+'A', casal:1, solteiro:2, sofaCama:0, frigobar:true, pax:4});
+    QUARTOS.push({id:'Q'+i+'B', label:i+'B', casal:1, solteiro:2, sofaCama:0, frigobar:true, pax:4});
+  } else if(i===23 || i===24){
+    QUARTOS.push({id:'Q'+i, label:i.toString(), casal:0, solteiro:3, sofaCama:0, frigobar:false, pax:3, perfil:'S'});
+  } else {
+    QUARTOS.push({id:'Q'+i, label:i.toString(), casal:1, solteiro:1, sofaCama:0, frigobar:false, pax:3});
+  }
+}
+
+const SECTIONS = [
+  {title:'Quartos', cols:6, units: QUARTOS},
+  {title:'Apartamentos', cols:6, units:[
+    {id:'A01',label:'A01', casal:1, solteiro:1, sofaCama:0, frigobar:true, pax:3},
+    {id:'A02',label:'A02', casal:1, solteiro:1, sofaCama:0, frigobar:true, pax:3},
+    {id:'A03',label:'A03', casal:1, solteiro:1, sofaCama:0, frigobar:true, pax:3}
+  ]},
+  {title:'Suíte Premium', cols:6, units:[
+    {id:'MIRANTE',label:'Mirante', casal:1, solteiro:1, sofaCama:0, frigobar:true, pax:3}
+  ]},
+  {title:'Casa & Chalé', cols:6, units:[
+    {id:'CASA01',label:'Casa 01', casal:1, solteiro:3, sofaCama:1, frigobar:true, pax:7},
+    {id:'CHALE01',label:'Chalé 01', casal:1, solteiro:2, sofaCama:0, frigobar:true, pax:4}
+  ]},
+  {title:'Experiência · Modo Extraordinário', cols:6, units:[
+    {id:'MUSEU',label:'Museu', casal:0, solteiro:8, sofaCama:0, frigobar:false, pax:8, especial:true}
+  ]}
+];
+
+const ALL_UNITS = SECTIONS.flatMap(s => s.units);
+const UNIT_MAP = Object.fromEntries(ALL_UNITS.map(u => [u.id, u]));
+const TOTAL = ALL_UNITS.length;
+
+// ===== ESTADOS =====
+const ESTADO_STYLE = {
+  livre:          {bg:'#FFFFFF', border:'#B8B5A8', text:'#1a1a18', label:'Livre', emoji:'·'},
+  vai_entrar:     {bg:'#FFC700', border:'#8C6A00', text:'#2D1F00', label:'Vai entrar', emoji:'🟡'},
+  no_quarto:      {bg:'#1E6FD9', border:'#0C3D7F', text:'#FFFFFF', label:'No quarto', emoji:'🔵'},
+  vai_sair:       {bg:'#F26C2D', border:'#8A2E00', text:'#FFFFFF', label:'Vai sair', emoji:'🟠'},
+  saiu:           {bg:'#7C3AED', border:'#4C1D95', text:'#FFFFFF', label:'Já saiu', emoji:'🟣'},
+  manutencao:     {bg:'#4B5563', border:'#1F2937', text:'#FFFFFF', label:'Manutenção', emoji:'⚙️'},
+  nao_compareceu: {bg:'#DC2626', border:'#7F1D1D', text:'#FFFFFF', label:'Não compareceu', emoji:'🔴'}
+};
+
+const PAGAMENTO_STYLE = {
+  pago:     {label:'Pago', short:'✓', cls:'pago'},
+  parcial:  {label:'Parcial', short:'½', cls:'parcial'},
+  pendente: {label:'Pendente', short:'!', cls:'pendente'}
+};
+
+let state = { reservas: [], servicos: [], despesas: [], funcionarios: [] };
+let currentDay = START_KEY;
+let currentMonth = START_KEY.substring(0, 7);
+let editingUnitId = null;
+
+function uid() { return 'r-' + Date.now() + '-' + Math.random().toString(36).slice(2,7); }
+
+function processSnapshot(val){
+  if(val === null || val === undefined) return [];
+  if(Array.isArray(val)) return val.filter(x => x && typeof x === 'object');
+  return Object.values(val).filter(x => x && typeof x === 'object');
+}
+
+let firstSnapshotProcessed = false;
+let firstServicosSnapshot = false;
+
+function setupFirebaseSync(){
+  reservasRef.on('value', snapshot => {
+    const val = snapshot.val();
+
+    if(val === null && !firstSnapshotProcessed){
+      // BANCO VAZIO na primeira conexão global — aplica seed inicial
+      console.log('[Firebase] Banco vazio. Aplicando seed inicial...');
+      const seed = todasReservasDoSeed().map(r => JSON.parse(JSON.stringify(r)));
+      state.reservas = seed;
+      saveToFirebase();
+      firstSnapshotProcessed = true;
+      // o set() vai disparar o listener de novo com os dados — então não renderiza aqui
+      return;
+    }
+
+    state.reservas = processSnapshot(val);
+
+    // Migração leve: garante campos obrigatórios
+    state.reservas.forEach(r => {
+      if(!r.estadoPorDia) r.estadoPorDia = {};
+      if(!r.statusPagamento) r.statusPagamento = 'pendente';
+      if(typeof r.valorTotal !== 'number') r.valorTotal = 0;
+      if(typeof r.valorPago !== 'number') r.valorPago = 0;
+      if(!r.canal) r.canal = 'direto';
+      if(!r.regimePensao) r.regimePensao = 'sem';
+    });
+
+    // Migração: garante campos novos em reservas SEED conhecidas
+    const seedAtual = todasReservasDoSeed();
+    let mudou = false;
+    seedAtual.forEach(seed => {
+      const existing = state.reservas.find(x => x.id === seed.id);
+      if(existing && seed.tipoFaturamento === 'mensal_diaria'){
+        if(!existing.tipoFaturamento){ existing.tipoFaturamento = seed.tipoFaturamento; mudou = true; }
+        if(typeof existing.diariaValor !== 'number'){ existing.diariaValor = seed.diariaValor; mudou = true; }
+        if(!existing.dataInicioFaturamento && seed.dataInicioFaturamento){
+          existing.dataInicioFaturamento = seed.dataInicioFaturamento; mudou = true;
+        }
+        if(typeof existing.emitirNF !== 'boolean'){ existing.emitirNF = !!seed.emitirNF; mudou = true; }
+        if(!Array.isArray(existing.faturasEncerradas)){ existing.faturasEncerradas = []; mudou = true; }
+      }
+    });
+    if(mudou) saveToFirebase();
+
+    render();
+
+    if(!firstSnapshotProcessed){
+      firstSnapshotProcessed = true;
+      const sync = document.getElementById('sync-overlay');
+      if(sync && firstServicosSnapshot) sync.style.display = 'none';
+    }
+  }, err => {
+    console.error('[Firebase] Erro na sincronização:', err);
+    showToast('⚠️ Erro de conexão: ' + (err.message || 'verifique internet'));
+    const sync = document.getElementById('sync-overlay');
+    if(sync) sync.style.display = 'none';
+  });
+
+  // Listener para serviços extras (Day Use, Passeios, Cachoeira)
+  servicosRef.on('value', snapshot => {
+    const val = snapshot.val();
+    state.servicos = processSnapshot(val);
+    // Garantir campos padrão
+    state.servicos.forEach(s => {
+      if(typeof s.valorTotal !== 'number') s.valorTotal = 0;
+      if(typeof s.valorPago !== 'number') s.valorPago = 0;
+      if(!s.statusPagamento) s.statusPagamento = 'pendente';
+      if(!s.canal) s.canal = 'direto';
+    });
+    render();
+    if(!firstServicosSnapshot){
+      firstServicosSnapshot = true;
+      const sync = document.getElementById('sync-overlay');
+      if(sync && firstSnapshotProcessed) sync.style.display = 'none';
+    }
+  }, err => {
+    console.error('[Firebase] Erro servicos:', err);
+  });
+
+  // Listener para despesas (Contas a Pagar)
+  despesasRef.on('value', snapshot => {
+    const val = snapshot.val();
+    state.despesas = processSnapshot(val);
+    state.despesas.forEach(d => {
+      if(typeof d.valor !== 'number') d.valor = 0;
+      if(!d.status) d.status = 'a_pagar';
+      if(!d.categoria) d.categoria = 'outros';
+    });
+    render();
+  }, err => {
+    console.error('[Firebase] Erro despesas:', err);
+  });
+
+  // Listener para funcionários (Módulo RH)
+  funcionariosRef.on('value', snapshot => {
+    const val = snapshot.val();
+    state.funcionarios = processSnapshot(val);
+    state.funcionarios.forEach(f => {
+      if(typeof f.salarioBase !== 'number') f.salarioBase = 0;
+      if(!Array.isArray(f.beneficios)) f.beneficios = [];
+      if(!f.status) f.status = 'ativo';
+      if(!f.tipoVinculo) f.tipoVinculo = 'fixo';
+      if(!Array.isArray(f.feriasHistorico)) f.feriasHistorico = [];
+    });
+    render();
+  }, err => {
+    console.error('[Firebase] Erro funcionarios:', err);
+  });
+}
+
+function saveToFirebase(){
+  const obj = {};
+  state.reservas.forEach(r => {
+    if(r && r.id) obj[r.id] = r;
+  });
+  reservasRef.set(obj).catch(err => {
+    console.error('[Firebase] Erro ao salvar reservas:', err);
+    showToast('⚠️ Erro ao salvar reservas');
+  });
+}
+
+function saveServicosToFirebase(){
+  const obj = {};
+  state.servicos.forEach(s => {
+    if(s && s.id) obj[s.id] = s;
+  });
+  servicosRef.set(obj).catch(err => {
+    console.error('[Firebase] Erro ao salvar servicos:', err);
+    showToast('⚠️ Erro ao salvar serviços');
+  });
+}
+
+function saveDespesasToFirebase(){
+  const obj = {};
+  state.despesas.forEach(d => {
+    if(d && d.id) obj[d.id] = d;
+  });
+  despesasRef.set(obj).catch(err => {
+    console.error('[Firebase] Erro ao salvar despesas:', err);
+    showToast('⚠️ Erro ao salvar despesas');
+  });
+}
+
+function saveFuncionariosToFirebase(){
+  const obj = {};
+  state.funcionarios.forEach(f => {
+    if(f && f.id) obj[f.id] = f;
+  });
+  funcionariosRef.set(obj).catch(err => {
+    console.error('[Firebase] Erro ao salvar funcionarios:', err);
+    showToast('⚠️ Erro ao salvar funcionários');
+  });
+}
+
+// Compatibilidade: mantém função save() chamada em vários pontos do código
+function save(){ saveToFirebase(); }
+
+// Stub mantido para compat — o load real é via Firebase listener
+function load(){
+  // Define dia inicial como hoje, se dentro do período
+  const t = todayKey();
+  if(t >= START_KEY && t <= END_KEY){
+    currentDay = t;
+    currentMonth = t.substring(0, 7);
+  }
+}
+
+// Importa reservas SEED que ainda não estão no state (idempotente por ID).
+// Útil após "Limpar tudo" ou se o usuário quiser reaplicar a importação.
+function importarSeed(){
+  const seed = todasReservasDoSeed();
+  const existentes = new Set(state.reservas.map(r => r.id));
+  const novas = seed.filter(r => !existentes.has(r.id));
+  if(novas.length === 0){
+    showToast('Nenhuma reserva nova para importar');
+    return;
+  }
+  novas.forEach(r => state.reservas.push(JSON.parse(JSON.stringify(r))));
+  save();
+  render();
+  showToast(novas.length + ' reserva(s) importada(s)');
+}
+
+// Função save antiga (localStorage) — substituída por saveToFirebase acima.
+// Mantida vazia para evitar redefinições.
+
+// ===== FATURAMENTO MENSAL (reservas longas com diária fixa) =====
+// Calcula o período aberto de uma reserva com tipoFaturamento='mensal_diaria'.
+// Usa dataInicioFaturamento (se houver) como ponto de partida real, pois algumas
+// reservas começaram antes do período visível do sistema (START_KEY).
+function calcularPeriodoAberto(reserva){
+  if(reserva.tipoFaturamento !== 'mensal_diaria') return null;
+  const faturas = reserva.faturasEncerradas || [];
+  let desde = reserva.dataInicioFaturamento || reserva.dataEntrada;
+  if(faturas.length){
+    const ultima = faturas[faturas.length - 1];
+    desde = addDays(ultima.periodoFim, 1);
+  }
+  const hoje = todayKey();
+  const ate = hoje < reserva.dataSaida ? hoje : reserva.dataSaida;
+  if(ate < desde) return { desde, ate, dias: 0, valor: 0 };
+  // dias inclusivos
+  let dias = 0;
+  let cur = desde;
+  while(cur <= ate){ dias++; cur = addDays(cur, 1); }
+  const valor = dias * (reserva.diariaValor || 0);
+  return { desde, ate, dias, valor };
+}
+
+// Alerta de fatura pendente: hoje é dia 1+ de um novo mês E há período aberto
+// que inclui dias do mês anterior (ou mais antigos) ainda não faturados.
+function temFaturaPendenteMensal(reserva){
+  if(reserva.tipoFaturamento !== 'mensal_diaria') return false;
+  const aberto = calcularPeriodoAberto(reserva);
+  if(!aberto || aberto.dias === 0) return false;
+  const hoje = todayKey();
+  const hojeMes = hoje.substring(0, 7);
+  const desdeMes = aberto.desde.substring(0, 7);
+  // Pendente se o período aberto começa antes do mês atual (= mês anterior ou mais)
+  return desdeMes < hojeMes;
+}
+
+function encerrarFaturaMensal(reservaId){
+  const r = state.reservas.find(x => x.id === reservaId);
+  if(!r || r.tipoFaturamento !== 'mensal_diaria') return;
+  const aberto = calcularPeriodoAberto(r);
+  if(!aberto || aberto.dias === 0){
+    showToast('Nada para faturar agora');
+    return;
+  }
+  const msg = 'Encerrar fatura?\n\n' +
+              'Período: ' + dayShort(aberto.desde) + ' → ' + dayShort(aberto.ate) + '\n' +
+              'Dias: ' + aberto.dias + '\n' +
+              'Valor: ' + formatBRL(aberto.valor) +
+              (r.emitirNF ? '\n\n⚠️ EMITIR NOTA FISCAL deste valor.' : '');
+  if(!confirm(msg)) return;
+  let nf = '';
+  if(r.emitirNF){
+    nf = prompt('Nº da Nota Fiscal emitida (pode deixar em branco e preencher depois):', '') || '';
+  }
+  if(!r.faturasEncerradas) r.faturasEncerradas = [];
+  r.faturasEncerradas.push({
+    periodoInicio: aberto.desde,
+    periodoFim: aberto.ate,
+    dias: aberto.dias,
+    valor: aberto.valor,
+    encerradoEm: todayKey(),
+    notaFiscal: nf.trim()
+  });
+  save();
+  render();
+  openModal(r.unitId);
+  showToast('Fatura encerrada · ' + formatBRL(aberto.valor) + (nf ? ' · NF ' + nf : ''));
+}
+window.encerrarFaturaMensal = encerrarFaturaMensal;
+
+// Permite editar número de NF de uma fatura já encerrada
+function editarNFFatura(reservaId, faturaIdx){
+  const r = state.reservas.find(x => x.id === reservaId);
+  if(!r || !r.faturasEncerradas || !r.faturasEncerradas[faturaIdx]) return;
+  const f = r.faturasEncerradas[faturaIdx];
+  const nova = prompt('Nº da NF para fatura ' + dayShort(f.periodoInicio) + ' → ' + dayShort(f.periodoFim) + ' (R$ ' + f.valor.toFixed(2) + '):', f.notaFiscal || '');
+  if(nova === null) return;
+  f.notaFiscal = nova.trim();
+  save();
+  render();
+  openModal(r.unitId);
+  showToast('NF atualizada');
+}
+window.editarNFFatura = editarNFFatura;
+
+function reservaIncludesDay(r, day){
+  return day >= r.dataEntrada && day <= r.dataSaida;
+}
+
+function getReservaForDay(unitId, day){
+  return state.reservas.find(r => r.unitId === unitId && reservaIncludesDay(r, day));
+}
+
+// === LÓGICA DE NÃO COMPARECEU ===
+// Se a data de entrada já passou e o status do dia de entrada NÃO foi confirmado
+// (continua como "vai_entrar" ou indefinido), todos os dias seguintes da reserva
+// recebem automaticamente o status "Não compareceu" (vermelho).
+function isNoShow(reserva, day){
+  if(reserva.tipo !== 'reserva') return false;
+  if(day <= reserva.dataEntrada) return false;
+  const entradaStatus = reserva.estadoPorDia && reserva.estadoPorDia[reserva.dataEntrada];
+  // Confirmado = status do dia de entrada foi elevado de "vai_entrar"
+  const confirmed = entradaStatus && entradaStatus !== 'vai_entrar' && entradaStatus !== 'nao_compareceu';
+  return !confirmed;
+}
+
+function getEstadoDefault(reserva, day){
+  if(reserva.tipo === 'manutencao') return 'manutencao';
+  if(isNoShow(reserva, day)) return 'nao_compareceu';
+  if(day === reserva.dataEntrada) return 'vai_entrar';
+  if(day === reserva.dataSaida) return 'vai_sair';
+  return 'no_quarto';
+}
+
+function getEstado(unitId, day){
+  const r = getReservaForDay(unitId, day);
+  if(!r) return { estado: 'livre', reserva: null };
+  const override = r.estadoPorDia && r.estadoPorDia[day];
+  return { estado: override || getEstadoDefault(r, day), reserva: r };
+}
+
+function getDayStats(day){
+  let stats = { livre:0, ocupado:0, checkin:0, checkout:0, manutencao:0, saiu:0, noshow:0, pessoas:0, recebido:0, areceber:0, porCanal:{} };
+  ALL_UNITS.forEach(unit => {
+    const { estado, reserva } = getEstado(unit.id, day);
+    if(estado === 'livre') stats.livre++;
+    else if(estado === 'manutencao') stats.manutencao++;
+    else if(estado === 'saiu') { stats.livre++; stats.saiu++; }
+    else if(estado === 'nao_compareceu') { stats.livre++; stats.noshow++; }
+    else {
+      stats.ocupado++;
+      if(reserva && reserva.tipo === 'reserva'){
+        stats.pessoas += (reserva.numPessoas || 0);
+        const c = reserva.canal || 'direto';
+        if(!stats.porCanal[c]) stats.porCanal[c] = { unidades: 0, recebido: 0, areceber: 0 };
+        stats.porCanal[c].unidades++;
+      }
+    }
+  });
+  stats.checkin = state.reservas.filter(r => r.tipo === 'reserva' && r.dataEntrada === day).length;
+  stats.checkout = state.reservas.filter(r => r.tipo === 'reserva' && r.dataSaida === day).length;
+  // Financeiro: soma de todas reservas ativas no dia (incluindo entrada/saída)
+  state.reservas.forEach(r => {
+    if(r.tipo === 'reserva' && reservaIncludesDay(r, day)){
+      stats.recebido += (r.valorPago || 0);
+      stats.areceber += Math.max(0, (r.valorTotal || 0) - (r.valorPago || 0));
+      const c = r.canal || 'direto';
+      if(!stats.porCanal[c]) stats.porCanal[c] = { unidades: 0, recebido: 0, areceber: 0 };
+      stats.porCanal[c].recebido += (r.valorPago || 0);
+      stats.porCanal[c].areceber += Math.max(0, (r.valorTotal || 0) - (r.valorPago || 0));
+    }
+  });
+  return stats;
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function buildSpecText(unit){
+  let parts = [];
+  if(unit.casal > 0) parts.push(unit.casal + ' cama' + (unit.casal>1?'s':'') + ' de casal');
+  if(unit.solteiro > 0) parts.push(unit.solteiro + ' cama' + (unit.solteiro>1?'s':'') + ' de solteiro');
+  if(unit.sofaCama > 0) parts.push(unit.sofaCama + ' sofá-cama');
+  parts.push('cap. ' + unit.pax + ' pax');
+  if(unit.frigobar) parts.push('frigobar');
+  if(unit.especial) parts.unshift('modo extraordinário');
+  return parts.join(' · ');
+}
+
+function formatBRL(v){
+  if(!v && v !== 0) return 'R$ 0,00';
+  return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+// ===== BUILDERS DE UI =====
+function buildMonthTabs(){
+  const tabs = document.getElementById('month-tabs');
+  tabs.innerHTML = '';
+  MONTHS.forEach(m => {
+    const b = document.createElement('button');
+    b.className = 'month-tab' + (m.key === currentMonth ? ' active' : '');
+    b.dataset.month = m.key;
+    b.textContent = m.label;
+    b.onclick = () => {
+      currentMonth = m.key;
+      // Se dia atual não pertence ao mês, vai para o primeiro dia do mês
+      if(currentDay.substring(0,7) !== m.key){
+        currentDay = m.days[0];
+      }
+      render();
+    };
+    tabs.appendChild(b);
+  });
+  setTimeout(() => {
+    const active = tabs.querySelector('.month-tab.active');
+    if(active) active.scrollIntoView({inline: 'center', block: 'nearest', behavior: 'smooth'});
+  }, 50);
+}
+
+function buildDayStrip(){
+  const strip = document.getElementById('day-strip');
+  strip.innerHTML = '';
+  const month = MONTHS.find(m => m.key === currentMonth);
+  if(!month) return;
+  const t = todayKey();
+  month.days.forEach(d => {
+    const dt = parseDate(d);
+    const dow = DOW_SHORT[dt.getDay()];
+    const dnum = dt.getDate();
+    const b = document.createElement('button');
+    let cls = 'day-pill';
+    if(d === currentDay) cls += ' active';
+    if(d === t) cls += ' today';
+    if(isFeriado(d)) cls += ' holiday';
+    else if(isEmenda(d)) cls += ' emenda';
+    else if(isWeekend(d)) cls += ' weekend';
+    if(temEvento(d)) cls += ' evento';
+    b.className = cls;
+    b.dataset.day = d;
+    const especial = nomeDiaEspecial(d);
+    const eventos = eventosDoDia(d);
+    const tooltipParts = [];
+    if(especial) tooltipParts.push(especial);
+    eventos.forEach(e => tooltipParts.push(e.nome));
+    if(tooltipParts.length) b.title = tooltipParts.join(' · ');
+    const starHtml = especial ? '<div class="star">' + (isFeriado(d) ? '★' : '◆') + '</div>' : '';
+    const evtIco = eventos.length ? '<div class="evento-ico">' + eventos[0].icone + '</div>' : '';
+    b.innerHTML = evtIco + '<div class="dow">' + dow + '</div><div class="dnum">' + dnum + '</div>' + starHtml;
+    b.onclick = () => { currentDay = d; render(); };
+    strip.appendChild(b);
+  });
+  setTimeout(() => {
+    const active = strip.querySelector('.day-pill.active');
+    if(active) active.scrollIntoView({inline: 'center', block: 'nearest', behavior: 'smooth'});
+  }, 50);
+}
+
+function buildSections(){
+  const container = document.getElementById('sections-container');
+  container.innerHTML = '';
+  SECTIONS.forEach((sec, idx) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'section';
+    wrap.innerHTML = '<p class="section-title">' + sec.title + '</p><div class="grid" id="grid-' + idx + '"></div>';
+    container.appendChild(wrap);
+  });
+}
+
+// ============================================================
+// ============= MÓDULO FINANCEIRO COMPLETO ==================
+// ============================================================
+
+let viewAtual = 'mapa'; // 'mapa' | 'financeiro'
+let filtroFinStatus = 'todos'; // 'todos' | 'a_pagar' | 'atrasado' | 'pago'
+let filtroFinMes = null; // ex: '2026-06' ou null = todos
+
+function trocarVista(v){
+  viewAtual = v;
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.toggle('active', t.dataset.view === v));
+  document.getElementById('vista-mapa').style.display = v === 'mapa' ? '' : 'none';
+  document.getElementById('vista-financeiro').style.display = v === 'financeiro' ? '' : 'none';
+  document.getElementById('vista-rh').style.display = v === 'rh' ? '' : 'none';
+  render();
+}
+
+// Agrega todas as contas a RECEBER consolidadas (reservas, serviços, faturas Osber)
+function getContasReceber(){
+  const itens = [];
+  state.reservas.forEach(r => {
+    if(r.tipo !== 'reserva') return;
+    // Reserva com pagamento parcial ou pendente
+    if(r.tipoFaturamento === 'mensal_diaria'){
+      // Osber: calcular fatura aberta
+      const aberto = calcularPeriodoAberto(r);
+      if(aberto && aberto.dias > 0){
+        itens.push({
+          id: 'rec-osber-' + r.id,
+          origem: 'osber',
+          descricao: r.hospede + ' · Fatura aberta (' + aberto.dias + ' dias)',
+          dataPrevista: addDays(aberto.ate, 1), // próximo dia útil
+          valor: aberto.valor,
+          status: 'a_receber',
+          link: r.unitId
+        });
+      }
+    } else if(r.statusPagamento === 'parcial' || r.statusPagamento === 'pendente'){
+      const falta = (r.valorTotal || 0) - (r.valorPago || 0);
+      if(falta > 0){
+        itens.push({
+          id: 'rec-' + r.id,
+          origem: 'reserva',
+          descricao: r.hospede + ' · ' + (UNIT_MAP[r.unitId] ? UNIT_MAP[r.unitId].label : ''),
+          dataPrevista: r.dataEntrada,
+          valor: falta,
+          status: 'a_receber',
+          link: r.unitId,
+          canal: r.canal
+        });
+      }
+    }
+  });
+  // Serviços (Day Use, passeios) pendentes
+  (state.servicos || []).forEach(s => {
+    if(s.statusPagamento === 'parcial' || s.statusPagamento === 'pendente'){
+      const falta = (s.valorTotal || 0) - (s.valorPago || 0);
+      if(falta > 0){
+        const info = servicoInfo(s.tipo);
+        itens.push({
+          id: 'rec-srv-' + s.id,
+          origem: 'servico',
+          descricao: (info ? info.icone + ' ' + info.nome : 'Serviço') + ' · ' + s.cliente,
+          dataPrevista: s.data,
+          valor: falta,
+          status: 'a_receber'
+        });
+      }
+    }
+  });
+  return itens.sort((a,b) => a.dataPrevista.localeCompare(b.dataPrevista));
+}
+
+// Atualiza automaticamente o status das despesas (atrasado, etc) sem persistir
+function statusDespesaCalculado(d){
+  if(d.status === 'pago') return 'pago';
+  const hoje = todayKey();
+  if(d.dataVencimento < hoje) return 'atrasado';
+  return 'a_pagar';
+}
+
+// Cria uma nova despesa
+function novaDespesa(despesa){
+  if(!state.despesas) state.despesas = [];
+  state.despesas.push({
+    id: 'desp-' + uid(),
+    categoria: 'outros',
+    descricao: '',
+    valor: 0,
+    dataVencimento: todayKey(),
+    dataPagamento: null,
+    status: 'a_pagar',
+    recorrente: false,
+    recorrenciaParent: null,
+    observacao: '',
+    ...despesa
+  });
+  saveDespesasToFirebase();
+}
+
+// Gera as próximas N parcelas de uma recorrência mensal a partir de um template
+function gerarRecorrencias(template, numMeses){
+  const parcelas = [];
+  const baseDate = template.dataVencimento;
+  for(let i = 1; i <= numMeses; i++){
+    const [y, m, d] = baseDate.split('-').map(Number);
+    const dt = new Date(y, m - 1 + i, d);
+    const novaData = dt.getFullYear() + '-' + pad(dt.getMonth()+1) + '-' + pad(dt.getDate());
+    if(novaData > END_KEY) break;
+    parcelas.push({
+      id: 'desp-' + uid() + '-' + i,
+      categoria: template.categoria,
+      descricao: template.descricao + ' (mês ' + (i+1) + ')',
+      valor: template.valor,
+      dataVencimento: novaData,
+      dataPagamento: null,
+      status: 'a_pagar',
+      recorrente: true,
+      recorrenciaParent: template.id,
+      observacao: template.observacao || ''
+    });
+  }
+  return parcelas;
+}
+
+// Modal de Nova Despesa
+function openDespesaModal(despesa){
+  const isNew = !despesa;
+  const d = despesa || {
+    categoria: 'outros', descricao: '', valor: 0,
+    dataVencimento: todayKey(), status: 'a_pagar',
+    recorrente: false, observacao: ''
+  };
+
+  document.getElementById('modal-title').textContent = (isNew ? 'Nova Despesa' : 'Editar Despesa');
+  const content = document.getElementById('modal-content');
+
+  content.innerHTML = `
+    <label class="field-label">Categoria</label>
+    <div class="cat-grid-modal" id="cat-grid-modal">
+      ${CATEGORIAS_DESPESA.map(c => `<button type="button" class="cat-btn-modal ${d.categoria === c.id ? 'selected' : ''}" data-cat="${c.id}" style="background:${c.cor};">${c.icone}<br/>${c.nome}</button>`).join('')}
+    </div>
+
+    <label class="field-label">Descrição</label>
+    <input type="text" id="d-desc" placeholder="Ex: Conta de luz Cemig junho/26" value="${escapeHtml(d.descricao || '')}" />
+
+    <label class="field-label">Valor (R$)</label>
+    <input type="number" id="d-valor" step="0.01" value="${d.valor || ''}" placeholder="0,00" />
+
+    <label class="field-label">Data de Vencimento</label>
+    <input type="date" id="d-venc" value="${d.dataVencimento}" min="2026-01-01" max="2027-12-31" />
+
+    <label class="field-label">Status</label>
+    <div class="pay-grid" id="d-status-grid">
+      <button type="button" class="pay-btn ${d.status === 'a_pagar' ? 'selected' : ''}" data-st="a_pagar">⏳ A pagar</button>
+      <button type="button" class="pay-btn ${d.status === 'pago' ? 'selected' : ''}" data-st="pago">✓ Pago</button>
+    </div>
+
+    ${isNew ? `
+    <label class="field-label">Recorrência</label>
+    <div style="display:flex;gap:6px;margin-bottom:4px;" id="d-recor-grid">
+      <button type="button" class="pay-btn selected" data-rec="0" style="flex:1;">Só este mês</button>
+      <button type="button" class="pay-btn" data-rec="6" style="flex:1;">+ 6 meses</button>
+      <button type="button" class="pay-btn" data-rec="12" style="flex:1;">+ 12 meses</button>
+    </div>
+    <div style="font-size:11px;color:#888;margin-bottom:8px;">Gerará automaticamente parcelas mensais com o mesmo valor. Você pode editar/excluir cada uma depois.</div>
+    ` : ''}
+
+    <label class="field-label">Observação (fornecedor, nº fatura, etc)</label>
+    <input type="text" id="d-obs" placeholder="Ex: Fornecedor X · Boleto 12345" value="${escapeHtml(d.observacao || '')}" />
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="d-salvar">💾 Salvar despesa</button>
+      ${!isNew ? '<button class="btn btn-danger" id="d-excluir">🗑 Excluir</button>' : ''}
+    </div>
+  `;
+
+  let catSel = d.categoria;
+  let statusSel = d.status;
+  let recor = 0;
+
+  document.querySelectorAll('#cat-grid-modal .cat-btn-modal').forEach(btn => {
+    btn.onclick = () => {
+      catSel = btn.dataset.cat;
+      document.querySelectorAll('#cat-grid-modal .cat-btn-modal').forEach(b => b.classList.toggle('selected', b.dataset.cat === catSel));
+      // Sugere data baseada na categoria
+      const info = categoriaInfo(catSel);
+      if(info && info.diaVencPadrao > 0 && isNew){
+        const hoje = parseDate(todayKey());
+        let venc = new Date(hoje.getFullYear(), hoje.getMonth(), info.diaVencPadrao);
+        if(venc < hoje) venc = new Date(hoje.getFullYear(), hoje.getMonth() + 1, info.diaVencPadrao);
+        document.getElementById('d-venc').value = venc.getFullYear() + '-' + pad(venc.getMonth()+1) + '-' + pad(venc.getDate());
+      }
+    };
+  });
+
+  document.querySelectorAll('#d-status-grid .pay-btn').forEach(btn => {
+    btn.onclick = () => {
+      statusSel = btn.dataset.st;
+      document.querySelectorAll('#d-status-grid .pay-btn').forEach(b => b.classList.toggle('selected', b.dataset.st === statusSel));
+    };
+  });
+
+  if(isNew){
+    document.querySelectorAll('#d-recor-grid .pay-btn').forEach(btn => {
+      btn.onclick = () => {
+        recor = parseInt(btn.dataset.rec);
+        document.querySelectorAll('#d-recor-grid .pay-btn').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.rec) === recor));
+      };
+    });
+  }
+
+  document.getElementById('d-salvar').onclick = () => {
+    const desc = document.getElementById('d-desc').value.trim();
+    const valor = parseFloat(document.getElementById('d-valor').value) || 0;
+    const venc = document.getElementById('d-venc').value;
+    const obs = document.getElementById('d-obs').value.trim();
+
+    if(!desc){ alert('Descrição obrigatória'); return; }
+    if(!venc){ alert('Data de vencimento obrigatória'); return; }
+    if(valor <= 0){ alert('Valor deve ser maior que zero'); return; }
+
+    const dadosBase = {
+      categoria: catSel,
+      descricao: desc,
+      valor,
+      dataVencimento: venc,
+      status: statusSel,
+      dataPagamento: statusSel === 'pago' ? todayKey() : null,
+      observacao: obs
+    };
+
+    if(despesa){
+      Object.assign(despesa, dadosBase);
+    } else {
+      const id = 'desp-' + uid();
+      const principal = { id, ...dadosBase, recorrente: recor > 0, recorrenciaParent: null };
+      if(!state.despesas) state.despesas = [];
+      state.despesas.push(principal);
+      if(recor > 0){
+        gerarRecorrencias(principal, recor).forEach(p => state.despesas.push(p));
+      }
+    }
+    saveDespesasToFirebase();
+    closeModal();
+    render();
+    showToast('Despesa salva' + (recor > 0 ? ' + ' + recor + ' parcelas geradas' : ''));
+  };
+
+  if(!isNew){
+    document.getElementById('d-excluir').onclick = () => {
+      let excluiTodas = false;
+      if(despesa.recorrenciaParent || despesa.recorrente){
+        excluiTodas = confirm('Esta é uma despesa recorrente. Deseja excluir TODAS as parcelas relacionadas?\n\nOK = todas · Cancelar = apenas esta');
+      } else {
+        if(!confirm('Excluir esta despesa?')) return;
+      }
+      const parentId = despesa.recorrenciaParent || despesa.id;
+      if(excluiTodas){
+        state.despesas = state.despesas.filter(x =>
+          x.id !== parentId && x.recorrenciaParent !== parentId
+        );
+      } else {
+        state.despesas = state.despesas.filter(x => x.id !== despesa.id);
+      }
+      saveDespesasToFirebase();
+      closeModal();
+      render();
+      showToast('Despesa excluída');
+    };
+  }
+
+  document.getElementById('modal-backdrop').classList.add('open');
+  document.getElementById('modal').classList.add('open');
+}
+
+function editDespesa(id){
+  const d = state.despesas.find(x => x.id === id);
+  if(d) openDespesaModal(d);
+}
+window.editDespesa = editDespesa;
+
+function marcarDespesaPaga(id){
+  const d = state.despesas.find(x => x.id === id);
+  if(!d) return;
+  d.status = 'pago';
+  d.dataPagamento = todayKey();
+  saveDespesasToFirebase();
+  render();
+  showToast('Despesa marcada como paga');
+}
+window.marcarDespesaPaga = marcarDespesaPaga;
+
+// ===== INDICADORES DE HOTELARIA =====
+function calcularIndicadores(mesYM){
+  // mesYM no formato 'YYYY-MM'
+  const inicioMes = mesYM + '-01';
+  const [y,m] = mesYM.split('-').map(Number);
+  const ultDia = new Date(y, m, 0).getDate();
+  const fimMes = mesYM + '-' + pad(ultDia);
+
+  const diasDisponiveis = ultDia * ALL_UNITS.length;
+  let diariasVendidas = 0;
+  let receitaQuartos = 0;
+  let receitaServicos = 0;
+
+  // Diárias vendidas (cada dia que uma unidade esteve ocupada com reserva)
+  ALL_UNITS.forEach(unit => {
+    let cur = inicioMes;
+    while(cur <= fimMes){
+      const { estado, reserva } = getEstado(unit.id, cur);
+      if(reserva && reserva.tipo === 'reserva' && estado !== 'livre' && estado !== 'nao_compareceu' && estado !== 'saiu'){
+        diariasVendidas++;
+      }
+      cur = addDays(cur, 1);
+    }
+  });
+
+  // Receita de reservas no mês (proporcional)
+  state.reservas.forEach(r => {
+    if(r.tipo !== 'reserva') return;
+    if(r.tipoFaturamento === 'mensal_diaria'){
+      // Osber: soma faturas do mês
+      (r.faturasEncerradas || []).forEach(f => {
+        if(f.encerradoEm >= inicioMes && f.encerradoEm <= fimMes){
+          receitaQuartos += f.valor;
+        }
+      });
+    } else {
+      // Reserva comum: proporcional dos dias dentro do mês
+      if(r.dataSaida < inicioMes || r.dataEntrada > fimMes) return;
+      const inicio = r.dataEntrada > inicioMes ? r.dataEntrada : inicioMes;
+      const fim = r.dataSaida < fimMes ? r.dataSaida : fimMes;
+      let noites = 0, cur = inicio;
+      while(cur < fim){ noites++; cur = addDays(cur, 1); }
+      const noitesTotal = (() => {
+        let n = 0, c = r.dataEntrada;
+        while(c < r.dataSaida){ n++; c = addDays(c, 1); }
+        return n || 1;
+      })();
+      receitaQuartos += (r.valorTotal || 0) * (noites / noitesTotal);
+    }
+  });
+
+  // Receita de serviços
+  (state.servicos || []).forEach(s => {
+    if(s.data >= inicioMes && s.data <= fimMes){
+      receitaServicos += s.valorTotal || 0;
+    }
+  });
+
+  const taxaOcup = diasDisponiveis ? (diariasVendidas / diasDisponiveis) * 100 : 0;
+  const adr = diariasVendidas ? receitaQuartos / diariasVendidas : 0;
+  const revPar = diasDisponiveis ? receitaQuartos / diasDisponiveis : 0;
+  const trevPar = diasDisponiveis ? (receitaQuartos + receitaServicos) / diasDisponiveis : 0;
+
+  // Despesas do mês
+  let despesasMes = 0;
+  (state.despesas || []).forEach(d => {
+    const data = d.status === 'pago' && d.dataPagamento ? d.dataPagamento : d.dataVencimento;
+    if(data >= inicioMes && data <= fimMes) despesasMes += d.valor || 0;
+  });
+
+  // Comissões estimadas no mês (Booking, Airbnb etc)
+  let comissoesEstimadas = 0;
+  state.reservas.forEach(r => {
+    if(r.tipo !== 'reserva' || r.tipoFaturamento === 'mensal_diaria') return;
+    if(r.dataEntrada >= inicioMes && r.dataEntrada <= fimMes){
+      const c = canalInfo(r.canal);
+      if(c && c.comissaoPct > 0) comissoesEstimadas += (r.valorTotal || 0) * c.comissaoPct / 100;
+    }
+  });
+
+  const lucroEstimado = receitaQuartos + receitaServicos - comissoesEstimadas - despesasMes;
+
+  return {
+    diasDisponiveis, diariasVendidas,
+    receitaQuartos, receitaServicos, receitaTotal: receitaQuartos + receitaServicos,
+    despesasMes, comissoesEstimadas, lucroEstimado,
+    taxaOcup, adr, revPar, trevPar
+  };
+}
+
+// ===== FLUXO DE CAIXA PROJETADO =====
+function calcularFluxoCaixa(diasFrente){
+  const hoje = todayKey();
+  const fim = addDays(hoje, diasFrente);
+  const aReceber = getContasReceber().filter(r => r.dataPrevista >= hoje && r.dataPrevista <= fim);
+  const aPagar = (state.despesas || []).filter(d =>
+    statusDespesaCalculado(d) !== 'pago' && d.dataVencimento >= hoje && d.dataVencimento <= fim
+  );
+  // Soma vencidos (atrasados) que ainda não foram pagos
+  const atrasados = (state.despesas || []).filter(d => statusDespesaCalculado(d) === 'atrasado');
+
+  const totalReceber = aReceber.reduce((s,r) => s + r.valor, 0);
+  const totalPagar = aPagar.reduce((s,d) => s + d.valor, 0);
+  const totalAtrasado = atrasados.reduce((s,d) => s + d.valor, 0);
+
+  return { aReceber, aPagar, atrasados, totalReceber, totalPagar, totalAtrasado, saldo: totalReceber - totalPagar - totalAtrasado };
+}
+
+// ===== ALERTAS CRÍTICOS =====
+function renderAlertasCriticos(){
+  const cont = document.getElementById('alertas-criticos');
+  if(!cont) return;
+  const alertas = [];
+
+  // Despesas atrasadas
+  const atrasadas = (state.despesas || []).filter(d => statusDespesaCalculado(d) === 'atrasado');
+  if(atrasadas.length > 0){
+    const total = atrasadas.reduce((s,d) => s + d.valor, 0);
+    alertas.push({ tipo: 'vermelho', icone: '🚨', texto: '<b>' + atrasadas.length + ' conta(s) ATRASADA(S)</b> — total ' + formatBRL(total) + '. Pague urgente.' });
+  }
+
+  // Vencendo em 3 dias
+  const hoje = todayKey();
+  const em3dias = addDays(hoje, 3);
+  const vencendoEmBreve = (state.despesas || []).filter(d => {
+    const st = statusDespesaCalculado(d);
+    return st !== 'pago' && st !== 'atrasado' && d.dataVencimento >= hoje && d.dataVencimento <= em3dias;
+  });
+  if(vencendoEmBreve.length > 0){
+    const total = vencendoEmBreve.reduce((s,d) => s + d.valor, 0);
+    alertas.push({ tipo: 'amarelo', icone: '⏰', texto: '<b>' + vencendoEmBreve.length + ' conta(s) vencendo em 3 dias</b> — total ' + formatBRL(total) });
+  }
+
+  // Saldo negativo projetado
+  const fluxo30 = calcularFluxoCaixa(30);
+  if(fluxo30.saldo < 0){
+    alertas.push({ tipo: 'vermelho', icone: '📉', texto: '<b>Saldo projetado 30 dias: ' + formatBRL(fluxo30.saldo) + '</b> (NEGATIVO). A pagar excede a receber.' });
+  }
+
+  // Fatura Osber pendente
+  const osber = state.reservas.find(r => r.id === 'imp-osber-a03');
+  if(osber && temFaturaPendenteMensal(osber)){
+    const aberto = calcularPeriodoAberto(osber);
+    alertas.push({ tipo: 'amarelo', icone: '🔔', texto: '<b>Fatura Osber pendente:</b> ' + formatBRL(aberto.valor) + ' (' + aberto.dias + ' dias). Emitir NF.' });
+  }
+
+  if(alertas.length === 0){
+    cont.innerHTML = '';
+    return;
+  }
+  cont.innerHTML = '<div style="margin-top:8px;">' + alertas.map(a =>
+    '<div class="alerta-financeiro alerta-' + a.tipo + '">' + a.icone + ' ' + a.texto + '</div>'
+  ).join('') + '</div>';
+}
+
+// ===== RENDER PRINCIPAL DO PAINEL FINANCEIRO =====
+function renderPainelFinanceiro(){
+  const cont = document.getElementById('painel-financeiro');
+  if(!cont) return;
+
+  const hoje = todayKey();
+  const mesAtual = hoje.substring(0, 7);
+  const ind = calcularIndicadores(mesAtual);
+  const fluxo30 = calcularFluxoCaixa(30);
+  const fluxo60 = calcularFluxoCaixa(60);
+  const fluxo90 = calcularFluxoCaixa(90);
+  const aReceber = getContasReceber();
+  const totalReceberGeral = aReceber.reduce((s,r) => s + r.valor, 0);
+
+  // Filtra despesas pelo filtro atual
+  let despesasFiltradas = (state.despesas || []).slice();
+  if(filtroFinStatus !== 'todos'){
+    despesasFiltradas = despesasFiltradas.filter(d => statusDespesaCalculado(d) === filtroFinStatus);
+  }
+  if(filtroFinMes){
+    despesasFiltradas = despesasFiltradas.filter(d => d.dataVencimento.substring(0,7) === filtroFinMes);
+  }
+  despesasFiltradas.sort((a,b) => a.dataVencimento.localeCompare(b.dataVencimento));
+
+  // Despesas por categoria (gráfico simples)
+  const porCategoria = {};
+  (state.despesas || []).forEach(d => {
+    if(d.dataVencimento.substring(0,7) !== mesAtual) return;
+    if(!porCategoria[d.categoria]) porCategoria[d.categoria] = 0;
+    porCategoria[d.categoria] += d.valor;
+  });
+
+  const mesesDisponiveis = new Set();
+  (state.despesas || []).forEach(d => mesesDisponiveis.add(d.dataVencimento.substring(0,7)));
+  const mesesOrdenados = Array.from(mesesDisponiveis).sort();
+
+  cont.innerHTML = `
+    <!-- KPIs do mês -->
+    <div class="fin-card">
+      <p class="fin-card-title">📊 Indicadores · ${MONTH_NAMES[parseInt(mesAtual.split('-')[1])-1]}/${mesAtual.split('-')[0].slice(2)}</p>
+      <div class="fin-kpi-grid">
+        <div class="fin-kpi" style="background:#DCFCE7;">
+          <p class="fin-kpi-label">💰 Receita Bruta</p>
+          <p class="fin-kpi-value" style="color:#15803D;">${formatBRL(ind.receitaTotal)}</p>
+          <p class="fin-kpi-sub">${formatBRL(ind.receitaQuartos)} quartos + ${formatBRL(ind.receitaServicos)} serviços</p>
+        </div>
+        <div class="fin-kpi" style="background:#FEE2E2;">
+          <p class="fin-kpi-label">💸 Despesas + Comissões</p>
+          <p class="fin-kpi-value" style="color:#B91C1C;">${formatBRL(ind.despesasMes + ind.comissoesEstimadas)}</p>
+          <p class="fin-kpi-sub">${formatBRL(ind.despesasMes)} desp + ${formatBRL(ind.comissoesEstimadas)} com.</p>
+        </div>
+        <div class="fin-kpi" style="background:${ind.lucroEstimado >= 0 ? '#DBEAFE' : '#FEE2E2'};">
+          <p class="fin-kpi-label">📈 Lucro Estimado</p>
+          <p class="fin-kpi-value" style="color:${ind.lucroEstimado >= 0 ? '#1E40AF' : '#B91C1C'};">${formatBRL(ind.lucroEstimado)}</p>
+          <p class="fin-kpi-sub">Receita − Despesas − Comissões</p>
+        </div>
+        <div class="fin-kpi" style="background:#FEF3C7;">
+          <p class="fin-kpi-label">🛏️ Taxa Ocupação</p>
+          <p class="fin-kpi-value" style="color:#92400E;">${ind.taxaOcup.toFixed(1)}%</p>
+          <p class="fin-kpi-sub">${ind.diariasVendidas} de ${ind.diasDisponiveis} diárias</p>
+        </div>
+        <div class="fin-kpi" style="background:#F5F1E8;">
+          <p class="fin-kpi-label">💵 ADR</p>
+          <p class="fin-kpi-value">${formatBRL(ind.adr)}</p>
+          <p class="fin-kpi-sub">Tarifa média praticada</p>
+        </div>
+        <div class="fin-kpi" style="background:#F5F1E8;">
+          <p class="fin-kpi-label">📊 RevPAR</p>
+          <p class="fin-kpi-value">${formatBRL(ind.revPar)}</p>
+          <p class="fin-kpi-sub">Receita por diária disponível</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fluxo de Caixa Projetado -->
+    <div class="fin-card">
+      <p class="fin-card-title">🔮 Fluxo de Caixa Projetado</p>
+      <div class="fin-kpi-grid">
+        ${[[30, fluxo30], [60, fluxo60], [90, fluxo90]].map(([dias, f]) => `
+          <div class="fin-kpi" style="background:${f.saldo >= 0 ? '#DCFCE7' : '#FEE2E2'};border:2px solid ${f.saldo >= 0 ? '#15803D' : '#DC2626'};">
+            <p class="fin-kpi-label">${dias} dias</p>
+            <p class="fin-kpi-value" style="color:${f.saldo >= 0 ? '#15803D' : '#B91C1C'};">${formatBRL(f.saldo)}</p>
+            <p class="fin-kpi-sub">+${formatBRL(f.totalReceber)} a receber<br/>−${formatBRL(f.totalPagar + f.totalAtrasado)} a pagar</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Contas a Receber -->
+    <div class="fin-card">
+      <p class="fin-card-title">📥 Contas a Receber · ${formatBRL(totalReceberGeral)} (${aReceber.length} item${aReceber.length===1?'':'s'})</p>
+      ${aReceber.length === 0 ? '<p style="color:#888;font-size:13px;">Nenhuma conta a receber pendente. 🎉</p>' : aReceber.map(r => `
+        <div class="fin-row" style="cursor:pointer;" onclick="${r.link ? `openModal('${r.link}')` : ''}">
+          <div class="fin-row-cat">
+            <div class="fin-row-ico" style="background:${r.origem === 'osber' ? '#7C3AED' : r.origem === 'servico' ? '#F59E0B' : '#15803D'};">${r.origem === 'osber' ? '⏰' : r.origem === 'servico' ? '🎯' : '🏨'}</div>
+            <div class="fin-row-info">
+              <div class="fin-row-desc">${escapeHtml(r.descricao)}</div>
+              <div class="fin-row-meta">Previsto: ${dayShort(r.dataPrevista)}${r.canal ? ' · ' + canalInfo(r.canal).icone + ' ' + canalInfo(r.canal).nome : ''}</div>
+            </div>
+          </div>
+          <div class="fin-row-valor" style="color:#15803D;">+${formatBRL(r.valor)}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Contas a Pagar -->
+    <div class="fin-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <p class="fin-card-title" style="margin:0;">📤 Contas a Pagar</p>
+        <button class="btn btn-primary" id="btn-nova-despesa" style="padding:8px 14px;font-size:13px;">+ Nova Despesa</button>
+      </div>
+      <div class="fin-toolbar">
+        <span style="font-size:12px;color:#6B6B66;font-weight:700;">Status:</span>
+        ${['todos','a_pagar','atrasado','pago'].map(s => `
+          <button class="fin-filter ${filtroFinStatus === s ? 'active' : ''}" data-fst="${s}">${s === 'todos' ? 'Todas' : s === 'a_pagar' ? '⏳ A pagar' : s === 'atrasado' ? '🚨 Atrasadas' : '✓ Pagas'}</button>
+        `).join('')}
+        <span style="font-size:12px;color:#6B6B66;font-weight:700;margin-left:8px;">Mês:</span>
+        <select id="filtro-mes" class="fin-filter" style="cursor:pointer;">
+          <option value="">Todos</option>
+          ${mesesOrdenados.map(m => {
+            const [y,mm] = m.split('-');
+            return `<option value="${m}" ${filtroFinMes === m ? 'selected' : ''}>${MONTH_NAMES[parseInt(mm)-1]}/${y.slice(2)}</option>`;
+          }).join('')}
+        </select>
+      </div>
+      ${despesasFiltradas.length === 0 ? '<p style="color:#888;font-size:13px;">Nenhuma despesa cadastrada com este filtro.</p>' : despesasFiltradas.map(d => {
+        const cat = categoriaInfo(d.categoria);
+        const st = statusDespesaCalculado(d);
+        const badgeClass = st === 'pago' ? 'fin-badge-pago' : st === 'atrasado' ? 'fin-badge-atrasado' : 'fin-badge-a-pagar';
+        const badgeTxt = st === 'pago' ? '✓ PAGO' : st === 'atrasado' ? '🚨 ATRASADO' : '⏳ A PAGAR';
+        return `
+        <div class="fin-row" style="cursor:pointer;" onclick="editDespesa('${d.id}')">
+          <div class="fin-row-cat">
+            <div class="fin-row-ico" style="background:${cat.cor};">${cat.icone}</div>
+            <div class="fin-row-info">
+              <div class="fin-row-desc">${escapeHtml(d.descricao)}</div>
+              <div class="fin-row-meta">${cat.nome} · Venc: ${dayShort(d.dataVencimento)} <span class="fin-status-badge ${badgeClass}">${badgeTxt}</span>${(d.recorrente || d.recorrenciaParent) ? '<span class="fin-status-badge fin-badge-recorrente">↻ RECOR.</span>' : ''}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="fin-row-valor" style="color:#B91C1C;">−${formatBRL(d.valor)}</div>
+            ${st !== 'pago' ? `<button onclick="event.stopPropagation();marcarDespesaPaga('${d.id}')" style="background:#15803D;color:#fff;border:none;padding:6px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">✓ Pagar</button>` : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Análise por Categoria -->
+    ${Object.keys(porCategoria).length > 0 ? `
+    <div class="fin-card">
+      <p class="fin-card-title">📊 Despesas do mês por Categoria</p>
+      ${Object.entries(porCategoria).sort((a,b) => b[1] - a[1]).map(([catId, val]) => {
+        const c = categoriaInfo(catId);
+        const totalMes = Object.values(porCategoria).reduce((s,v) => s+v, 0);
+        const pct = totalMes ? (val / totalMes * 100).toFixed(1) : 0;
+        return `
+        <div style="margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:3px;">
+            <span>${c.icone} ${c.nome}</span>
+            <span>${formatBRL(val)} <span style="color:#888;font-weight:400;">(${pct}%)</span></span>
+          </div>
+          <div class="fluxo-bar">
+            <div class="fluxo-bar-segment" style="width:${pct}%;background:${c.cor};"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    ` : ''}
+  `;
+
+  // Handler do botão nova despesa
+  const btn = document.getElementById('btn-nova-despesa');
+  if(btn) btn.onclick = () => openDespesaModal(null);
+
+  // Handlers dos filtros
+  document.querySelectorAll('.fin-filter[data-fst]').forEach(b => {
+    b.onclick = () => { filtroFinStatus = b.dataset.fst; renderPainelFinanceiro(); };
+  });
+  const selMes = document.getElementById('filtro-mes');
+  if(selMes){
+    selMes.onchange = () => { filtroFinMes = selMes.value || null; renderPainelFinanceiro(); };
+  }
+}
+
+// ============================================================
+// ============= MÓDULO RH (FUNCIONÁRIOS) ====================
+// ============================================================
+
+let filtroRHStatus = 'ativos'; // 'ativos' | 'todos' | 'desligados'
+
+function statusFuncInfo(id){ return STATUS_FUNC.find(s => s.id === id) || STATUS_FUNC[0]; }
+function vinculoInfo(id){ return TIPOS_VINCULO.find(v => v.id === id) || TIPOS_VINCULO[0]; }
+
+// Calcula custo total mensal do funcionário (salário + benefícios + encargos)
+function calcularCustoFuncionario(f){
+  const salario = f.salarioBase || 0;
+  const beneficios = (f.beneficios || []).reduce((s,b) => s + (b.valor || 0), 0);
+  let encargos = 0;
+  let provisaoFerias = 0;
+  let provisao13o = 0;
+  if(f.tipoVinculo === 'fixo'){
+    encargos = salario * (ENCARGOS_CLT_PCT / 100);
+    provisaoFerias = salario * 0.1111; // 1/9 (férias + 1/3)
+    provisao13o = salario / 12;
+  }
+  const custoTotal = salario + beneficios + encargos;
+  const custoComProvisoes = custoTotal + provisaoFerias + provisao13o;
+  return { salario, beneficios, encargos, provisaoFerias, provisao13o, custoTotal, custoComProvisoes };
+}
+
+// Calcula meses trabalhados desde a admissão
+function mesesTrabalhados(f){
+  if(!f.dataAdmissao) return 0;
+  const adm = parseDate(f.dataAdmissao);
+  const hoje = new Date();
+  let meses = (hoje.getFullYear() - adm.getFullYear()) * 12 + (hoje.getMonth() - adm.getMonth());
+  if(hoje.getDate() < adm.getDate()) meses--;
+  return Math.max(0, meses);
+}
+
+// Calcula dias de férias acumulados (CLT: 30 dias após 12 meses)
+function calcularFeriasAcumuladas(f){
+  const meses = mesesTrabalhados(f);
+  const direitoTotal = Math.floor(meses / 12) * 30; // 30 dias por ano trabalhado
+  const jaGozadas = (f.feriasHistorico || []).reduce((s,h) => s + (h.dias || 0), 0);
+  return {
+    direitoTotal,
+    jaGozadas,
+    disponivel: Math.max(0, direitoTotal - jaGozadas),
+    proximoPeriodo: meses % 12 === 0 ? 0 : 12 - (meses % 12)
+  };
+}
+
+// Calcula 13º salário provisionado no ano atual
+function calcular13o(f){
+  if(f.tipoVinculo !== 'fixo' || !f.dataAdmissao) return { provisao: 0, mesesNoAno: 0 };
+  const adm = parseDate(f.dataAdmissao);
+  const anoAtual = new Date().getFullYear();
+  const inicioAno = new Date(anoAtual, 0, 1);
+  const inicioCalculo = adm > inicioAno ? adm : inicioAno;
+  const hoje = new Date();
+  let meses = (hoje.getFullYear() - inicioCalculo.getFullYear()) * 12 + (hoje.getMonth() - inicioCalculo.getMonth()) + 1;
+  meses = Math.max(0, Math.min(12, meses));
+  return {
+    provisao: (f.salarioBase || 0) * meses / 12,
+    mesesNoAno: meses
+  };
+}
+
+// Gera as despesas de folha do mês para todos os funcionários ativos
+function gerarFolhaMensal(){
+  const hoje = todayKey();
+  const mesAtual = hoje.substring(0,7);
+  const [y, m] = mesAtual.split('-').map(Number);
+  // Vencimento: dia 5 do mês seguinte
+  let vencY = y, vencM = m + 1;
+  if(vencM > 12){ vencM = 1; vencY++; }
+  const vencimento = vencY + '-' + pad(vencM) + '-05';
+
+  if(!state.despesas) state.despesas = [];
+
+  const ativos = state.funcionarios.filter(f => f.status === 'ativo' || f.status === 'ferias');
+  if(ativos.length === 0){
+    showToast('Nenhum funcionário ativo cadastrado');
+    return;
+  }
+
+  let geradas = 0;
+  let total = 0;
+  ativos.forEach(f => {
+    // Verifica se já foi gerada folha deste funcionário para este mês
+    const jaExiste = state.despesas.some(d =>
+      d.categoria === 'folha' &&
+      d.funcionarioId === f.id &&
+      d.dataVencimento.substring(0,7) === vencimento.substring(0,7)
+    );
+    if(jaExiste) return;
+
+    const custo = calcularCustoFuncionario(f);
+    state.despesas.push({
+      id: 'desp-folha-' + f.id + '-' + mesAtual,
+      categoria: 'folha',
+      descricao: 'Folha ' + f.nome + ' · ' + MONTH_NAMES[m-1] + '/' + y.toString().slice(2),
+      valor: custo.custoTotal,
+      dataVencimento: vencimento,
+      dataPagamento: null,
+      status: 'a_pagar',
+      recorrente: false,
+      recorrenciaParent: null,
+      observacao: 'Salário ' + formatBRL(custo.salario) + ' + benefícios ' + formatBRL(custo.beneficios) + (custo.encargos > 0 ? ' + encargos ' + formatBRL(custo.encargos) : ''),
+      funcionarioId: f.id
+    });
+    geradas++;
+    total += custo.custoTotal;
+  });
+
+  if(geradas === 0){
+    showToast('Folha já foi gerada para este mês');
+  } else {
+    saveDespesasToFirebase();
+    showToast('✓ Folha gerada: ' + geradas + ' funcionário(s) · ' + formatBRL(total));
+  }
+}
+
+// Modal de cadastro/edição de funcionário
+function openFuncionarioModal(funcionario){
+  const isNew = !funcionario;
+  const f = funcionario || {
+    nome: '', cpf: '', telefone: '', email: '',
+    funcao: 'Recepção', tipoVinculo: 'fixo', status: 'ativo',
+    dataAdmissao: todayKey(), dataDesligamento: null,
+    salarioBase: 0, beneficios: [], feriasHistorico: [],
+    observacao: ''
+  };
+
+  document.getElementById('modal-title').textContent = isNew ? '+ Novo Funcionário' : '✏️ Editar Funcionário';
+  const content = document.getElementById('modal-content');
+
+  content.innerHTML = `
+    <label class="field-label">Nome completo</label>
+    <input type="text" id="f-nome" placeholder="Nome do funcionário" value="${escapeHtml(f.nome || '')}" />
+
+    <label class="field-label">CPF</label>
+    <input type="text" id="f-cpf" placeholder="000.000.000-00" value="${escapeHtml(f.cpf || '')}" />
+
+    <label class="field-label">Telefone</label>
+    <input type="text" id="f-tel" placeholder="(31) 99999-9999" value="${escapeHtml(f.telefone || '')}" />
+
+    <label class="field-label">E-mail (opcional)</label>
+    <input type="email" id="f-email" placeholder="email@exemplo.com" value="${escapeHtml(f.email || '')}" />
+
+    <label class="field-label">Função</label>
+    <select id="f-funcao" style="width:100%;padding:10px;border:1.5px solid #B8B5A8;border-radius:6px;font-family:inherit;font-size:14px;">
+      ${FUNCOES_SUGERIDAS.map(fn => `<option value="${fn}" ${f.funcao === fn ? 'selected' : ''}>${fn}</option>`).join('')}
+    </select>
+
+    <label class="field-label">Tipo de Vínculo</label>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:4px;" id="f-vinc-grid">
+      ${TIPOS_VINCULO.map(v => `<button type="button" class="cat-btn-modal ${f.tipoVinculo === v.id ? 'selected' : ''}" data-vinc="${v.id}" style="background:${v.cor};">${v.icone}<br/>${v.nome}</button>`).join('')}
+    </div>
+
+    <label class="field-label">Status</label>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px;" id="f-status-grid">
+      ${STATUS_FUNC.map(s => `<button type="button" class="cat-btn-modal ${f.status === s.id ? 'selected' : ''}" data-status="${s.id}" style="background:${s.cor};">${s.nome}</button>`).join('')}
+    </div>
+
+    <label class="field-label">Data de Admissão</label>
+    <input type="date" id="f-adm" value="${f.dataAdmissao || todayKey()}" />
+
+    <label class="field-label">Salário Base (R$)</label>
+    <input type="number" id="f-sal" step="0.01" value="${f.salarioBase || ''}" placeholder="0,00" />
+    <div style="font-size:11px;color:#888;margin-bottom:8px;">Para CLT, o sistema acresce ~${ENCARGOS_CLT_PCT}% de encargos automaticamente.</div>
+
+    <label class="field-label">Benefícios</label>
+    <div id="f-beneficios-list" style="margin-bottom:8px;"></div>
+    <button type="button" class="btn" id="f-add-beneficio" style="width:100%;padding:8px;font-size:12px;background:#F5F1E8;">+ Adicionar Benefício</button>
+
+    <label class="field-label">Observação (RG, conta bancária, observações)</label>
+    <textarea id="f-obs" rows="2" style="width:100%;padding:10px;border:1.5px solid #B8B5A8;border-radius:6px;font-family:inherit;font-size:13px;resize:vertical;" placeholder="Observações internas...">${escapeHtml(f.observacao || '')}</textarea>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="f-salvar">💾 Salvar Funcionário</button>
+      ${!isNew ? '<button class="btn btn-danger" id="f-excluir">🗑 Excluir</button>' : ''}
+    </div>
+  `;
+
+  let vincSel = f.tipoVinculo || 'fixo';
+  let statusSel = f.status || 'ativo';
+  let beneficios = (f.beneficios || []).slice();
+
+  function renderBeneficios(){
+    const cont = document.getElementById('f-beneficios-list');
+    if(beneficios.length === 0){
+      cont.innerHTML = '<p style="font-size:12px;color:#888;font-style:italic;margin:4px 0;">Nenhum benefício cadastrado.</p>';
+      return;
+    }
+    cont.innerHTML = beneficios.map((b, idx) => `
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
+        <input type="text" class="ben-nome" data-idx="${idx}" placeholder="Nome do benefício" value="${escapeHtml(b.nome || '')}" style="flex:2;padding:8px;border:1px solid #B8B5A8;border-radius:4px;font-size:12px;" />
+        <input type="number" class="ben-valor" data-idx="${idx}" placeholder="Valor R$" step="0.01" value="${b.valor || ''}" style="flex:1;padding:8px;border:1px solid #B8B5A8;border-radius:4px;font-size:12px;" />
+        <button type="button" class="ben-del" data-idx="${idx}" style="background:#DC2626;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer;font-weight:700;">×</button>
+      </div>
+    `).join('');
+    cont.querySelectorAll('.ben-nome').forEach(i => i.oninput = () => { beneficios[parseInt(i.dataset.idx)].nome = i.value; });
+    cont.querySelectorAll('.ben-valor').forEach(i => i.oninput = () => { beneficios[parseInt(i.dataset.idx)].valor = parseFloat(i.value) || 0; });
+    cont.querySelectorAll('.ben-del').forEach(b => b.onclick = () => { beneficios.splice(parseInt(b.dataset.idx), 1); renderBeneficios(); });
+  }
+  renderBeneficios();
+
+  document.getElementById('f-add-beneficio').onclick = () => {
+    // Mostra sugestões
+    const lista = BENEFICIOS_SUGERIDOS.map(s => s.nome).join(' | ');
+    const escolha = prompt('Nome do benefício:\n\nSugestões: ' + lista, '');
+    if(escolha === null || !escolha.trim()) return;
+    beneficios.push({ nome: escolha.trim(), valor: 0 });
+    renderBeneficios();
+  };
+
+  document.querySelectorAll('#f-vinc-grid .cat-btn-modal').forEach(btn => {
+    btn.onclick = () => {
+      vincSel = btn.dataset.vinc;
+      document.querySelectorAll('#f-vinc-grid .cat-btn-modal').forEach(b => b.classList.toggle('selected', b.dataset.vinc === vincSel));
+    };
+  });
+
+  document.querySelectorAll('#f-status-grid .cat-btn-modal').forEach(btn => {
+    btn.onclick = () => {
+      statusSel = btn.dataset.status;
+      document.querySelectorAll('#f-status-grid .cat-btn-modal').forEach(b => b.classList.toggle('selected', b.dataset.status === statusSel));
+    };
+  });
+
+  document.getElementById('f-salvar').onclick = () => {
+    const nome = document.getElementById('f-nome').value.trim();
+    if(!nome){ alert('Nome obrigatório'); return; }
+    const dados = {
+      nome,
+      cpf: document.getElementById('f-cpf').value.trim(),
+      telefone: document.getElementById('f-tel').value.trim(),
+      email: document.getElementById('f-email').value.trim(),
+      funcao: document.getElementById('f-funcao').value,
+      tipoVinculo: vincSel,
+      status: statusSel,
+      dataAdmissao: document.getElementById('f-adm').value,
+      salarioBase: parseFloat(document.getElementById('f-sal').value) || 0,
+      beneficios: beneficios.filter(b => b.nome && b.nome.trim()),
+      observacao: document.getElementById('f-obs').value.trim()
+    };
+
+    if(funcionario){
+      Object.assign(funcionario, dados);
+    } else {
+      state.funcionarios.push({
+        id: 'func-' + uid(),
+        ...dados,
+        feriasHistorico: []
+      });
+    }
+    saveFuncionariosToFirebase();
+    closeModal();
+    render();
+    showToast(isNew ? 'Funcionário cadastrado' : 'Funcionário atualizado');
+  };
+
+  if(!isNew){
+    document.getElementById('f-excluir').onclick = () => {
+      if(!confirm('Excluir este funcionário?\n\nObs: as despesas de folha já geradas NÃO serão excluídas.')) return;
+      state.funcionarios = state.funcionarios.filter(x => x.id !== funcionario.id);
+      saveFuncionariosToFirebase();
+      closeModal();
+      render();
+      showToast('Funcionário excluído');
+    };
+  }
+
+  document.getElementById('modal-backdrop').classList.add('open');
+  document.getElementById('modal').classList.add('open');
+}
+
+function editFuncionario(id){
+  const f = state.funcionarios.find(x => x.id === id);
+  if(f) openFuncionarioModal(f);
+}
+window.editFuncionario = editFuncionario;
+
+// Registrar férias do funcionário
+function registrarFerias(id){
+  const f = state.funcionarios.find(x => x.id === id);
+  if(!f) return;
+  const dias = parseInt(prompt('Quantos dias de férias?', '30'));
+  if(!dias || dias <= 0) return;
+  const dataInicio = prompt('Data de início (AAAA-MM-DD):', todayKey());
+  if(!dataInicio) return;
+  if(!f.feriasHistorico) f.feriasHistorico = [];
+  const dt = parseDate(dataInicio);
+  dt.setDate(dt.getDate() + dias - 1);
+  const dataFim = dt.getFullYear() + '-' + pad(dt.getMonth()+1) + '-' + pad(dt.getDate());
+  f.feriasHistorico.push({
+    dias,
+    dataInicio,
+    dataFim,
+    registradoEm: todayKey()
+  });
+  // Gera despesa de pagamento de férias (salário + 1/3 proporcional)
+  const valorFerias = (f.salarioBase || 0) * (dias / 30) * 1.3333;
+  if(!state.despesas) state.despesas = [];
+  state.despesas.push({
+    id: 'desp-ferias-' + f.id + '-' + dataInicio,
+    categoria: 'folha',
+    descricao: 'Férias ' + f.nome + ' · ' + dias + ' dias (' + dayShort(dataInicio) + ' a ' + dayShort(dataFim) + ')',
+    valor: valorFerias,
+    dataVencimento: dataInicio,
+    status: 'a_pagar',
+    dataPagamento: null,
+    funcionarioId: f.id,
+    observacao: 'Pagamento de férias com 1/3 constitucional'
+  });
+  saveFuncionariosToFirebase();
+  saveDespesasToFirebase();
+  render();
+  showToast('Férias registradas + despesa gerada');
+}
+window.registrarFerias = registrarFerias;
+
+// Render do painel RH
+function renderPainelRH(){
+  const cont = document.getElementById('painel-rh');
+  if(!cont) return;
+
+  let funcs = (state.funcionarios || []).slice();
+  if(filtroRHStatus === 'ativos') funcs = funcs.filter(f => f.status !== 'desligado');
+  else if(filtroRHStatus === 'desligados') funcs = funcs.filter(f => f.status === 'desligado');
+
+  funcs.sort((a,b) => (a.nome || '').localeCompare(b.nome || ''));
+
+  // Cálculos agregados
+  const ativos = (state.funcionarios || []).filter(f => f.status === 'ativo' || f.status === 'ferias');
+  let custoTotalMensal = 0;
+  let provisaoFeriasTotal = 0;
+  let provisao13oTotal = 0;
+  ativos.forEach(f => {
+    const c = calcularCustoFuncionario(f);
+    custoTotalMensal += c.custoTotal;
+    provisaoFeriasTotal += c.provisaoFerias;
+    provisao13oTotal += c.provisao13o;
+  });
+
+  cont.innerHTML = `
+    <!-- KPIs RH -->
+    <div class="fin-card">
+      <p class="fin-card-title">👥 Quadro de Funcionários</p>
+      <div class="fin-kpi-grid">
+        <div class="fin-kpi" style="background:#DCFCE7;">
+          <p class="fin-kpi-label">Ativos</p>
+          <p class="fin-kpi-value" style="color:#15803D;">${ativos.length}</p>
+          <p class="fin-kpi-sub">de ${(state.funcionarios || []).length} cadastrados</p>
+        </div>
+        <div class="fin-kpi" style="background:#FEE2E2;">
+          <p class="fin-kpi-label">Custo Mensal Total</p>
+          <p class="fin-kpi-value" style="color:#B91C1C;">${formatBRL(custoTotalMensal)}</p>
+          <p class="fin-kpi-sub">Salários + benefícios + encargos</p>
+        </div>
+        <div class="fin-kpi" style="background:#FEF3C7;">
+          <p class="fin-kpi-label">Provisão Férias</p>
+          <p class="fin-kpi-value" style="color:#92400E;">${formatBRL(provisaoFeriasTotal)}</p>
+          <p class="fin-kpi-sub">Acumulado mensal</p>
+        </div>
+        <div class="fin-kpi" style="background:#DBEAFE;">
+          <p class="fin-kpi-label">Provisão 13º</p>
+          <p class="fin-kpi-value" style="color:#1E40AF;">${formatBRL(provisao13oTotal)}</p>
+          <p class="fin-kpi-sub">1/12 do salário/mês</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="fin-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div class="fin-toolbar" style="margin:0;">
+          <button class="fin-filter ${filtroRHStatus === 'ativos' ? 'active' : ''}" data-rh="ativos">👥 Ativos</button>
+          <button class="fin-filter ${filtroRHStatus === 'todos' ? 'active' : ''}" data-rh="todos">Todos</button>
+          <button class="fin-filter ${filtroRHStatus === 'desligados' ? 'active' : ''}" data-rh="desligados">Desligados</button>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn" id="btn-gerar-folha" style="background:#15803D;color:#fff;padding:8px 12px;font-size:12px;">📋 Gerar Folha do Mês</button>
+          <button class="btn btn-primary" id="btn-novo-func" style="padding:8px 12px;font-size:12px;">+ Novo Funcionário</button>
+        </div>
+      </div>
+
+      ${funcs.length === 0 ? '<p style="color:#888;font-size:13px;text-align:center;padding:20px;">Nenhum funcionário cadastrado neste filtro.</p>' : funcs.map(f => {
+        const custo = calcularCustoFuncionario(f);
+        const ferias = calcularFeriasAcumuladas(f);
+        const dec = calcular13o(f);
+        const st = statusFuncInfo(f.status);
+        const vinc = vinculoInfo(f.tipoVinculo);
+        const meses = mesesTrabalhados(f);
+        const anosTrab = (meses / 12).toFixed(1);
+        return `
+        <div style="background:#FAF8F2;border-radius:10px;padding:14px;margin-bottom:10px;border-left:4px solid ${st.cor};">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+            <div style="flex:1;min-width:200px;">
+              <div style="font-size:15px;font-weight:800;color:#1a1a18;">${escapeHtml(f.nome)} <span style="font-size:10px;font-weight:700;background:${st.cor};color:#fff;padding:2px 6px;border-radius:4px;text-transform:uppercase;">${st.nome}</span></div>
+              <div style="font-size:12px;color:#6B6B66;margin-top:3px;">${vinc.icone} ${vinc.nome} · ${escapeHtml(f.funcao || '—')}</div>
+              <div style="font-size:11px;color:#888;margin-top:2px;">Admissão: ${dayShort(f.dataAdmissao || todayKey())} · ${anosTrab} ano(s) de casa</div>
+              ${f.telefone ? '<div style="font-size:11px;color:#888;margin-top:2px;">📱 ' + escapeHtml(f.telefone) + '</div>' : ''}
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:18px;font-weight:800;color:#B91C1C;">${formatBRL(custo.custoTotal)}<span style="font-size:11px;font-weight:400;">/mês</span></div>
+              <div style="font-size:10px;color:#888;">Salário ${formatBRL(custo.salario)}${custo.beneficios > 0 ? ' + Ben ' + formatBRL(custo.beneficios) : ''}${custo.encargos > 0 ? ' + Enc ' + formatBRL(custo.encargos) : ''}</div>
+            </div>
+          </div>
+
+          ${f.tipoVinculo === 'fixo' ? `
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:11px;padding:8px;background:#fff;border-radius:6px;margin-top:6px;">
+            <div>
+              <div style="color:#6B6B66;font-weight:700;">🏖 Férias disponíveis</div>
+              <div style="font-size:14px;font-weight:800;color:${ferias.disponivel > 0 ? '#F59E0B' : '#444'};">${ferias.disponivel} dias</div>
+            </div>
+            <div>
+              <div style="color:#6B6B66;font-weight:700;">🎁 13º (proporcional ${dec.mesesNoAno}/12)</div>
+              <div style="font-size:14px;font-weight:800;color:#1E40AF;">${formatBRL(dec.provisao)}</div>
+            </div>
+            <div>
+              <div style="color:#6B6B66;font-weight:700;">📊 Provisão mensal</div>
+              <div style="font-size:14px;font-weight:800;color:#92400E;">${formatBRL(custo.provisaoFerias + custo.provisao13o)}</div>
+            </div>
+          </div>
+          ` : ''}
+
+          <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+            <button class="btn" onclick="editFuncionario('${f.id}')" style="padding:6px 12px;font-size:11px;background:#1a1a18;color:#fff;">✏️ Editar</button>
+            ${f.tipoVinculo === 'fixo' && f.status === 'ativo' ? `<button class="btn" onclick="registrarFerias('${f.id}')" style="padding:6px 12px;font-size:11px;background:#F59E0B;color:#fff;">🏖 Registrar Férias</button>` : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+
+  // Handlers
+  document.querySelectorAll('.fin-filter[data-rh]').forEach(b => {
+    b.onclick = () => { filtroRHStatus = b.dataset.rh; renderPainelRH(); };
+  });
+  const btnNovo = document.getElementById('btn-novo-func');
+  if(btnNovo) btnNovo.onclick = () => openFuncionarioModal(null);
+  const btnFolha = document.getElementById('btn-gerar-folha');
+  if(btnFolha) btnFolha.onclick = gerarFolhaMensal;
+}
+
+function render(){
+  document.querySelectorAll('.month-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.month === currentMonth);
+  });
+
+  // Alertas críticos (sempre visíveis em qualquer vista)
+  try { renderAlertasCriticos(); } catch(e){ console.error('Erro render alertas:', e); }
+
+  // Se estiver na vista financeira, renderiza só o painel financeiro
+  if(viewAtual === 'financeiro'){
+    try { renderPainelFinanceiro(); } catch(e){ console.error('Erro render financeiro:', e); }
+    return;
+  }
+
+  // Se estiver na vista RH, renderiza só o painel de funcionários
+  if(viewAtual === 'rh'){
+    try { renderPainelRH(); } catch(e){ console.error('Erro render RH:', e); }
+    return;
+  }
+
+  buildDayStrip();
+
+  // Renderiza seção de serviços do dia (Day Use, Cavalo, Cachoeira)
+  try { renderServicosDia(); } catch(e){ console.error('Erro render servicos:', e); }
+
+  SECTIONS.forEach((sec, idx) => {
+    const grid = document.getElementById('grid-' + idx);
+    grid.innerHTML = '';
+    sec.units.forEach(unit => {
+      const { estado, reserva } = getEstado(unit.id, currentDay);
+      const st = ESTADO_STYLE[estado];
+
+      const card = document.createElement('button');
+      card.className = 'card' + (unit.especial ? ' card-special' : '');
+      card.style.background = st.bg;
+      card.style.borderColor = st.border;
+      card.style.color = st.text;
+      card.onclick = () => openModal(unit.id);
+
+      const icons = [];
+      if(unit.frigobar) icons.push('❄');
+      if(unit.perfil === 'S') icons.push('<b style="font-size:9px;">S</b>');
+      if(unit.sofaCama > 0) icons.push('🛋');
+
+      // Badge de pagamento (inline no topo direito)
+      let payHtml = '';
+      if(reserva && reserva.tipo === 'reserva' && reserva.statusPagamento){
+        const p = PAGAMENTO_STYLE[reserva.statusPagamento];
+        payHtml = '<span class="pay-mini ' + p.cls + '">' + p.short + '</span>';
+      }
+
+      // Badge de canal (mini ícone do canal de origem)
+      let canalHtml = '';
+      if(reserva && reserva.tipo === 'reserva' && reserva.canal){
+        const c = canalInfo(reserva.canal);
+        canalHtml = '<span class="canal-mini" style="background:' + c.cor + ';color:' + c.textCor + ';" title="' + c.nome + '">' + c.icone + '</span>';
+      }
+      // Junta canal + pagamento no payHtml
+      if(canalHtml) payHtml = canalHtml + ' ' + payHtml;
+
+      // Badge de fatura mensal pendente
+      let faturaBadge = '';
+      if(reserva && reserva.tipo === 'reserva' && reserva.tipoFaturamento === 'mensal_diaria'){
+        const aberto = calcularPeriodoAberto(reserva);
+        const pendente = temFaturaPendenteMensal(reserva);
+        if(pendente){
+          faturaBadge = '<span class="pay-mini" style="background:#DC2626;color:#fff;animation:pulse 1.5s infinite;">🔔 FATURAR ' + formatBRL(aberto.valor) + '</span>';
+        } else if(aberto && aberto.dias > 0){
+          faturaBadge = '<span class="pay-mini" style="background:#15803D;color:#fff;">' + aberto.dias + 'd · ' + formatBRL(aberto.valor) + '</span>';
+        }
+        // Substitui o pagamento padrão pela info de faturamento
+        payHtml = faturaBadge;
+      }
+
+      let mainInfo;
+      if(reserva && reserva.tipo === 'reserva'){
+        const extraIcons = [];
+        if(reserva.numCriancas > 0) extraIcons.push('👶' + reserva.numCriancas);
+        if(reserva.temPet) extraIcons.push('🐾');
+        if(reserva.obsLimpeza) extraIcons.push('🧹');
+        const extraIconsHtml = extraIcons.length ? ' <span style="font-size:11px;">' + extraIcons.join(' ') + '</span>' : '';
+        mainInfo = '<div class="card-guest">' + escapeHtml(reserva.hospede || '(s/ nome)') + extraIconsHtml + '</div><div class="card-pax">' + reserva.numPessoas + ' pax</div>';
+      } else if(estado === 'manutencao'){
+        mainInfo = '<div class="card-guest">Bloqueado</div>';
+      } else {
+        mainInfo = '<div class="card-pax">cap. ' + unit.pax + 'p</div>';
+      }
+
+      if(unit.especial){
+        const extraLabel = reserva ? '' : '<span style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;margin-left:8px;opacity:0.8;font-weight:700;">modo extraordinário</span>';
+        card.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><span style="font-size:15px;font-weight:800;">' + unit.label + '</span>' + extraLabel + '</div><div style="display:flex;gap:6px;align-items:center;">' + payHtml + '<span style="font-size:10px;font-weight:700;">' + (reserva ? reserva.numPessoas + ' pax' : unit.pax + ' camas extras') + '</span></div></div><div style="display:flex;justify-content:space-between;align-items:center;"><div class="card-status">' + st.label + '</div><div style="font-size:11px;font-weight:700;">' + (reserva ? escapeHtml(reserva.hospede || '(s/ nome)') : '') + '</div></div>';
+      } else {
+        const topRight = '<div style="display:flex;gap:4px;align-items:center;">' + payHtml + '<div class="card-icons">' + icons.join(' ') + '</div></div>';
+        card.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;"><span class="card-label">' + unit.label + '</span>' + topRight + '</div><div><div class="card-status">' + st.label + '</div>' + mainInfo + '</div>';
+      }
+      grid.appendChild(card);
+    });
+  });
+
+  const stats = getDayStats(currentDay);
+  const ocupPct = Math.round((stats.ocupado / TOTAL) * 100);
+  const especial = nomeDiaEspecial(currentDay);
+  const eventos = eventosDoDia(currentDay);
+  const labelParts = [dayLabel(currentDay)];
+  if(especial) labelParts.push(especial);
+  eventos.forEach(e => labelParts.push(e.icone + ' ' + e.nome));
+  document.getElementById('report-day').innerHTML = labelParts.join(' <span style="color:#999;">·</span> ');
+  document.getElementById('r-ocupados').textContent = stats.ocupado;
+  document.getElementById('r-livres').textContent = stats.livre;
+  document.getElementById('r-ocup-pct').textContent = ocupPct + '% ocupação';
+  document.getElementById('r-pessoas').textContent = stats.pessoas;
+  document.getElementById('r-checkins').textContent = stats.checkin;
+  document.getElementById('r-checkouts').textContent = stats.checkout;
+  document.getElementById('r-noshow').textContent = stats.noshow;
+  document.getElementById('r-recebido').textContent = formatBRL(stats.recebido);
+  document.getElementById('r-receber').textContent = formatBRL(stats.areceber);
+
+  // Renderiza distribuição por canal
+  const canaisDiv = document.getElementById('r-canais');
+  const entradas = Object.entries(stats.porCanal).sort((a,b) => b[1].unidades - a[1].unidades);
+  if(entradas.length === 0){
+    canaisDiv.innerHTML = '<span style="color:#999;font-size:12px;">Nenhuma reserva ativa</span>';
+  } else {
+    canaisDiv.innerHTML = entradas.map(([id, dados]) => {
+      const c = canalInfo(id);
+      return '<span class="canal-mini" style="background:' + c.cor + ';color:' + c.textCor + ';padding:3px 8px;font-size:11px;">' +
+             c.icone + ' ' + c.nome + ' · <b>' + dados.unidades + '</b> un · ' + formatBRL(dados.recebido) +
+             '</span>';
+    }).join('');
+  }
+}
+
+// ===== MODAL =====
+function openModal(unitId){
+  editingUnitId = unitId;
+  const unit = UNIT_MAP[unitId];
+  document.getElementById('modal-title').textContent = unit.label + ' — ' + dayShort(currentDay);
+  document.getElementById('modal-spec').textContent = buildSpecText(unit);
+
+  const { estado, reserva } = getEstado(unitId, currentDay);
+
+  if(reserva){
+    renderReservaView(reserva, unit, estado);
+  } else {
+    renderNewReservaForm(unit);
+  }
+
+  document.getElementById('modal-backdrop').classList.add('open');
+  setTimeout(() => document.getElementById('modal').classList.add('open'), 10);
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  setTimeout(() => {
+    document.getElementById('modal-backdrop').classList.remove('open');
+    editingUnitId = null;
+  }, 250);
+}
+
+function renderReservaView(reserva, unit, estadoAtual){
+  const content = document.getElementById('modal-content');
+  if(reserva.tipo === 'manutencao'){
+    content.innerHTML = `
+      <div class="reserva-info">
+        <div class="reserva-info-row"><span class="reserva-info-label">Status</span><span class="reserva-info-value">Manutenção</span></div>
+        <div class="reserva-info-row"><span class="reserva-info-label">Período</span><span class="reserva-info-value">${dayShort(reserva.dataEntrada)} → ${dayShort(reserva.dataSaida)}</span></div>
+        ${reserva.observacao ? '<div class="reserva-info-row"><span class="reserva-info-label">Obs</span><span class="reserva-info-value">' + escapeHtml(reserva.observacao) + '</span></div>' : ''}
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-danger btn-block" onclick="deleteReserva('${reserva.id}')">Liberar quarto</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Info de pagamento
+  const pgto = reserva.statusPagamento || 'pendente';
+  const pgtoStyle = PAGAMENTO_STYLE[pgto];
+  let pgtoInfo = `<span class="pay-info ${pgtoStyle.cls}">${pgtoStyle.label}</span>`;
+  const total = reserva.valorTotal || 0;
+  const pago = reserva.valorPago || 0;
+  if(pgto === 'parcial'){
+    const falta = Math.max(0, total - pago);
+    pgtoInfo += `<br><span style="font-size:11px;color:var(--text-2);font-weight:600;">${formatBRL(pago)} pago · falta <b style="color:#7F1D1D;">${formatBRL(falta)}</b></span>`;
+  } else if(pgto === 'pago' && total){
+    pgtoInfo += `<br><span style="font-size:11px;color:var(--text-2);font-weight:600;">${formatBRL(total)}</span>`;
+  } else if(pgto === 'pendente' && total){
+    pgtoInfo += `<br><span style="font-size:11px;color:#7F1D1D;font-weight:700;">${formatBRL(total)} a receber</span>`;
+  }
+
+  // Aviso de no-show
+  let noShowWarning = '';
+  if(estadoAtual === 'nao_compareceu'){
+    noShowWarning = `<div style="background:#FEE2E2;border:2px solid #DC2626;color:#7F1D1D;padding:10px 12px;border-radius:8px;margin-bottom:12px;font-size:13px;font-weight:600;">⚠️ Hóspede não compareceu. Check-in do dia ${dayShort(reserva.dataEntrada)} não foi confirmado.</div>`;
+  }
+
+  // Bloco de Faturamento Mensal (reservas longas com diária fixa)
+  let faturaBloco = '';
+  if(reserva.tipoFaturamento === 'mensal_diaria'){
+    const aberto = calcularPeriodoAberto(reserva);
+    const pendente = temFaturaPendenteMensal(reserva);
+    const historico = reserva.faturasEncerradas || [];
+    const alertaCor = pendente ? '#DC2626' : '#15803D';
+    const alertaBg = pendente ? '#FEE2E2' : '#DCFCE7';
+    const alertaBorda = pendente ? '#DC2626' : '#15803D';
+    const alertaIcone = pendente ? '🔔' : '💰';
+    const alertaTexto = pendente ? 'FATURA PENDENTE — período em aberto desde ' + dayShort(aberto.desde) : 'Faturamento em dia';
+
+    // Identifica meses fechados ainda não faturados (para botões "fechar mês X")
+    // Cada mês fechado tem sua própria sub-fatura sugerida.
+    let mesesEmAberto = [];
+    if(aberto.dias > 0){
+      const hoje = todayKey();
+      let cursorMes = aberto.desde.substring(0,7);
+      const mesAtual = hoje.substring(0,7);
+      while(cursorMes < mesAtual){
+        const [y,m] = cursorMes.split('-').map(Number);
+        const lastDay = new Date(y, m, 0).getDate(); // último dia do mês
+        const fimMes = cursorMes + '-' + pad(lastDay);
+        const iniMes = (cursorMes === aberto.desde.substring(0,7)) ? aberto.desde : cursorMes + '-01';
+        // Conta dias
+        let dias = 0, cur = iniMes;
+        while(cur <= fimMes){ dias++; cur = addDays(cur,1); }
+        mesesEmAberto.push({ mes: cursorMes, iniMes, fimMes, dias, valor: dias * reserva.diariaValor });
+        cursorMes = addDays(fimMes, 1).substring(0,7);
+      }
+    }
+
+    let mesesHtml = '';
+    if(mesesEmAberto.length > 0){
+      mesesHtml = '<div style="margin-top:10px;padding:10px;background:#FEF3C7;border:1.5px dashed #B45309;border-radius:8px;">' +
+        '<div style="font-size:11px;font-weight:800;color:#7C2D12;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">⚠️ ' + mesesEmAberto.length + ' mês(es) fechado(s) sem faturamento:</div>' +
+        mesesEmAberto.map(m => {
+          const [y,mm] = m.mes.split('-');
+          return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0;">' +
+                 '<span><b>' + MONTH_NAMES[parseInt(mm)-1] + '/' + y.slice(2) + '</b> · ' + dayShort(m.iniMes) + ' → ' + dayShort(m.fimMes) + ' · ' + m.dias + 'd</span>' +
+                 '<b style="color:#7C2D12;">' + formatBRL(m.valor) + '</b>' +
+                 '</div>';
+        }).join('') +
+        '</div>';
+    }
+
+    let historicoHtml = '';
+    if(historico.length){
+      historicoHtml = '<div style="margin-top:10px;font-size:11px;"><b style="color:var(--text-2);">Histórico de faturas encerradas:</b>' +
+        '<table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:11px;"><tbody>' +
+        historico.slice().reverse().map((f, revIdx) => {
+          const realIdx = historico.length - 1 - revIdx;
+          const nfDisplay = f.notaFiscal ? '<b>NF ' + escapeHtml(f.notaFiscal) + '</b>' : '<span style="color:#DC2626;font-weight:700;">sem NF</span>';
+          return '<tr style="border-bottom:1px solid #E7E5E0;"><td style="padding:4px 6px;">' +
+                 dayShort(f.periodoInicio) + '→' + dayShort(f.periodoFim) +
+                 '</td><td style="padding:4px 6px;text-align:center;">' + f.dias + 'd</td>' +
+                 '<td style="padding:4px 6px;text-align:right;"><b>' + formatBRL(f.valor) + '</b></td>' +
+                 '<td style="padding:4px 6px;text-align:center;cursor:pointer;color:#0C3D7F;" onclick="editarNFFatura(\'' + reserva.id + '\',' + realIdx + ')" title="Clique para editar">' + nfDisplay + ' ✏️</td>' +
+                 '</tr>';
+        }).join('') +
+        '</tbody></table></div>';
+    }
+
+    // Dados de entrada real (se anterior ao período do mapa)
+    const entradaRealHtml = reserva.dataInicioFaturamento && reserva.dataInicioFaturamento < reserva.dataEntrada
+      ? '<div style="font-size:11px;color:var(--text-2);margin-bottom:6px;"><b>Entrada real:</b> ' + dayShort(reserva.dataInicioFaturamento) + ' (anterior ao período do mapa)</div>'
+      : '';
+
+    faturaBloco = `
+      <div style="background:${alertaBg};border:2px solid ${alertaBorda};border-radius:10px;padding:12px;margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:700;color:${alertaCor};text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+          ${alertaIcone} ${alertaTexto}
+        </div>
+        ${entradaRealHtml}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px;">
+          <div><b>Diária:</b> ${formatBRL(reserva.diariaValor)}${reserva.emitirNF ? ' <span style="font-size:10px;background:#1E40AF;color:#fff;padding:1px 5px;border-radius:3px;">NF</span>' : ''}</div>
+          <div><b>Período aberto:</b> ${aberto.dias > 0 ? dayShort(aberto.desde) + ' → ' + dayShort(aberto.ate) : '—'}</div>
+          <div><b>Dias acumulados:</b> ${aberto.dias}</div>
+          <div><b>Valor acumulado:</b> <span style="color:${alertaCor};font-weight:800;">${formatBRL(aberto.valor)}</span></div>
+        </div>
+        ${mesesHtml}
+        ${aberto.dias > 0 ? `<button class="btn btn-primary btn-block" style="margin-top:10px;background:${alertaCor};border-color:${alertaCor};" onclick="encerrarFaturaMensal('${reserva.id}')">✓ Encerrar fatura até hoje · ${formatBRL(aberto.valor)}${reserva.emitirNF ? ' + emitir NF' : ''}</button>` : ''}
+        ${historicoHtml}
+      </div>
+    `;
+  }
+
+  // Estados (override manual)
+  const estadosOpcoes = ['vai_entrar','no_quarto','vai_sair','saiu','nao_compareceu'];
+  let estadoBtnsHtml = '';
+  estadosOpcoes.forEach(e => {
+    const s = ESTADO_STYLE[e];
+    const isSel = e === estadoAtual;
+    estadoBtnsHtml += `
+      <button class="estado-btn${isSel ? ' selected' : ''}"
+              style="background:${s.bg};color:${s.text};border-color:${s.border};"
+              onclick="setEstado('${reserva.id}','${e}')">
+        <span class="estado-emoji">${s.emoji}</span><b>${s.label}</b>
+      </button>
+    `;
+  });
+
+  // Botões de pagamento
+  const pgtoOpcoes = ['pago','parcial','pendente'];
+  let pgtoBtnsHtml = '';
+  pgtoOpcoes.forEach(p => {
+    const ps = PAGAMENTO_STYLE[p];
+    const isSel = p === pgto;
+    pgtoBtnsHtml += `<button class="pay-btn ${ps.cls}${isSel ? ' selected' : ''}" onclick="setPagamento('${reserva.id}','${p}')">${ps.short} ${ps.label}</button>`;
+  });
+
+  const isMensal = reserva.tipoFaturamento === 'mensal_diaria';
+
+  content.innerHTML = `
+    ${noShowWarning}
+    ${faturaBloco}
+    <div class="reserva-info">
+      <div class="reserva-info-row"><span class="reserva-info-label">Hóspede</span><span class="reserva-info-value">${escapeHtml(reserva.hospede || '(sem nome)')}</span></div>
+      <div class="reserva-info-row"><span class="reserva-info-label">Pessoas</span><span class="reserva-info-value">${reserva.numPessoas} de ${unit.pax} pax</span></div>
+      <div class="reserva-info-row"><span class="reserva-info-label">Entrada</span><span class="reserva-info-value">${dayShort(reserva.dataEntrada)}</span></div>
+      <div class="reserva-info-row"><span class="reserva-info-label">Saída</span><span class="reserva-info-value">${dayShort(reserva.dataSaida)}</span></div>
+      ${isMensal ? '' : '<div class="reserva-info-row"><span class="reserva-info-label">Pagamento</span><span class="reserva-info-value">' + pgtoInfo + '</span></div>'}
+      <div class="reserva-info-row"><span class="reserva-info-label">Canal</span><span class="reserva-info-value"><span class="canal-mini" style="background:${canalInfo(reserva.canal).cor};color:${canalInfo(reserva.canal).textCor};">${canalInfo(reserva.canal).icone} ${canalInfo(reserva.canal).nome}</span></span></div>
+      ${(reserva.numCriancas > 0) ? '<div class="reserva-info-row"><span class="reserva-info-label">Crianças</span><span class="reserva-info-value">👶 ' + reserva.numCriancas + (reserva.numCriancas === 1 ? ' criança' : ' crianças') + '</span></div>' : ''}
+      ${reserva.temPet ? '<div class="reserva-info-row"><span class="reserva-info-label">Pet</span><span class="reserva-info-value">🐾 Sim</span></div>' : ''}
+      ${(reserva.regimePensao && reserva.regimePensao !== 'sem') ? '<div class="reserva-info-row" style="background:#DCFCE7;border-left:3px solid #15803D;padding-left:8px;"><span class="reserva-info-label">🍽 Pensão</span><span class="reserva-info-value">' + regimeInfo(reserva.regimePensao).icone + ' ' + regimeInfo(reserva.regimePensao).nome + '</span></div>' : ''}
+      ${reserva.obsLimpeza ? '<div class="reserva-info-row" style="background:#E0F2FE;border-left:3px solid #0EA5E9;padding-left:8px;"><span class="reserva-info-label">🧹 Camareira</span><span class="reserva-info-value">' + escapeHtml(reserva.obsLimpeza) + '</span></div>' : ''}
+      ${reserva.observacao ? '<div class="reserva-info-row"><span class="reserva-info-label">Obs</span><span class="reserva-info-value">' + escapeHtml(reserva.observacao) + '</span></div>' : ''}
+    </div>
+
+    <label class="field-label">Status em ${dayShort(currentDay)}</label>
+    <div class="estado-grid">${estadoBtnsHtml}</div>
+    <button class="btn" style="width:100%;margin-top:8px;font-size:12px;padding:8px;" onclick="resetEstado('${reserva.id}')">↺ Voltar ao automático</button>
+
+    ${isMensal ? '' : `
+    <label class="field-label">Status do Pagamento</label>
+    <div class="pay-grid">${pgtoBtnsHtml}</div>
+
+    <label class="field-label">Valor total (R$)</label>
+    <input type="number" id="f-valor-total" step="0.01" value="${total || ''}" placeholder="0,00" />
+    ${pgto === 'parcial' ? `
+      <label class="field-label">Valor já pago (R$)</label>
+      <input type="number" id="f-valor-pago" step="0.01" value="${pago || ''}" placeholder="0,00" />
+      <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="salvarValoresParcial('${reserva.id}')">💾 Salvar valores</button>
+    ` : `
+      <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="salvarValorTotal('${reserva.id}')">💾 Salvar valor total</button>
+    `}
+    `}
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="editReserva('${reserva.id}')">✏️ Editar reserva</button>
+      <button class="btn" onclick="gerarVoucherPorId('${reserva.id}')" style="background:#7C2D12;color:#fff;border-color:#7C2D12;">📄 Gerar Voucher</button>
+      <button class="btn btn-danger" onclick="deleteReserva('${reserva.id}')">🗑 Cancelar</button>
+    </div>
+  `;
+}
+
+function renderNewReservaForm(unit, existing){
+  const r = existing || {
+    hospede:'',
+    numPessoas: Math.min(2, unit.pax),
+    dataEntrada: currentDay,
+    dataSaida: addDays(currentDay, 1) > END_KEY ? currentDay : addDays(currentDay, 1),
+    observacao:'',
+    statusPagamento: 'pendente',
+    valorTotal: 0,
+    valorPago: 0
+  };
+  const content = document.getElementById('modal-content');
+
+  const pgtoOpcoes = ['pago','parcial','pendente'];
+  let pgtoBtnsHtml = '';
+  pgtoOpcoes.forEach(p => {
+    const ps = PAGAMENTO_STYLE[p];
+    const isSel = p === (r.statusPagamento || 'pendente');
+    pgtoBtnsHtml += `<button type="button" class="pay-btn ${ps.cls}${isSel ? ' selected' : ''}" data-pay="${p}">${ps.short} ${ps.label}</button>`;
+  });
+
+  content.innerHTML = `
+    <label class="field-label">Hóspede</label>
+    <input type="text" id="f-hospede" placeholder="Nome do hóspede" value="${escapeHtml(r.hospede)}" />
+
+    <label class="field-label">Nº de pessoas (cap. ${unit.pax})</label>
+    <div class="pax-control">
+      <button class="pax-btn" id="pax-minus" type="button">−</button>
+      <span class="pax-display" id="pax-display">${r.numPessoas}</span>
+      <button class="pax-btn" id="pax-plus" type="button">+</button>
+      <span class="pax-max">de ${unit.pax} pax cap.</span>
+    </div>
+
+    <label class="field-label">Data de entrada</label>
+    <input type="date" id="f-entrada" min="${START_KEY}" max="${END_KEY}" value="${r.dataEntrada}" />
+
+    <label class="field-label">Data de saída</label>
+    <input type="date" id="f-saida" min="${START_KEY}" max="${END_KEY}" value="${r.dataSaida}" />
+
+    <label class="field-label">Status do Pagamento</label>
+    <div class="pay-grid" id="pay-grid">${pgtoBtnsHtml}</div>
+
+    <label class="field-label">Valor total (R$)</label>
+    <input type="number" id="f-valor-total" step="0.01" value="${r.valorTotal || ''}" placeholder="0,00" />
+    <div id="pay-pago-block" style="display:${(r.statusPagamento === 'parcial') ? 'block' : 'none'};">
+      <label class="field-label">Valor já pago (R$)</label>
+      <input type="number" id="f-valor-pago" step="0.01" value="${r.valorPago || ''}" placeholder="0,00" />
+    </div>
+
+    <label class="field-label">Canal de Origem</label>
+    <div class="canal-grid" id="canal-grid">
+      ${CANAIS.map(c => `<button type="button" class="canal-btn ${(r.canal || 'direto') === c.id ? 'selected' : ''}" data-canal="${c.id}" style="background:${c.cor};color:${c.textCor};">${c.icone} ${c.nome}</button>`).join('')}
+    </div>
+
+    <label class="field-label">🍽 Regime de Pensão (refeições inclusas)</label>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:4px;" id="regime-grid">
+      ${REGIMES_PENSAO.map(rp => `<button type="button" class="regime-btn ${(r.regimePensao || 'sem') === rp.id ? 'selected' : ''}" data-regime="${rp.id}" style="padding:8px;border:2px solid #B8B5A8;border-radius:6px;background:#fff;font-weight:700;cursor:pointer;font-family:inherit;text-align:left;font-size:13px;">${rp.icone} ${rp.nome}</button>`).join('')}
+    </div>
+
+    <label class="field-label">👶 Crianças incluídas (do total de pax acima)</label>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;" id="criancas-grid">
+      ${[0,1,2,3,4].map(n => `<button type="button" class="crianca-btn ${(r.numCriancas || 0) === n ? 'selected' : ''}" data-n="${n}" style="flex:1;min-width:48px;padding:8px;border:2px solid #B8B5A8;border-radius:6px;background:#fff;font-weight:700;cursor:pointer;font-family:inherit;">${n === 4 ? '4+' : n}</button>`).join('')}
+    </div>
+
+    <label class="field-label">🐾 Pet</label>
+    <div style="display:flex;gap:6px;margin-bottom:4px;" id="pet-grid">
+      <button type="button" class="pet-btn ${!r.temPet ? 'selected' : ''}" data-pet="false" style="flex:1;padding:8px;border:2px solid #B8B5A8;border-radius:6px;background:#fff;font-weight:700;cursor:pointer;font-family:inherit;">Sem pet</button>
+      <button type="button" class="pet-btn ${r.temPet ? 'selected' : ''}" data-pet="true" style="flex:1;padding:8px;border:2px solid #B8B5A8;border-radius:6px;background:#fff;font-weight:700;cursor:pointer;font-family:inherit;">🐾 Com pet</button>
+    </div>
+
+    <label class="field-label">🧹 Observação para Camareira / Governança</label>
+    <input type="text" id="f-obs-limpeza" placeholder="Ex: alergia a perfume, berço extra, cama king split" value="${escapeHtml(r.obsLimpeza || '')}" />
+
+    <label class="field-label">Observação geral</label>
+    <input type="text" id="f-obs" placeholder="Ex: chega à noite, café especial" value="${escapeHtml(r.observacao)}" />
+
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-block" id="btn-save">${existing ? '💾 Salvar alterações' : '✓ Criar reserva'}</button>
+    </div>
+    ${!existing ? `<div class="modal-actions">
+      <button class="btn btn-warning btn-block" id="btn-manut">⚙️ Marcar manutenção (este dia)</button>
+    </div>` : ''}
+  `;
+
+  let numPessoas = r.numPessoas;
+  let statusPgto = r.statusPagamento || 'pendente';
+
+  function updatePax(){ document.getElementById('pax-display').textContent = numPessoas; }
+  document.getElementById('pax-minus').onclick = () => { if(numPessoas > 1) { numPessoas--; updatePax(); } };
+  document.getElementById('pax-plus').onclick = () => { if(numPessoas < unit.pax) { numPessoas++; updatePax(); } };
+
+  document.querySelectorAll('#pay-grid .pay-btn').forEach(btn => {
+    btn.onclick = () => {
+      statusPgto = btn.dataset.pay;
+      document.querySelectorAll('#pay-grid .pay-btn').forEach(b => b.classList.toggle('selected', b.dataset.pay === statusPgto));
+      document.getElementById('pay-pago-block').style.display = (statusPgto === 'parcial') ? 'block' : 'none';
+    };
+  });
+
+  let canalSelecionado = r.canal || 'direto';
+  document.querySelectorAll('#canal-grid .canal-btn').forEach(btn => {
+    btn.onclick = () => {
+      canalSelecionado = btn.dataset.canal;
+      document.querySelectorAll('#canal-grid .canal-btn').forEach(b => b.classList.toggle('selected', b.dataset.canal === canalSelecionado));
+    };
+  });
+
+  let numCriancasSelecionado = r.numCriancas || 0;
+  document.querySelectorAll('#criancas-grid .crianca-btn').forEach(btn => {
+    btn.onclick = () => {
+      numCriancasSelecionado = parseInt(btn.dataset.n);
+      document.querySelectorAll('#criancas-grid .crianca-btn').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.n) === numCriancasSelecionado));
+    };
+  });
+
+  let temPetSelecionado = !!r.temPet;
+  document.querySelectorAll('#pet-grid .pet-btn').forEach(btn => {
+    btn.onclick = () => {
+      temPetSelecionado = btn.dataset.pet === 'true';
+      document.querySelectorAll('#pet-grid .pet-btn').forEach(b => b.classList.toggle('selected', (b.dataset.pet === 'true') === temPetSelecionado));
+    };
+  });
+
+  let regimeSelecionado = r.regimePensao || 'sem';
+  document.querySelectorAll('#regime-grid .regime-btn').forEach(btn => {
+    btn.onclick = () => {
+      regimeSelecionado = btn.dataset.regime;
+      document.querySelectorAll('#regime-grid .regime-btn').forEach(b => b.classList.toggle('selected', b.dataset.regime === regimeSelecionado));
+    };
+  });
+
+  document.getElementById('f-entrada').onchange = (e) => {
+    const v = e.target.value;
+    const saida = document.getElementById('f-saida');
+    if(saida.value < v) saida.value = v;
+    saida.min = v;
+  };
+
+  document.getElementById('btn-save').onclick = () => {
+    const hospede = document.getElementById('f-hospede').value.trim();
+    const dataEntrada = document.getElementById('f-entrada').value;
+    const dataSaida = document.getElementById('f-saida').value;
+    const obs = document.getElementById('f-obs').value.trim();
+    const obsLimpeza = document.getElementById('f-obs-limpeza').value.trim();
+    const valorTotal = parseFloat(document.getElementById('f-valor-total').value) || 0;
+    let valorPago = 0;
+    if(statusPgto === 'pago') valorPago = valorTotal;
+    else if(statusPgto === 'parcial') valorPago = parseFloat(document.getElementById('f-valor-pago').value) || 0;
+
+    if(!dataEntrada || !dataSaida){ alert('Datas obrigatórias'); return; }
+    if(dataEntrada < START_KEY || dataSaida > END_KEY){ alert('Data fora do período permitido (24/05/2026 a 31/12/2026)'); return; }
+    if(dataSaida < dataEntrada){ alert('Data de saída anterior à entrada'); return; }
+    if(numCriancasSelecionado > numPessoas){ alert('Não pode haver mais crianças (' + numCriancasSelecionado + ') do que o total de hóspedes (' + numPessoas + ')'); return; }
+
+    if(existing){
+      Object.assign(existing, {
+        hospede, numPessoas, dataEntrada, dataSaida, observacao: obs, obsLimpeza,
+        statusPagamento: statusPgto, valorTotal, valorPago, canal: canalSelecionado,
+        numCriancas: numCriancasSelecionado, temPet: temPetSelecionado,
+        regimePensao: regimeSelecionado
+      });
+    } else {
+      const novaReserva = {
+        id: uid(),
+        unitId: editingUnitId,
+        tipo: 'reserva',
+        hospede, numPessoas, dataEntrada, dataSaida, observacao: obs, obsLimpeza,
+        statusPagamento: statusPgto, valorTotal, valorPago, canal: canalSelecionado,
+        numCriancas: numCriancasSelecionado, temPet: temPetSelecionado,
+        regimePensao: regimeSelecionado,
+        estadoPorDia: {}
+      };
+      state.reservas.push(novaReserva);
+      // Após criar, oferece geração automática do voucher
+      setTimeout(() => {
+        if(confirm('✅ Reserva criada com sucesso!\n\n📄 Deseja gerar o VOUCHER em PDF agora para enviar ao cliente?')){
+          gerarVoucherPDF(novaReserva);
+        }
+      }, 400);
+    }
+    save();
+    render();
+    closeModal();
+    showToast(existing ? 'Reserva atualizada' : 'Reserva criada · ' + dayShort(dataEntrada) + ' → ' + dayShort(dataSaida));
+  };
+
+  const btnManut = document.getElementById('btn-manut');
+  if(btnManut){
+    btnManut.onclick = () => {
+      if(!confirm('Marcar ' + unit.label + ' em manutenção em ' + dayLabel(currentDay) + '?')) return;
+      const obs = document.getElementById('f-obs').value.trim();
+      state.reservas.push({
+        id: uid(),
+        unitId: editingUnitId,
+        tipo: 'manutencao',
+        hospede: '', numPessoas: 0,
+        dataEntrada: currentDay, dataSaida: currentDay,
+        observacao: obs,
+        statusPagamento: 'pendente', valorTotal: 0, valorPago: 0,
+        estadoPorDia: {}
+      });
+      save();
+      render();
+      closeModal();
+      showToast('Manutenção marcada');
+    };
+  }
+}
+
+window.setEstado = function(reservaId, novoEstado){
+  const r = state.reservas.find(x => x.id === reservaId);
+  if(!r) return;
+  if(!r.estadoPorDia) r.estadoPorDia = {};
+  r.estadoPorDia[currentDay] = novoEstado;
+  save();
+  render();
+  const unit = UNIT_MAP[r.unitId];
+  renderReservaView(r, unit, novoEstado);
+  showToast('Status: ' + ESTADO_STYLE[novoEstado].label);
+};
+
+window.resetEstado = function(reservaId){
+  const r = state.reservas.find(x => x.id === reservaId);
+  if(!r || !r.estadoPorDia) return;
+  delete r.estadoPorDia[currentDay];
+  save();
+  render();
+  const unit = UNIT_MAP[r.unitId];
+  const { estado } = getEstado(r.unitId, currentDay);
+  renderReservaView(r, unit, estado);
+  showToast('Voltou ao padrão automático');
+};
+
+window.setPagamento = function(reservaId, novoStatus){
+  const r = state.reservas.find(x => x.id === reservaId);
+  if(!r) return;
+  r.statusPagamento = novoStatus;
+  if(novoStatus === 'pago'){
+    r.valorPago = r.valorTotal || 0;
+  } else if(novoStatus === 'pendente'){
+    r.valorPago = 0;
+  }
+  save();
+  render();
+  const unit = UNIT_MAP[r.unitId];
+  const { estado } = getEstado(r.unitId, currentDay);
+  renderReservaView(r, unit, estado);
+  showToast('Pagamento: ' + PAGAMENTO_STYLE[novoStatus].label);
+};
+
+window.salvarValoresParcial = function(reservaId){
+  const r = state.reservas.find(x => x.id === reservaId);
+  if(!r) return;
+  const total = parseFloat(document.getElementById('f-valor-total').value) || 0;
+  const pago = parseFloat(document.getElementById('f-valor-pago').value) || 0;
+  r.valorTotal = total;
+  r.valorPago = pago;
+  if(pago >= total && total > 0){
+    r.statusPagamento = 'pago';
+    showToast('Pagamento agora está como PAGO');
+  } else if(pago > 0){
+    r.statusPagamento = 'parcial';
+    showToast('Valores salvos · falta ' + formatBRL(total - pago));
+  } else {
+    r.statusPagamento = 'pendente';
+    showToast('Sem pagamento ainda');
+  }
+  save();
+  render();
+  const unit = UNIT_MAP[r.unitId];
+  const { estado } = getEstado(r.unitId, currentDay);
+  renderReservaView(r, unit, estado);
+};
+
+window.salvarValorTotal = function(reservaId){
+  const r = state.reservas.find(x => x.id === reservaId);
+  if(!r) return;
+  const total = parseFloat(document.getElementById('f-valor-total').value) || 0;
+  r.valorTotal = total;
+  if(r.statusPagamento === 'pago') r.valorPago = total;
+  save();
+  render();
+  const unit = UNIT_MAP[r.unitId];
+  const { estado } = getEstado(r.unitId, currentDay);
+  renderReservaView(r, unit, estado);
+  showToast('Valor total salvo: ' + formatBRL(total));
+};
+
+window.editReserva = function(reservaId){
+  const r = state.reservas.find(x => x.id === reservaId);
+  if(!r) return;
+  const unit = UNIT_MAP[r.unitId];
+  renderNewReservaForm(unit, r);
+};
+
+window.deleteReserva = function(reservaId){
+  if(!confirm('Cancelar esta reserva / liberar quarto?')) return;
+  state.reservas = state.reservas.filter(x => x.id !== reservaId);
+  save();
+  render();
+  closeModal();
+  showToast('Removido');
+};
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+document.getElementById('modal-close').onclick = closeModal;
+document.getElementById('modal-backdrop').onclick = closeModal;
+
+document.getElementById('btn-today').onclick = () => {
+  const t = todayKey();
+  if(t < START_KEY){ currentDay = START_KEY; }
+  else if(t > END_KEY){ currentDay = END_KEY; }
+  else { currentDay = t; }
+  currentMonth = currentDay.substring(0, 7);
+  buildMonthTabs();
+  render();
+  showToast('Pulou para ' + dayShort(currentDay));
+};
+
+document.getElementById('btn-reset').onclick = () => {
+  if(!confirm('⚠️ ATENÇÃO\n\nIsto vai apagar TODAS as reservas e manutenções da nuvem.\n\nO efeito é IMEDIATO em TODOS os dispositivos (celular, tablet, notebook).\n\nNão tem volta. Confirma?')) return;
+  if(!confirm('Tem certeza absoluta? Digite mentalmente "apagar tudo" antes de clicar OK.')) return;
+  state.reservas = [];
+  saveToFirebase();
+  showToast('Tudo limpo (sincronizando...)');
+};
+
+document.getElementById('btn-import').onclick = () => {
+  importarSeed();
+};
+
+document.getElementById('btn-export').onclick = async () => {
+  const stats = getDayStats(currentDay);
+  const ocupPct = Math.round((stats.ocupado / TOTAL) * 100);
+
+  let txt = 'RELATÓRIO DE OCUPAÇÃO — ' + dayLabel(currentDay) + '\n';
+  txt += '─────────────────────────────────\n';
+  txt += `Ocupação: ${ocupPct}% (${stats.ocupado}/${TOTAL} unidades)\n`;
+  txt += `Hóspedes: ${stats.pessoas} pessoas\n`;
+  txt += `Check-ins hoje: ${stats.checkin}\n`;
+  txt += `Check-outs hoje: ${stats.checkout}\n`;
+  txt += `Livres: ${stats.livre}\n`;
+  txt += `Manutenção: ${stats.manutencao}\n`;
+  txt += `NÃO COMPARECERAM: ${stats.noshow}\n\n`;
+
+  const checkins = state.reservas.filter(r => r.tipo === 'reserva' && r.dataEntrada === currentDay);
+  if(checkins.length){
+    txt += 'CHECK-INS DE HOJE:\n';
+    checkins.forEach(r => {
+      const est = (r.estadoPorDia && r.estadoPorDia[currentDay]) || 'vai_entrar';
+      const pgto = PAGAMENTO_STYLE[r.statusPagamento || 'pendente'].label;
+      const valor = r.valorTotal ? ` · ${formatBRL(r.valorTotal)}` : '';
+      txt += `  ${UNIT_MAP[r.unitId].label} · ${r.hospede || '(s/ nome)'} · ${r.numPessoas} pax · ${ESTADO_STYLE[est].label} · pgto: ${pgto}${valor} · sai ${dayShort(r.dataSaida)}\n`;
+    });
+    txt += '\n';
+  }
+
+  const checkouts = state.reservas.filter(r => r.tipo === 'reserva' && r.dataSaida === currentDay);
+  if(checkouts.length){
+    txt += 'CHECK-OUTS DE HOJE:\n';
+    checkouts.forEach(r => {
+      const est = (r.estadoPorDia && r.estadoPorDia[currentDay]) || 'vai_sair';
+      const pgto = PAGAMENTO_STYLE[r.statusPagamento || 'pendente'].label;
+      const falta = Math.max(0, (r.valorTotal||0) - (r.valorPago||0));
+      const faltaStr = falta > 0 ? ` · ATENÇÃO: falta ${formatBRL(falta)}` : '';
+      txt += `  ${UNIT_MAP[r.unitId].label} · ${r.hospede || '(s/ nome)'} · ${r.numPessoas} pax · ${ESTADO_STYLE[est].label} · pgto: ${pgto}${faltaStr}\n`;
+    });
+    txt += '\n';
+  }
+
+  // No-shows
+  const noShows = ALL_UNITS.map(u => {
+    const { estado, reserva } = getEstado(u.id, currentDay);
+    return (estado === 'nao_compareceu' && reserva) ? {u, r: reserva} : null;
+  }).filter(Boolean);
+  if(noShows.length){
+    txt += 'NÃO COMPARECERAM:\n';
+    noShows.forEach(({u, r}) => {
+      txt += `  ${u.label} · ${r.hospede || '(s/ nome)'} · entrada era ${dayShort(r.dataEntrada)}\n`;
+    });
+    txt += '\n';
+  }
+
+  const emCurso = state.reservas.filter(r =>
+    r.tipo === 'reserva' && reservaIncludesDay(r, currentDay) &&
+    r.dataEntrada !== currentDay && r.dataSaida !== currentDay
+  );
+  if(emCurso.length){
+    txt += 'EM ESTADIA:\n';
+    emCurso.forEach(r => {
+      const pgto = PAGAMENTO_STYLE[r.statusPagamento || 'pendente'].label;
+      txt += `  ${UNIT_MAP[r.unitId].label} · ${r.hospede || '(s/ nome)'} · ${r.numPessoas} pax · pgto: ${pgto} · sai ${dayShort(r.dataSaida)}\n`;
+    });
+    txt += '\n';
+  }
+
+  txt += 'FINANCEIRO DO DIA:\n';
+  txt += `  Recebido (acumulado nas estadias ativas): ${formatBRL(stats.recebido)}\n`;
+  txt += `  A receber: ${formatBRL(stats.areceber)}\n`;
+
+  const entradasCanal = Object.entries(stats.porCanal).sort((a,b) => b[1].unidades - a[1].unidades);
+  if(entradasCanal.length > 0){
+    txt += '\nCANAIS ATIVOS HOJE:\n';
+    entradasCanal.forEach(([id, d]) => {
+      const c = canalInfo(id);
+      txt += `  ${c.icone} ${c.nome}: ${d.unidades} unidade(s) · Recebido ${formatBRL(d.recebido)} · A receber ${formatBRL(d.areceber)}\n`;
+    });
+  }
+
+  // Serviços extras do dia (Day Use, Passeios, Cachoeira)
+  const servicosHoje = (state.servicos || []).filter(s => s.data === currentDay);
+  if(servicosHoje.length > 0){
+    txt += '\nSERVIÇOS EXTRAS DO DIA:\n';
+    servicosHoje.sort((a,b) => (a.hora || '99').localeCompare(b.hora || '99'));
+    let totalServicos = 0, recebidoSrv = 0, areceberSrv = 0;
+    servicosHoje.forEach(s => {
+      const info = servicoInfo(s.tipo);
+      if(!info) return;
+      totalServicos++;
+      recebidoSrv += s.valorPago || 0;
+      areceberSrv += Math.max(0, (s.valorTotal||0) - (s.valorPago||0));
+      txt += `  ${info.icone} ${info.nome}${s.hora ? ' ' + s.hora : ''} · ${s.cliente} · ${s.numPessoas} pax · ${formatBRL(s.valorTotal)} (${s.statusPagamento})\n`;
+    });
+    txt += `  → Total: ${totalServicos} serviço(s) · Recebido ${formatBRL(recebidoSrv)} · A receber ${formatBRL(areceberSrv)}\n`;
+  }
+
+  try {
+    await navigator.clipboard.writeText(txt);
+    showToast('Relatório copiado!');
+  } catch(e){
+    prompt('Copie o texto abaixo:', txt);
+  }
+};
+
+// ===== RELATÓRIO CAMAREIRA / GOVERNANÇA =====
+// ===== SERVIÇOS EXTRAS (Day Use, Passeio Cavalo, Cachoeira) =====
+
+function renderServicosDia(){
+  const container = document.getElementById('servicos-dia-container');
+  if(!container) return;
+
+  const servicosHoje = (state.servicos || []).filter(s => s.data === currentDay);
+
+  if(servicosHoje.length === 0){
+    container.innerHTML = `<div style="background:#FAF8F2;border:1px dashed #B8B5A8;border-radius:10px;padding:12px;margin-top:14px;text-align:center;color:#888;font-size:13px;">
+      📅 Nenhum serviço extra agendado para ${dayShort(currentDay)}. Clique em "+ Novo Serviço" para adicionar.
+    </div>`;
+    return;
+  }
+
+  let html = '<div style="margin-top:14px;"><h3 style="font-size:14px;margin:0 0 8px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#444;">📅 Serviços do Dia (' + servicosHoje.length + ')</h3>';
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;">';
+
+  servicosHoje.sort((a,b) => (a.hora || '99').localeCompare(b.hora || '99'));
+
+  servicosHoje.forEach(s => {
+    const info = servicoInfo(s.tipo);
+    if(!info) return;
+    const pgto = s.statusPagamento === 'pago' ? '✓' : s.statusPagamento === 'parcial' ? '½' : '!';
+    const pgtoCor = s.statusPagamento === 'pago' ? '#15803D' : s.statusPagamento === 'parcial' ? '#EAB308' : '#B91C1C';
+
+    // Hóspede vinculado?
+    let vinculoTxt = '';
+    if(s.vinculadoReserva){
+      const r = state.reservas.find(x => x.id === s.vinculadoReserva);
+      if(r){
+        const u = UNIT_MAP[r.unitId];
+        vinculoTxt = '<div style="font-size:11px;color:#0C3D7F;margin-top:4px;">🏨 Hóspede ' + (u ? u.label : '') + ' · ' + escapeHtml(r.hospede || '') + '</div>';
+      }
+    }
+
+    html += `<div style="background:${info.cor};color:#fff;padding:10px;border-radius:8px;cursor:pointer;" onclick="editServico('${s.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-weight:800;font-size:14px;">${info.icone} ${info.nome}${s.hora ? ' · ' + s.hora : ''}</div>
+        <div style="background:${pgtoCor};color:#fff;padding:1px 6px;border-radius:4px;font-weight:700;font-size:11px;">${pgto}</div>
+      </div>
+      <div style="font-size:13px;margin-top:4px;font-weight:600;">${escapeHtml(s.cliente || '(s/ nome)')} · ${s.numPessoas} pax</div>
+      <div style="font-size:12px;margin-top:2px;opacity:0.95;">${formatBRL(s.valorTotal)}</div>
+      ${vinculoTxt}
+      ${s.observacao ? '<div style="font-size:11px;margin-top:4px;opacity:0.9;font-style:italic;">' + escapeHtml(s.observacao) + '</div>' : ''}
+    </div>`;
+  });
+
+  html += '</div></div>';
+  container.innerHTML = html;
+}
+
+function openServicoModal(servico){
+  const isNew = !servico;
+  const s = servico || { tipo: 'dayuse', data: currentDay, hora: '', cliente: '', numPessoas: 1, observacao: '', valorTotal: 0, valorPago: 0, statusPagamento: 'pendente', canal: 'whatsapp', vinculadoReserva: '' };
+
+  document.getElementById('modal-title').textContent = (isNew ? 'Novo Serviço' : 'Editar Serviço') + ' — ' + dayShort(currentDay);
+  const content = document.getElementById('modal-content');
+
+  // Lista reservas ativas para vincular (hóspedes presentes no dia)
+  const reservasAtivas = state.reservas.filter(r => r.tipo === 'reserva' && reservaIncludesDay(r, s.data || currentDay));
+
+  content.innerHTML = `
+    <label class="field-label">Tipo de Serviço</label>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;" id="srv-tipo-grid">
+      ${SERVICOS.map(sv => `<button type="button" class="servico-btn ${s.tipo === sv.id ? 'selected' : ''}" data-tipo="${sv.id}" style="background:${sv.cor};opacity:${s.tipo === sv.id ? '1' : '0.55'};">${sv.icone}<br/>${sv.nome}${sv.valorPadrao > 0 ? '<br/><span style=\"font-size:10px;\">R$ ' + sv.valorPadrao + '</span>' : ''}</button>`).join('')}
+    </div>
+
+    <label class="field-label">Cliente / Hóspede</label>
+    <input type="text" id="srv-cliente" placeholder="Nome do cliente" value="${escapeHtml(s.cliente)}" />
+
+    <label class="field-label">Hóspede da pousada? (vincular reserva)</label>
+    <select id="srv-vinculo" style="width:100%;padding:10px;border:1.5px solid #B8B5A8;border-radius:6px;font-family:inherit;font-size:14px;">
+      <option value="">— Não é hóspede (cliente externo) —</option>
+      ${reservasAtivas.map(r => {
+        const u = UNIT_MAP[r.unitId];
+        return `<option value="${r.id}" ${s.vinculadoReserva === r.id ? 'selected' : ''}>${u ? u.label : ''} · ${escapeHtml(r.hospede || '(s/ nome)')}</option>`;
+      }).join('')}
+    </select>
+    <div style="font-size:11px;color:#B91C1C;margin-top:4px;display:none;" id="srv-vinculo-aviso">⚠️ Visita à Cachoeira é EXCLUSIVA para hóspedes da pousada</div>
+
+    <label class="field-label">Data</label>
+    <input type="date" id="srv-data" min="${START_KEY}" max="${END_KEY}" value="${s.data || currentDay}" />
+
+    <label class="field-label">Hora (opcional)</label>
+    <input type="time" id="srv-hora" value="${s.hora || ''}" />
+
+    <label class="field-label">Número de pessoas</label>
+    <input type="number" id="srv-pax" min="1" max="50" value="${s.numPessoas}" />
+
+    <label class="field-label">Valor total (R$)</label>
+    <input type="number" id="srv-valor" step="0.01" value="${s.valorTotal || ''}" placeholder="0,00" />
+
+    <label class="field-label">Status do pagamento</label>
+    <div class="pay-grid" id="srv-pay-grid">
+      <button type="button" class="pay-btn ${s.statusPagamento === 'pago' ? 'selected' : ''}" data-pay="pago">✓ Pago</button>
+      <button type="button" class="pay-btn ${s.statusPagamento === 'parcial' ? 'selected' : ''}" data-pay="parcial">½ Parcial</button>
+      <button type="button" class="pay-btn ${s.statusPagamento === 'pendente' ? 'selected' : ''}" data-pay="pendente">! Pendente</button>
+    </div>
+
+    <label class="field-label">Canal</label>
+    <div class="canal-grid" id="srv-canal-grid">
+      ${CANAIS.map(c => `<button type="button" class="canal-btn ${(s.canal || 'whatsapp') === c.id ? 'selected' : ''}" data-canal="${c.id}" style="background:${c.cor};color:${c.textCor};">${c.icone} ${c.nome}</button>`).join('')}
+    </div>
+
+    <label class="field-label">Observação</label>
+    <input type="text" id="srv-obs" placeholder="Detalhes adicionais" value="${escapeHtml(s.observacao || '')}" />
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="srv-salvar">💾 Salvar Serviço</button>
+      ${!isNew ? '<button class="btn btn-danger" id="srv-excluir">🗑 Excluir</button>' : ''}
+    </div>
+  `;
+
+  let tipoSel = s.tipo;
+  let paySel = s.statusPagamento || 'pendente';
+  let canalSel = s.canal || 'whatsapp';
+
+  const aviso = document.getElementById('srv-vinculo-aviso');
+  const vinculoSelect = document.getElementById('srv-vinculo');
+  function atualizarAvisoVinculo(){
+    const info = servicoInfo(tipoSel);
+    if(info && info.apenasHospedes){
+      aviso.style.display = vinculoSelect.value ? 'none' : 'block';
+    } else {
+      aviso.style.display = 'none';
+    }
+  }
+  vinculoSelect.onchange = atualizarAvisoVinculo;
+
+  document.querySelectorAll('#srv-tipo-grid .servico-btn').forEach(btn => {
+    btn.onclick = () => {
+      tipoSel = btn.dataset.tipo;
+      document.querySelectorAll('#srv-tipo-grid .servico-btn').forEach(b => {
+        b.style.opacity = b.dataset.tipo === tipoSel ? '1' : '0.55';
+        b.classList.toggle('selected', b.dataset.tipo === tipoSel);
+      });
+      // Preencher valor padrão se for novo
+      const info = servicoInfo(tipoSel);
+      const valorInput = document.getElementById('srv-valor');
+      if(info && info.valorPadrao > 0 && (!valorInput.value || valorInput.value == '0')) valorInput.value = info.valorPadrao;
+      atualizarAvisoVinculo();
+    };
+  });
+
+  document.querySelectorAll('#srv-pay-grid .pay-btn').forEach(btn => {
+    btn.onclick = () => {
+      paySel = btn.dataset.pay;
+      document.querySelectorAll('#srv-pay-grid .pay-btn').forEach(b => b.classList.toggle('selected', b.dataset.pay === paySel));
+    };
+  });
+
+  document.querySelectorAll('#srv-canal-grid .canal-btn').forEach(btn => {
+    btn.onclick = () => {
+      canalSel = btn.dataset.canal;
+      document.querySelectorAll('#srv-canal-grid .canal-btn').forEach(b => b.classList.toggle('selected', b.dataset.canal === canalSel));
+    };
+  });
+
+  document.getElementById('srv-salvar').onclick = () => {
+    const cliente = document.getElementById('srv-cliente').value.trim();
+    const data = document.getElementById('srv-data').value;
+    const hora = document.getElementById('srv-hora').value;
+    const pax = parseInt(document.getElementById('srv-pax').value) || 1;
+    const valor = parseFloat(document.getElementById('srv-valor').value) || 0;
+    const obs = document.getElementById('srv-obs').value.trim();
+    const vinculado = document.getElementById('srv-vinculo').value || null;
+
+    if(!cliente){ alert('Nome do cliente obrigatório'); return; }
+    if(!data){ alert('Data obrigatória'); return; }
+
+    const info = servicoInfo(tipoSel);
+    if(info && info.apenasHospedes && !vinculado){
+      alert('⚠️ ' + info.nome + ' é EXCLUSIVO para hóspedes da pousada. Vincule a uma reserva ativa.');
+      return;
+    }
+
+    const valorPago = paySel === 'pago' ? valor : (paySel === 'pendente' ? 0 : valor / 2);
+
+    if(servico){
+      Object.assign(servico, { tipo: tipoSel, cliente, data, hora, numPessoas: pax, valorTotal: valor, valorPago, statusPagamento: paySel, canal: canalSel, observacao: obs, vinculadoReserva: vinculado });
+    } else {
+      if(!state.servicos) state.servicos = [];
+      state.servicos.push({
+        id: 'srv-' + uid(),
+        tipo: tipoSel,
+        cliente, data, hora,
+        numPessoas: pax,
+        valorTotal: valor, valorPago,
+        statusPagamento: paySel,
+        canal: canalSel,
+        observacao: obs,
+        vinculadoReserva: vinculado
+      });
+    }
+    saveServicosToFirebase();
+    closeModal();
+    render();
+    showToast('Serviço salvo');
+  };
+
+  if(!isNew){
+    document.getElementById('srv-excluir').onclick = () => {
+      if(!confirm('Excluir este serviço?')) return;
+      state.servicos = state.servicos.filter(x => x.id !== servico.id);
+      saveServicosToFirebase();
+      closeModal();
+      render();
+      showToast('Serviço excluído');
+    };
+  }
+
+  document.getElementById('modal-backdrop').classList.add('open');
+  document.getElementById('modal').classList.add('open');
+}
+
+function editServico(id){
+  const s = state.servicos.find(x => x.id === id);
+  if(s) openServicoModal(s);
+}
+window.editServico = editServico;
+
+document.getElementById('btn-novo-servico').onclick = () => openServicoModal(null);
+
+// ===== RELATÓRIO RESTAURANTE =====
+document.getElementById('btn-restaurante').onclick = async () => {
+  const day = currentDay;
+  const dt = parseDate(day);
+  const dataFmt = dt.getDate() + '/' + (dt.getMonth()+1) + '/' + dt.getFullYear();
+  const dowFmt = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][dt.getDay()];
+
+  // Agrupa hóspedes por refeição do dia
+  const refeicoesDoDia = { cafe_manha: [], almoco: [], cafe_tarde: [], jantar: [] };
+
+  // 1. Hóspedes da pousada com regime de pensão
+  ALL_UNITS.forEach(unit => {
+    const { estado, reserva } = getEstado(unit.id, day);
+    if(!reserva || reserva.tipo !== 'reserva') return;
+    if(estado === 'livre' || estado === 'nao_compareceu' || estado === 'manutencao' || estado === 'saiu') return;
+    const regime = regimeInfo(reserva.regimePensao);
+    regime.refeicoes.forEach(ref => {
+      refeicoesDoDia[ref].push({
+        origem: 'Quarto ' + unit.label,
+        nome: reserva.hospede || '(s/ nome)',
+        pax: reserva.numPessoas || 0,
+        criancas: reserva.numCriancas || 0,
+        obs: reserva.observacao || '',
+        check: reserva.dataEntrada === day ? '🟢 Check-in hoje' : (reserva.dataSaida === day ? '🟠 Check-out hoje' : '')
+      });
+    });
+  });
+
+  // 2. Day Use do dia (geralmente almoço incluso)
+  const dayUses = (state.servicos || []).filter(s => s.data === day && s.tipo === 'dayuse');
+  dayUses.forEach(s => {
+    refeicoesDoDia.almoco.push({
+      origem: '🌞 Day Use' + (s.hora ? ' · ' + s.hora : ''),
+      nome: s.cliente,
+      pax: s.numPessoas,
+      criancas: 0,
+      obs: s.observacao,
+      check: ''
+    });
+  });
+
+  let txt = '🍽 *RELATÓRIO RESTAURANTE*\n';
+  txt += '📅 ' + dowFmt + ', ' + dataFmt + '\n';
+  txt += '━━━━━━━━━━━━━━━━━━━━\n\n';
+
+  let totalGeral = 0;
+  Object.entries(refeicoesDoDia).forEach(([ref, lista]) => {
+    if(lista.length === 0) return;
+    const totalPax = lista.reduce((s,l) => s + (l.pax || 0), 0);
+    totalGeral += totalPax;
+    txt += '\n' + REFEICAO_NOMES[ref] + '  ·  *' + totalPax + ' pax* (' + lista.length + ' grupo' + (lista.length>1?'s':'') + ')\n';
+    txt += '━━━━━━━━━━━━━━━━━━━\n';
+    lista.forEach(item => {
+      const cr = item.criancas > 0 ? ' (' + item.criancas + 'c)' : '';
+      txt += '• ' + item.origem + ' — ' + item.nome + ' · ' + item.pax + ' pax' + cr;
+      if(item.check) txt += ' · ' + item.check;
+      txt += '\n';
+      if(item.obs) txt += '   📝 ' + item.obs + '\n';
+    });
+  });
+
+  if(totalGeral === 0){
+    txt += '\n_Nenhuma refeição programada para hoje._\n';
+  } else {
+    txt += '\n━━━━━━━━━━━━━━━━━━━━\n';
+    txt += '*RESUMO DO DIA:*\n';
+    Object.entries(refeicoesDoDia).forEach(([ref, lista]) => {
+      if(lista.length === 0) return;
+      const pax = lista.reduce((s,l) => s + (l.pax || 0), 0);
+      const cr = lista.reduce((s,l) => s + (l.criancas || 0), 0);
+      txt += '   ' + REFEICAO_NOMES[ref].replace(/[^a-zA-ZÀ-ÿ ]/g, '').trim() + ': ' + pax + ' pax' + (cr > 0 ? ' (' + cr + ' criança' + (cr>1?'s':'') + ')' : '') + '\n';
+    });
+  }
+
+  txt += '\n━━━━━━━━━━━━━━━━━━━━\n';
+  txt += '_Gerado pelo Mapa de Ocupação · ' + new Date().toLocaleString('pt-BR') + '_';
+
+  try {
+    await navigator.clipboard.writeText(txt);
+    showToast('🍽 Relatório do restaurante copiado!');
+  } catch(e){
+    prompt('Copie o texto e envie para a cozinha:', txt);
+  }
+};
+
+document.getElementById('btn-camareira').onclick = async () => {
+  const day = currentDay;
+  const dt = parseDate(day);
+  const dataFmt = dt.getDate() + '/' + (dt.getMonth()+1) + '/' + dt.getFullYear();
+  const dowFmt = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][dt.getDay()];
+
+  // Coleta todas as unidades ocupadas no dia
+  const ocupacoes = [];
+  ALL_UNITS.forEach(unit => {
+    const { estado, reserva } = getEstado(unit.id, day);
+    if(!reserva || reserva.tipo !== 'reserva') return;
+    if(estado === 'livre' || estado === 'nao_compareceu' || estado === 'manutencao' || estado === 'saiu') return;
+    ocupacoes.push({ unit, reserva, estado });
+  });
+
+  ocupacoes.sort((a,b) => {
+    const la = a.unit.label, lb = b.unit.label;
+    const na = parseInt(la), nb = parseInt(lb);
+    if(!isNaN(na) && !isNaN(nb)) return na - nb || la.localeCompare(lb);
+    return la.localeCompare(lb);
+  });
+
+  let txt = '🧹 *RELATÓRIO DE GOVERNANÇA / CAMAREIRA*\n';
+  txt += '📅 ' + dowFmt + ', ' + dataFmt + '\n';
+  txt += '━━━━━━━━━━━━━━━━━━━━\n\n';
+
+  if(ocupacoes.length === 0){
+    txt += '✅ Nenhuma unidade ocupada hoje.\n';
+  } else {
+    const totalPax = ocupacoes.reduce((s,o) => s + (o.reserva.numPessoas || 0), 0);
+    const totalCriancas = ocupacoes.reduce((s,o) => s + (o.reserva.numCriancas || 0), 0);
+    const comPet = ocupacoes.filter(o => o.reserva.temPet).length;
+    txt += '🛏️ *Total ocupado: ' + ocupacoes.length + ' unidade(s)* · ' + totalPax + ' hóspede(s)';
+    if(totalCriancas > 0) txt += ' (' + totalCriancas + ' criança' + (totalCriancas>1?'s':'') + ')';
+    if(comPet > 0) txt += ' · 🐾 ' + comPet + ' com pet';
+    txt += '\n━━━━━━━━━━━━━━━━━━━━\n';
+
+    ocupacoes.forEach(({unit, reserva, estado}) => {
+      let statusIcon = '';
+      let acao = '';
+      if(reserva.dataEntrada === day){
+        statusIcon = ' 🟢 *CHECK-IN HOJE*';
+        acao = '   ↳ _Arrumar quarto completo para chegada_\n';
+      } else if(reserva.dataSaida === day){
+        statusIcon = ' 🟠 *CHECK-OUT HOJE*';
+        acao = '   ↳ _Faxina completa após saída_\n';
+      } else {
+        acao = '   ↳ _Faxina diária (hóspede continua)_\n';
+      }
+
+      txt += '\n*' + unit.label + '* — ' + (reserva.hospede || '(s/ nome)') + statusIcon + '\n';
+      const adultos = (reserva.numPessoas || 0) - (reserva.numCriancas || 0);
+      let paxLine = '   👥 ' + reserva.numPessoas + ' pax';
+      if(reserva.numCriancas > 0) paxLine += ' (' + adultos + ' adulto' + (adultos>1?'s':'') + ' + ' + reserva.numCriancas + ' criança' + (reserva.numCriancas>1?'s':'') + ')';
+      txt += paxLine + '\n';
+
+      if(reserva.temPet) txt += '   🐾 *COM PET — atenção extra na limpeza*\n';
+      if(reserva.obsLimpeza) txt += '   🧹 *OBS:* ' + reserva.obsLimpeza + '\n';
+      txt += acao;
+    });
+  }
+
+  // Faxinas pendentes (check-outs de ontem)
+  const ontem = addDays(day, -1);
+  const checkoutsOntem = state.reservas.filter(r =>
+    r.tipo === 'reserva' && r.dataSaida === ontem
+  );
+  if(checkoutsOntem.length > 0){
+    txt += '\n━━━━━━━━━━━━━━━━━━━━\n';
+    txt += '🧽 *Confirmar faxinas pós-checkout de ontem:*\n';
+    checkoutsOntem.forEach(r => {
+      const u = UNIT_MAP[r.unitId];
+      if(u) txt += '   • ' + u.label + '\n';
+    });
+  }
+
+  txt += '\n━━━━━━━━━━━━━━━━━━━━\n';
+  txt += '_Para dúvidas, consultar a gerência_';
+
+  try {
+    await navigator.clipboard.writeText(txt);
+    showToast('🧹 Relatório copiado! Cole no WhatsApp da camareira');
+  } catch(e){
+    prompt('Copie o texto e envie para a camareira:', txt);
+  }
+};
+
+// ===== INIT (com autenticação) =====
+function showLoginError(){
+  const err = document.getElementById('login-err');
+  if(err) err.style.display = 'block';
+  const pwd = document.getElementById('login-pwd');
+  if(pwd){ pwd.value = ''; pwd.focus(); }
+}
+
+function tryLogin(){
+  const v = document.getElementById('login-pwd').value;
+  if(v === APP_PASSWORD){
+    sessionStorage.setItem('mapa-auth', 'ok');
+    document.getElementById('login-overlay').style.display = 'none';
+    document.getElementById('app-content').style.display = '';
+    document.getElementById('sync-overlay').style.display = 'flex';
+    bootApp();
+  } else {
+    showLoginError();
+  }
+}
+
+function bootApp(){
+  load(); // só define currentDay/currentMonth — dados vêm via Firebase
+  buildMonthTabs();
+  buildSections();
+  buildDayStrip();
+  // Handlers de troca de vista
+  document.querySelectorAll('.view-tab').forEach(t => {
+    t.onclick = () => trocarVista(t.dataset.view);
+  });
+  setupFirebaseSync(); // dispara render() quando dados chegam
+}
+
+// Sessão já autenticada? entra direto
+if(sessionStorage.getItem('mapa-auth') === 'ok'){
+  document.getElementById('login-overlay').style.display = 'none';
+  document.getElementById('app-content').style.display = '';
+  document.getElementById('sync-overlay').style.display = 'flex';
+  bootApp();
+} else {
+  // Aguarda senha
+  document.getElementById('login-btn').onclick = tryLogin;
+  document.getElementById('login-pwd').onkeydown = (e) => {
+    if(e.key === 'Enter') tryLogin();
+  };
+}
+</script>
+
+</div><!-- /#app-content -->
+
+</body>
+</html>
