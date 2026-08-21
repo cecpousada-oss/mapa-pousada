@@ -1,17 +1,12 @@
 <!DOCTYPE html>
-<html lang="pt-BR" translate="no">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<!-- v79: impede a tradução automática do navegador. O Chrome estava "traduzindo" a página
-     (já em português) e corrompendo os rótulos: SEG virava SEGMENTO, SEX virava SEXO,
-     Livres virava Livros, Voucher virava Vale-presente e Check-out virava Finalizar compra. -->
-<meta name="google" content="notranslate">
-<meta name="googlebot" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1E3A2F">
-<title>Pousada das Cores · Sistema de Gestão v78</title>
+<title>Pousada das Cores · Sistema de Gestão v66</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
@@ -973,7 +968,7 @@ input[type=number] {
 @media(max-width:600px){.v62-crm-actions button{flex:1 1 100%;}.v62-crm-card{font-size:12px;}}
 </style>
 </head>
-<body class="notranslate" translate="no">
+<body>
 
 <!-- ============= LOGIN OVERLAY ============= -->
 <div id="login-overlay" style="position:fixed;inset:0;background:linear-gradient(135deg,#1a1a18 0%,#3a2f1e 100%);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
@@ -1004,7 +999,7 @@ input[type=number] {
 
 <div class="header">
   <div>
-    <h1>Pousada das Cores · v78</h1>
+    <h1>Pousada das Cores · v66</h1>
     <p class="sub" id="calendar-range-label">35 unidades · 119 pax cap. · Calendário dinâmico</p>
   </div>
   <div class="right">
@@ -1021,7 +1016,8 @@ input[type=number] {
 <div class="view-tabs" id="view-tabs">
   <button class="view-tab tab-op active" data-view="mapa"><span class="tab-emoji">🗓️</span><span class="tab-label">Mapa &amp; Operação</span><span class="tab-counter" id="counter-operacao"></span></button>
   <button class="view-tab tab-ger" data-view="financeiro"><span class="tab-emoji">💰</span><span class="tab-label">Financeiro</span><span class="tab-counter" id="counter-financeiro"></span></button>
-  <button class="view-tab tab-ger" data-view="decisoes"><span class="tab-emoji">📌</span><span class="tab-label">Decisões</span><span class="tab-counter" id="counter-decisoes"></span></button>
+  <button class="view-tab tab-ger" data-view="estoque"><span class="tab-emoji">📦</span><span class="tab-label">Estoque</span></button>
+  <button class="view-tab tab-ger" data-view="ia-geral"><span class="tab-emoji">🤖</span><span class="tab-label">IA Geral</span></button>
   <button class="view-tab tab-rel" data-view="relatorios"><span class="tab-emoji">📋</span><span class="tab-label">Relatórios</span></button>
   <button class="view-tab tab-more" id="btn-more-menu" type="button"><span class="tab-emoji">⚙️</span><span class="tab-label">Mais ▾</span></button>
 </div>
@@ -1042,7 +1038,7 @@ input[type=number] {
 <div id="firebase-status-bar" style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:-4px 0 12px;padding:8px 12px;border-radius:10px;background:#F5F1E8;border:1.5px solid #D4C9A8;font-size:12px;font-weight:700;color:#1a1a18;">
   <span id="firebase-status-text">☁️ Verificando conexão...</span>
   <button class="btn" id="btn-seguranca-top" style="padding:6px 10px;font-size:12px;background:#1E40AF;color:#fff;border-color:#1E3A8A;">🛡️ Segurança</button>
-  <button class="btn" id="btn-publicacao-top" style="padding:6px 10px;font-size:12px;background:#111827;color:#fff;border-color:#111827;">🚀 Diagnóstico v78</button>
+  <button class="btn" id="btn-publicacao-top" style="padding:6px 10px;font-size:12px;background:#111827;color:#fff;border-color:#111827;">🚀 Diagnóstico v66</button>
 </div>
 
 <!-- VISTA OPERAÇÃO / PENDÊNCIAS -->
@@ -1126,18 +1122,18 @@ input[type=number] {
 </div>
 
 <div class="actions-bottom">
+  <button class="btn btn-warning" id="btn-reset">↻ Limpar tudo</button>
+  <button class="btn" id="btn-import">📥 Importar pendentes</button>
   <button class="btn" id="btn-import-ota" style="background:#003580;color:#fff;border-color:#003580;">📥 Importar Reserva OTA</button>
   <button class="btn" id="btn-import-wa-global" style="background:#25D366;color:#fff;border-color:#128C7E;">📱 Importar WhatsApp</button>
-  <button class="btn" id="btn-novo-servico" style="background:#7C3AED;color:#fff;border-color:#7C3AED;">+ Day Use / Passeio</button>
   <button class="btn" id="btn-governanca" style="background:#0EA5E9;color:#fff;border-color:#0369A1;">🧹 Governança</button>
-  <button class="btn" id="btn-camareira" style="background:#0EA5E9;color:#fff;border-color:#0EA5E9;">🧹 Rel. Camareira</button>
-  <button class="btn" id="btn-restaurante" style="background:#15803D;color:#fff;border-color:#15803D;">🍽 Rel. Restaurante</button>
+  <button class="btn" id="btn-financeiro-v20" style="background:#15803D;color:#fff;border-color:#14532D;">💰 Financeiro</button>
+  <button class="btn" id="btn-seguranca-v21" style="background:#1E40AF;color:#fff;border-color:#1E3A8A;">🛡️ Segurança</button>
+  <button class="btn" id="btn-publicacao-v23" style="background:#111827;color:#fff;border-color:#111827;">🚀 Diagnóstico v66</button>
   <button class="btn" id="btn-export">📋 Copiar relatório do dia</button>
-  <button class="btn" id="btn-import" style="display:none;">📥 Importar pendentes</button>
-  <button class="btn btn-warning" id="btn-reset" style="display:none;">↻ Limpar tudo</button>
-  <button class="btn" id="btn-financeiro-v20" style="display:none;">💰 Financeiro</button>
-  <button class="btn" id="btn-seguranca-v21" style="display:none;">🛡️ Segurança</button>
-  <button class="btn" id="btn-publicacao-v23" style="display:none;">🚀 Diagnóstico</button>
+  <button class="btn" id="btn-camareira" style="background:#0EA5E9;color:#fff;border-color:#0EA5E9;">🧹 Relatório Camareira</button>
+  <button class="btn" id="btn-restaurante" style="background:#15803D;color:#fff;border-color:#15803D;">🍽 Relatório Restaurante</button>
+  <button class="btn" id="btn-novo-servico" style="background:#7C3AED;color:#fff;border-color:#7C3AED;">+ Novo Serviço (Day Use/Cavalo/Cachoeira)</button>
 </div>
 
 <div id="servicos-dia-container"></div>
@@ -1188,11 +1184,6 @@ input[type=number] {
 </div>
 
 <!-- VISTA CLIENTES (v67) -->
-<!-- VISTA DECISÕES PENDENTES (v76) -->
-<div id="vista-decisoes" style="display:none;">
-  <div id="painel-decisoes"></div>
-</div>
-
 <div id="vista-clientes" style="display:none;">
   <div id="painel-clientes"></div>
 </div>
@@ -3650,19 +3641,7 @@ function setupFirebaseSync(){
     state.reservas = processSnapshot(val);
 
     // Migração leve: garante campos obrigatórios
-    // v80: registra quantas reservas vieram do servidor, para a proteção contra apagamento
-    // em massa saber comparar já no primeiro salvamento desta sessão.
-    try { if(state.reservas.length > 0) v80UltimaContagem['reservas'] = state.reservas.length; } catch(e){}
     state.reservas.forEach(r => {
-      // v77 fix (CRÍTICO): se um valor chegar como texto ("500" em vez de 500), todas as somas
-      // do financeiro concatenavam em vez de somar — R$500 + R$150 virava "0500150". Forçamos
-      // número aqui, na entrada dos dados, para nenhum total sair errado.
-      r.valorTotal = Number(r.valorTotal) || 0;
-      r.valorPago = Number(r.valorPago) || 0;
-      r.valorDiaria = Number(r.valorDiaria) || 0;
-      r.valorComissaoOTA = Number(r.valorComissaoOTA) || 0;
-      r.numPessoas = Number(r.numPessoas) || 0;
-      r.numCriancas = Number(r.numCriancas) || 0;
       if(!r.estadoPorDia) r.estadoPorDia = {};
       if(!r.statusPagamento) r.statusPagamento = 'pendente';
       if(typeof r.valorTotal !== 'number') r.valorTotal = 0;
@@ -3718,13 +3697,9 @@ function setupFirebaseSync(){
     const val = snapshot.val();
     state.servicos = processSnapshot(val);
     // Garantir campos padrão
-    try { if(state.servicos.length > 0) v80UltimaContagem['serviços'] = state.servicos.length; } catch(e){}
     state.servicos.forEach(s => {
-      // v77: antes, um valor que chegasse como texto era ZERADO (perdia o dinheiro).
-      // Agora é convertido para número, preservando o valor.
-      s.valorTotal = Number(s.valorTotal) || 0;
-      s.valorPago = Number(s.valorPago) || 0;
-      s.numPessoas = Number(s.numPessoas) || 0;
+      if(typeof s.valorTotal !== 'number') s.valorTotal = 0;
+      if(typeof s.valorPago !== 'number') s.valorPago = 0;
       if(!s.statusPagamento) s.statusPagamento = 'pendente';
       if(!s.canal) s.canal = 'direto';
     });
@@ -3745,10 +3720,8 @@ function setupFirebaseSync(){
   despesasRef.on('value', snapshot => {
     const val = snapshot.val();
     state.despesas = processSnapshot(val);
-    try { if(state.despesas.length > 0) v80UltimaContagem['despesas'] = state.despesas.length; } catch(e){}
     state.despesas.forEach(d => {
-      // v77: converte em vez de zerar — um valor em texto perdia o dinheiro da conta.
-      d.valor = Number(d.valor) || 0;
+      if(typeof d.valor !== 'number') d.valor = 0;
       if(!d.status) d.status = 'a_pagar';
       if(!d.categoria) d.categoria = 'outros';
     });
@@ -3761,10 +3734,8 @@ function setupFirebaseSync(){
   receitasRef.on('value', snapshot => {
     const val = snapshot.val();
     state.receitas = processSnapshot(val);
-    try { if(state.receitas.length > 0) v80UltimaContagem['receitas'] = state.receitas.length; } catch(e){}
     state.receitas.forEach(r => {
-      // v77: converte em vez de zerar, para não perder o valor da entrada.
-      r.valor = Number(r.valor) || 0;
+      if(typeof r.valor !== 'number') r.valor = 0;
       if(!r.status) r.status = 'recebido';
       if(!r.categoria) r.categoria = 'outros';
     });
@@ -3865,37 +3836,7 @@ function v21ObjetoPorArray(arr){
   return obj;
 }
 
-// v80: rede de segurança contra apagamento em massa.
-// Guarda quantos registros existiam na última vez que cada coleção foi vista cheia.
-const v80UltimaContagem = {};
-
 function v21SalvarRef(ref, obj, label){
-  // Se este salvamento vai reduzir drasticamente a quantidade de registros, para tudo e pergunta.
-  // Foi exatamente esse tipo de sobrescrita silenciosa que causou perda de dados na v78.
-  try {
-    const qtdNova = obj ? Object.keys(obj).length : 0;
-    const qtdAnterior = v80UltimaContagem[label];
-    const colecoesCriticas = ['reservas','serviços','despesas','receitas'];
-    if(colecoesCriticas.includes(label) && typeof qtdAnterior === 'number' && qtdAnterior >= 5 && qtdNova < qtdAnterior * 0.5){
-      const ok = confirm(
-        '🛑 ATENÇÃO — POSSÍVEL PERDA DE DADOS\n\n' +
-        'O sistema está prestes a salvar apenas ' + qtdNova + ' registro(s) de "' + label + '",\n' +
-        'mas havia ' + qtdAnterior + ' registro(s) carregados.\n\n' +
-        'Isso apagaria ' + (qtdAnterior - qtdNova) + ' registro(s) do servidor.\n\n' +
-        'Se você NÃO apagou isso de propósito, clique em Cancelar.\n\n' +
-        'OK = salvar mesmo assim   |   Cancelar = não salvar (recomendado)'
-      );
-      if(!ok){
-        v21AtualizarStatusFirebase(v21FirebaseOnline ? 'online' : 'offline', label + ' — salvamento cancelado');
-        showToast('🛑 Salvamento cancelado. Nada foi apagado.');
-        return Promise.resolve();
-      }
-      // Antes de aceitar uma redução grande, guarda um backup do que ainda está na tela.
-      try { if(typeof v21CriarBackupSistema === 'function') v21CriarBackupSistema('Backup automático antes de redução em massa de ' + label, true); } catch(e){}
-    }
-    if(qtdNova > 0) v80UltimaContagem[label] = qtdNova;
-  } catch(e){ console.warn('[v80 proteção]', e); }
-
   v21Salvando = true;
   v21AtualizarStatusFirebase('salvando', label);
   return ref.set(obj).then(() => {
@@ -3912,53 +3853,6 @@ function v21SalvarRef(ref, obj, label){
 }
 
 function saveToFirebase(){ return v21SalvarRef(reservasRef, v21ObjetoPorArray(state.reservas), 'reservas'); }
-
-// v78: recuperação do "cofre de emergência". Quando um salvamento falha (queda de internet),
-// os dados ficam guardados no navegador — mas até agora NADA lia isso de volta: bastava recarregar
-// a página para o trabalho sumir. Esta função avisa e oferece restaurar o que ficou pendente.
-function v78VerificarPendenciasDeSalvamento(){
-  // ⚠️ v80 — CORREÇÃO DE FALHA GRAVE INTRODUZIDA NA v78.
-  // A versão anterior desta função fazia: state.reservas = (cópia antiga do navegador) e em
-  // seguida salvava isso por cima no Firebase. Ou seja: bastava clicar "OK" naquele aviso para
-  // TODAS as reservas atuais serem substituídas por um retrato antigo/parcial e o servidor ser
-  // sobrescrito. Isso podia apagar dados novos. A recuperação automática está DESATIVADA.
-  // Agora esta função apenas AVISA que existe uma cópia pendente e oferece baixá-la em arquivo,
-  // para conferência manual. Nunca mais toca no que está salvo.
-  const labels = ['reservas','serviços','despesas','receitas'];
-  labels.forEach(label => {
-    let bruto = null;
-    try { bruto = localStorage.getItem('v21-pendente-' + label); } catch(e){ return; }
-    if(!bruto) return;
-    let pacote;
-    try { pacote = JSON.parse(bruto); } catch(e){ return; }
-    if(!pacote || !pacote.dados) return;
-    const quando = pacote.quando ? new Date(pacote.quando).toLocaleString('pt-BR') : 'momento desconhecido';
-    const qtd = Object.keys(pacote.dados || {}).length;
-    const baixar = confirm(
-      'ℹ️ CÓPIA DE SEGURANÇA ENCONTRADA\n\n' +
-      'Existe uma cópia de "' + label + '" (' + qtd + ' registro(s)) guardada neste navegador,\n' +
-      'de um salvamento que não completou em ' + quando + '.\n\n' +
-      'NADA será alterado no sistema. Deseja apenas BAIXAR essa cópia em arquivo\n' +
-      'para conferir com calma?\n\n' +
-      'OK = baixar arquivo   |   Cancelar = ignorar por agora'
-    );
-    if(baixar){
-      try {
-        const blob = new Blob([JSON.stringify(pacote, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'copia-pendente-' + label + '-' + (pacote.quando || '').substring(0,10) + '.json';
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-        showToast('📄 Cópia de ' + label + ' baixada — nada foi alterado no sistema');
-      } catch(e){ console.error('[v80] falha ao baixar cópia', e); }
-    }
-    // A cópia é mantida no navegador (não apagamos), para poder ser baixada de novo se precisar.
-  });
-}
-window.v78VerificarPendenciasDeSalvamento = v78VerificarPendenciasDeSalvamento;
-
 function saveServicosToFirebase(){ return v21SalvarRef(servicosRef, v21ObjetoPorArray(state.servicos), 'serviços'); }
 function saveDespesasToFirebase(){ return v21SalvarRef(despesasRef, v21ObjetoPorArray(state.despesas), 'despesas'); }
 function saveReceitasToFirebase(){ return v21SalvarRef(receitasRef, v21ObjetoPorArray(state.receitas || []), 'receitas'); }
@@ -3970,7 +3864,7 @@ function v21GerarId(prefix){ return prefix + '-' + Date.now() + '-' + Math.rando
 
 function v21SnapshotSistema(){
   return {
-    versao: 'v78',
+    versao: 'v66',
     criadoEm: new Date().toISOString(),
     currentDay,
     reservas: JSON.parse(JSON.stringify(state.reservas || [])),
@@ -4494,14 +4388,6 @@ function atualizarContadoresAbas(){
     if(pendFin > 0){ cFin.textContent = pendFin; cFin.classList.add('show'); }
     else cFin.classList.remove('show');
   }
-  // v76: contador da aba Decisões — mostra o que já passou do prazo de resposta
-  const cDec = document.getElementById('counter-decisoes');
-  if(cDec){
-    let pendDec = 0;
-    try { pendDec = v76ContarUrgentes(); } catch(e){ pendDec = 0; }
-    if(pendDec > 0){ cDec.textContent = pendDec; cDec.classList.add('show'); }
-    else cDec.classList.remove('show');
-  }
 }
 window.atualizarContadoresAbas = atualizarContadoresAbas;
 
@@ -4555,9 +4441,6 @@ function trocarVista(v){
   const cli = document.getElementById('vista-clientes');
   if(cli) cli.style.display = v === 'clientes' ? '' : 'none';
   if(v === 'clientes'){ try { renderPainelClientesV67(); } catch(e){ console.error('Erro render clientes:', e); } }
-  const dec = document.getElementById('vista-decisoes');
-  if(dec) dec.style.display = v === 'decisoes' ? '' : 'none';
-  if(v === 'decisoes'){ try { renderPainelDecisoesV76(); } catch(e){ console.error('Erro render decisões:', e); } }
   const rel = document.getElementById('vista-relatorios');
   if(rel) rel.style.display = v === 'relatorios' ? '' : 'none';
   const seg = document.getElementById('vista-seguranca');
@@ -4653,13 +4536,7 @@ function gerarRecorrencias(template, numMeses){
   const baseDate = template.dataVencimento;
   for(let i = 1; i <= numMeses; i++){
     const [y, m, d] = baseDate.split('-').map(Number);
-    // v77 fix: uma conta com vencimento dia 29/30/31 gerava data errada nos meses curtos.
-    // "31 de janeiro + 1 mês" virava "31 de fevereiro", que o JavaScript empurra sozinho
-    // para 3 de março — a conta de fevereiro simplesmente sumia e caía no mês errado.
-    // Agora o dia é limitado ao último dia real do mês de destino (31/01 → 28/02 → 31/03).
-    const ultimoDiaDoMes = new Date(y, m + i, 0).getDate();
-    const diaAjustado = Math.min(d, ultimoDiaDoMes);
-    const dt = new Date(y, m - 1 + i, diaAjustado);
+    const dt = new Date(y, m - 1 + i, d);
     const novaData = dt.getFullYear() + '-' + pad(dt.getMonth()+1) + '-' + pad(dt.getDate());
     if(novaData > END_KEY) break;
     parcelas.push({
@@ -5471,16 +5348,12 @@ function render(){
   // Alertas críticos (sempre visíveis em qualquer vista)
   try { renderAlertasCriticos(); } catch(e){ console.error('Erro render alertas:', e); }
 
-  // v76: Estoque e IA Geral foram removidas do sistema; Operação vive dentro do Mapa.
-  if(viewAtual === 'operacao' || viewAtual === 'rh' || viewAtual === 'comercial' || viewAtual === 'estoque' || viewAtual === 'ia-geral'){
+  // v75: as abas Operação, RH e Comercial foram removidas. Operação passou a viver dentro do Mapa
+  // (renderizada mais abaixo). Se algum código/atalho antigo ainda pedir essas vistas, cai no Mapa
+  // em vez de mostrar tela em branco.
+  if(viewAtual === 'operacao' || viewAtual === 'rh' || viewAtual === 'comercial'){
     viewAtual = 'mapa';
     try { trocarVista('mapa'); return; } catch(e){ /* segue e renderiza o mapa abaixo */ }
-  }
-
-  // Painel de decisões pendentes (financeiro parado esperando resposta)
-  if(viewAtual === 'decisoes'){
-    try { renderPainelDecisoesV76(); } catch(e){ console.error('Erro render decisões:', e); }
-    return;
   }
 
   // Se estiver na vista de governança, renderiza fluxo de limpeza/camareira
@@ -6418,26 +6291,19 @@ function renderNewReservaForm(unit, existing, estadoAtualParam){
       const numLimpo = telefone.replace(/\D/g,'');
       if(numLimpo.length < 10) erros.push('• Telefone com menos de 10 dígitos');
     }
-    // v78: CPF deixou de ser obrigatório para criar a reserva — muita reserva por telefone/balcão
-    // não tem o documento na hora, e o importador de OTA já tratava CPF como opcional.
-    // Ele continua sendo pedido no check-in (fica marcado como pendente).
+    if(!cpfHospede) erros.push('• CPF/Documento');
     if(!dataEntrada) erros.push('• Data de entrada');
     if(!dataSaida) erros.push('• Data de saída');
+    if(!canalSelecionado || canalSelecionado === 'direto') {
+      // 'direto' é ok mas deve ser confirmado
+    }
     if(valorTotal <= 0) erros.push('• Valor total da reserva (maior que zero)');
     if(statusPgto === 'parcial' && valorPago <= 0) erros.push('• Valor pago (já que status é parcial)');
-    if(statusPgto === 'parcial' && valorPago >= valorTotal) erros.push('• Valor pago igual/maior que o total — marque como "Pago" em vez de "Parcial"');
 
     if(email && !email.includes('@')) erros.push('• E-mail inválido (sem @)');
 
-    // v78: capacidade do quarto — a importação de OTA já checava isso, mas a reserva manual não:
-    // dava para lançar 6 pessoas num quarto de 3 sem nenhum aviso.
-    const unidadeEscolhida = UNIT_MAP[editingUnitId];
-    if(unidadeEscolhida && unidadeEscolhida.pax > 0 && numPessoas > unidadeEscolhida.pax){
-      erros.push('• Capacidade excedida: ' + unidadeEscolhida.label + ' comporta ' + unidadeEscolhida.pax + ' pessoa(s), foram informadas ' + numPessoas);
-    }
-
     if(erros.length > 0){
-      alert('⚠️ CORRIJA ANTES DE SALVAR:\n\n' + erros.join('\n'));
+      alert('⚠️ CAMPOS OBRIGATÓRIOS NÃO PREENCHIDOS:\n\n' + erros.join('\n') + '\n\nPreencha tudo antes de criar a reserva.');
       return;
     }
 
@@ -8548,7 +8414,7 @@ function abrirModalRelatorioV16(tipo){
   const content = document.getElementById('modal-content');
   content.innerHTML = `
     <div style="background:#F5F1E8;border:1px solid #D4C9A8;border-radius:10px;padding:10px 12px;margin-bottom:12px;">
-      <div style="font-size:13px;font-weight:800;margin-bottom:4px;">Relatório v78 · WhatsApp + PDF + Impressão</div>
+      <div style="font-size:13px;font-weight:800;margin-bottom:4px;">Relatório v66 · WhatsApp + PDF + Impressão</div>
       <div style="font-size:12px;color:#6B6B66;line-height:1.4;">Revise abaixo. Você pode enviar no WhatsApp, copiar, gerar PDF ou imprimir.</div>
     </div>
     <textarea id="v16-rel-text" style="width:100%;min-height:360px;border:1.5px solid #B8B5A8;border-radius:8px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.35;white-space:pre-wrap;">${escapeHtml(texto)}</textarea>
@@ -8655,8 +8521,8 @@ function v75RelatorioPeriodoTexto(inicio, fim){
     const data = d.status === 'pago' && d.dataPagamento ? d.dataPagamento : d.dataVencimento;
     return data >= inicio && data <= fim;
   });
-  const receitaBruta = entradas.reduce((s,r) => s + (Number(r.valorTotal) || 0), 0);
-  const recebido = entradas.reduce((s,r) => s + (Number(r.valorPago) || 0), 0);
+  const receitaBruta = entradas.reduce((s,r) => s + (r.valorTotal || 0), 0);
+  const recebido = entradas.reduce((s,r) => s + (r.valorPago || 0), 0);
   const aReceber = entradas.reduce((s,r) => s + Math.max(0, (r.valorTotal||0) - (r.valorPago||0)), 0);
   const comissoes = entradas.reduce((s,r) => s + (typeof v20ComissaoReserva === 'function' ? v20ComissaoReserva(r) : 0), 0);
   const receitaServicos = servicos.reduce((s,x) => s + (x.valorTotal || 0), 0);
@@ -8819,14 +8685,7 @@ function v18PendenciasDoDia(day=currentDay){
     const entradaVencidaSemCheckin = r.dataEntrada < hojeReal && r.dataSaida >= hojeReal && !fezCheckin;
     const saidaVencidaSemCheckout = r.dataSaida < hojeReal && !fezCheckout;
     const paradaSemAcao = !!r.importadoEm && !fezCheckin && !fezCheckout && r.dataEntrada < hojeReal;
-    const precisaAcao = entradaVencidaSemCheckin || saidaVencidaSemCheckout || paradaSemAcao;
-    if(!precisaAcao) return false;
-    // v79: reserva parada há mais de 10 dias sai desta lista do dia a dia e passa a viver
-    // na aba Decisões (que é onde ela vira uma decisão de verdade). Reservas futuras e as
-    // que passaram há menos de 10 dias continuam aqui, na operação.
-    const diasParada = Math.round((parseDate(hojeReal) - parseDate(r.dataSaida || r.dataEntrada)) / 86400000);
-    if(diasParada > 10) return false;
-    return true;
+    return entradaVencidaSemCheckin || saidaVencidaSemCheckout || paradaSemAcao;
   }).sort(v16SortReservaPorUnidade);
   // v66: histórico — reservas que já saíram de "sem movimentação" porque check-in e/ou
   // check-out foram de fato registrados. Mantém rastro em vez de simplesmente sumir da tela.
@@ -8944,10 +8803,16 @@ function renderPainelOperacaoV18(){
     </div>
 
     <div class="fin-kpi-grid" style="margin-bottom:14px;">
-      <div class="fin-kpi"><p class="fin-kpi-label">Check-ins hoje</p><p class="fin-kpi-value">${p.checkins.length}</p><p class="fin-kpi-sub">${p.checkinPendente.length} pendente(s)</p></div>
-      <div class="fin-kpi"><p class="fin-kpi-label">Check-outs hoje</p><p class="fin-kpi-value">${p.checkouts.length}</p><p class="fin-kpi-sub">${p.checkoutPendente.length} pendente(s)</p></div>
-      <div class="fin-kpi"><p class="fin-kpi-label">Chegam amanhã</p><p class="fin-kpi-value">${p.checkinsAmanha.length}</p><p class="fin-kpi-sub">preparar quartos</p></div>
-      <div class="fin-kpi"><p class="fin-kpi-label">Na casa hoje</p><p class="fin-kpi-value">${stats.pessoas}</p><p class="fin-kpi-sub">${stats.ocupado}/${TOTAL} unidades ocupadas</p></div>
+      <div class="fin-kpi" style="background:${pendenciasCriticas ? '#FEE2E2' : '#DCFCE7'};"><p class="fin-kpi-label">Pendências críticas</p><p class="fin-kpi-value" style="${v18ResumoClass(pendenciasCriticas)}">${pendenciasCriticas}</p><p class="fin-kpi-sub">ações que exigem atenção</p></div>
+      <div class="fin-kpi"><p class="fin-kpi-label">Check-ins</p><p class="fin-kpi-value">${p.checkins.length}</p><p class="fin-kpi-sub">${p.checkinPendente.length} pendente(s)</p></div>
+      <div class="fin-kpi"><p class="fin-kpi-label">Check-outs</p><p class="fin-kpi-value">${p.checkouts.length}</p><p class="fin-kpi-sub">${p.checkoutPendente.length} pendente(s)</p></div>
+      <div class="fin-kpi"><p class="fin-kpi-label">Amanhã</p><p class="fin-kpi-value">${p.checkinsAmanha.length}</p><p class="fin-kpi-sub">check-ins previstos</p></div>
+      <div class="fin-kpi" style="${p.semMovimentacao.length ? 'background:#FEE2E2;' : ''}"><p class="fin-kpi-label">Sem movimentação</p><p class="fin-kpi-value" style="${v18ResumoClass(p.semMovimentacao.length)}">${p.semMovimentacao.length}</p><p class="fin-kpi-sub">reservas paradas</p></div>
+      <div class="fin-kpi"><p class="fin-kpi-label">Hóspedes</p><p class="fin-kpi-value">${stats.pessoas}</p><p class="fin-kpi-sub">${stats.ocupado}/${TOTAL} unidades ocupadas</p></div>
+      <div class="fin-kpi"><p class="fin-kpi-label">Saldo check-in</p><p class="fin-kpi-value" style="font-size:18px;${saldoCheckinValor ? 'color:#B91C1C;' : ''}">${formatBRL(saldoCheckinValor)}</p><p class="fin-kpi-sub">a cobrar nas chegadas</p></div>
+      <div class="fin-kpi"><p class="fin-kpi-label">Kits toalha</p><p class="fin-kpi-value">${mat.kitsToalhaTotal}</p><p class="fin-kpi-sub">entradas + permanências</p></div>
+      <div class="fin-kpi"><p class="fin-kpi-label">Café manhã</p><p class="fin-kpi-value">${cafe}</p><p class="fin-kpi-sub">pax previstos</p></div>
+      <div class="fin-kpi"><p class="fin-kpi-label">Almoço/Jantar</p><p class="fin-kpi-value" style="font-size:18px;">${almoco}/${jantar}</p><p class="fin-kpi-sub">pax previstos</p></div>
     </div>
 
     <div class="fin-card">
@@ -8972,11 +8837,7 @@ function renderPainelOperacaoV18(){
 
     <div class="fin-card" style="margin-top:14px;${p.semMovimentacao.length ? 'border-color:#B91C1C;' : ''}">
       <p class="fin-card-title">⛔ Reservas sem movimentação</p>
-      <div style="font-size:12px;color:#6B6B66;margin-bottom:8px;line-height:1.45;">
-        Entrada vencida sem check-in, saída vencida sem check-out, ou reserva importada sem ação.
-        <b>Depois de 10 dias parada</b>, a reserva sai daqui e passa para a aba
-        <b onclick="trocarVista('decisoes')" style="color:#B45309;cursor:pointer;text-decoration:underline;">📌 Decisões</b>.
-      </div>
+      <div style="font-size:12px;color:#6B6B66;margin-bottom:8px;">Entrada vencida sem check-in, saída vencida sem check-out, ou reserva importada sem nenhuma ação até hoje.</div>
       ${p.semMovimentacao.length ? p.semMovimentacao.map(r => v18ReservaCardHtml(r, r.dataSaida < todayKey() ? 'checkout' : 'checkin')).join('') : '<div style="font-size:13px;color:#15803D;font-weight:700;">✅ Nenhuma reserva parada.</div>'}
     </div>
 
@@ -9015,6 +8876,15 @@ function renderPainelOperacaoV18(){
         <div class="fin-row"><div><b>Sem documento/CPF</b><div class="fin-row-meta">chegadas de hoje</div></div><b style="${v18ResumoClass(p.semDocumento.length)}">${p.semDocumento.length}</b></div>
         <div class="fin-row"><div><b>Voucher pendente</b><div class="fin-row-meta">sem registro de envio</div></div><b style="${v18ResumoClass(p.voucherPendente.length)}">${p.voucherPendente.length}</b></div>
         <div class="fin-row"><div><b>Pets / crianças</b><div class="fin-row-meta">atenção operação</div></div><b>${p.pets.length} / ${p.criancas.reduce((s,r)=>s+(r.numCriancas||0),0)}</b></div>
+      </div>
+
+      <div class="fin-card">
+        <p class="fin-card-title">💰 Financeiro rápido</p>
+        <div class="fin-row"><div><b>Reservas com saldo</b><div class="fin-row-meta">hospedadas/ativas hoje</div></div><b style="${v18ResumoClass(p.saldosAtivos.length)}">${p.saldosAtivos.length}</b></div>
+        <div class="fin-row"><div><b>Contas atrasadas</b><div class="fin-row-meta">contas a pagar</div></div><b style="${v18ResumoClass(p.despesasAtrasadas.length)}">${p.despesasAtrasadas.length}</b></div>
+        <div class="fin-row"><div><b>Vencem em 3 dias</b><div class="fin-row-meta">contas a pagar</div></div><b>${p.despesasVencendo.length}</b></div>
+        <div class="fin-row"><div><b>Serviços pendentes</b><div class="fin-row-meta">day use/passeios hoje</div></div><b>${p.servicosPendentes.length}</b></div>
+        <button class="btn btn-primary btn-block" onclick="trocarVista('financeiro')">💰 Abrir financeiro</button>
       </div>
     </div>`;
 }
@@ -9074,24 +8944,6 @@ function v18MarcarPago(reservaId){
 window.v18MarcarPago = v18MarcarPago;
 
 function v18CobrarSaldo(reservaId){
-  // v79: toda cobrança passa a ser conduzida pelo Financeiro, que é o único dono dos valores.
-  // Antes existiam DUAS rotinas de cobrança (uma aqui na operação, outra no financeiro), cada
-  // uma montando o valor do seu jeito — risco real de divergência de número. Agora a operação
-  // apenas encaminha para o fluxo financeiro oficial.
-  const r = state.reservas.find(x => x.id === reservaId);
-  if(!r) return;
-  const saldo = v16SaldoReserva(r);
-  if(saldo <= 0){ showToast('Sem saldo a cobrar'); return; }
-  if(typeof window.v20CobrarSaldoReserva === 'function'){
-    window.v20CobrarSaldoReserva(reservaId);
-    return;
-  }
-  return v18CobrarSaldoLegado(reservaId);
-}
-window.v18CobrarSaldo = v18CobrarSaldo;
-
-// Mantido como reserva técnica caso o módulo financeiro não tenha carregado.
-function v18CobrarSaldoLegado(reservaId){
   const r = state.reservas.find(x => x.id === reservaId);
   if(!r) return;
   const saldo = v16SaldoReserva(r);
@@ -9110,7 +8962,7 @@ function v18CobrarSaldoLegado(reservaId){
     navigator.clipboard.writeText(msg).then(() => showToast('Mensagem copiada — telefone não cadastrado'), () => prompt('Copie a mensagem:', msg));
   }
 }
-// (a exportação de v18CobrarSaldo já foi feita acima, apontando para o fluxo do Financeiro)
+window.v18CobrarSaldo = v18CobrarSaldo;
 
 try {
   const btnOp = document.getElementById('btn-operacao-hoje');
@@ -9481,16 +9333,16 @@ function v20AgruparFinanceiro(inicio, fim){
   });
   const canais = Object.values(porCanal).sort((a,b) => b.liquido - a.liquido);
   const reservasFiltradas = reservas.filter(r => v20FiltroCanal === 'todos' || (r.canal || 'direto') === v20FiltroCanal);
-  const receitaHospedagem = reservasFiltradas.reduce((s,r) => s + (Number(r.valorTotal) || 0), 0);
-  const receitaRecebida = reservasFiltradas.reduce((s,r) => s + (Number(r.valorPago) || 0), 0);
+  const receitaHospedagem = reservasFiltradas.reduce((s,r) => s + (r.valorTotal || 0), 0);
+  const receitaRecebida = reservasFiltradas.reduce((s,r) => s + (r.valorPago || 0), 0);
   const comissoes = reservasFiltradas.reduce((s,r) => s + v20ComissaoReserva(r), 0);
   const receitaLiquidaHospedagem = receitaHospedagem - comissoes;
-  const servicosTotal = servicos.reduce((s,x) => s + (Number(x.valorTotal) || 0), 0);
-  const servicosRecebido = servicos.reduce((s,x) => s + (Number(x.valorPago) || 0), 0);
-  const despesasTotal = despesas.reduce((s,d) => s + (Number(d.valor) || 0), 0);
-  const aReceberTotal = aReceber.reduce((s,r) => s + (Number(r.valor) || 0), 0);
-  const aPagarTotal = despesasAbertas.reduce((s,d) => s + (Number(d.valor) || 0), 0);
-  const atrasadasTotal = atrasadas.reduce((s,d) => s + (Number(d.valor) || 0), 0);
+  const servicosTotal = servicos.reduce((s,x) => s + (x.valorTotal || 0), 0);
+  const servicosRecebido = servicos.reduce((s,x) => s + (x.valorPago || 0), 0);
+  const despesasTotal = despesas.reduce((s,d) => s + (d.valor || 0), 0);
+  const aReceberTotal = aReceber.reduce((s,r) => s + (r.valor || 0), 0);
+  const aPagarTotal = despesasAbertas.reduce((s,d) => s + (d.valor || 0), 0);
+  const atrasadasTotal = atrasadas.reduce((s,d) => s + (d.valor || 0), 0);
   const lucroOperacional = receitaLiquidaHospedagem + servicosTotal - despesasTotal;
   return { reservas, reservasAtivas, reservasFiltradas, servicos, despesas, aReceber, despesasAbertas, atrasadas, canais,
     receitaHospedagem, receitaRecebida, comissoes, receitaLiquidaHospedagem, servicosTotal, servicosRecebido,
@@ -9581,13 +9433,13 @@ function v75ResumoCaixa(inicio, fim){
   const recebidoServicos = dados.servicosRecebido;
   // Entradas manuais lançadas na mão (ex: venda avulsa, aporte, reembolso recebido)
   const receitasManuais = v75ReceitasDoPeriodo(inicio, fim);
-  const manualRecebido = receitasManuais.filter(r => r.status === 'recebido').reduce((s,r) => s + (Number(r.valor)||0), 0);
-  const manualAReceber = receitasManuais.filter(r => r.status !== 'recebido').reduce((s,r) => s + (Number(r.valor)||0), 0);
+  const manualRecebido = receitasManuais.filter(r => r.status === 'recebido').reduce((s,r) => s + (r.valor||0), 0);
+  const manualAReceber = receitasManuais.filter(r => r.status !== 'recebido').reduce((s,r) => s + (r.valor||0), 0);
 
   const totalEntradas = recebidoReservas + recebidoServicos + manualRecebido;
   // Saídas: despesas efetivamente pagas no período
   const despesasPagas = (state.despesas || []).filter(d => d.status === 'pago' && d.dataPagamento && d.dataPagamento >= inicio && d.dataPagamento <= fim);
-  const totalSaidas = despesasPagas.reduce((s,d) => s + (Number(d.valor)||0), 0);
+  const totalSaidas = despesasPagas.reduce((s,d) => s + (d.valor||0), 0);
   const saldo = totalEntradas - totalSaidas;
 
   // A receber e a pagar (ainda em aberto)
@@ -9716,9 +9568,7 @@ function v75AbrirModalReceita(receitaId){
       const repetir = parseInt((document.getElementById('rec-recor') || {}).value || '0') || 0;
       for(let i = 1; i <= repetir; i++){
         const [y, m, dia] = data.split('-').map(Number);
-        // v77 fix: mesmo problema das despesas — dia 31 empurrava a entrada para o mês errado.
-        const ultimoDiaDoMes = new Date(y, m + i, 0).getDate();
-        const dt = new Date(y, m - 1 + i, Math.min(dia, ultimoDiaDoMes));
+        const dt = new Date(y, m - 1 + i, dia);
         const novaData = dt.getFullYear() + '-' + pad(dt.getMonth()+1) + '-' + pad(dt.getDate());
         if(novaData > END_KEY) break;
         state.receitas.push(Object.assign({}, base, {
@@ -9753,234 +9603,6 @@ function v75AbrirModalReceita(receitaId){
 }
 window.v75AbrirModalReceita = v75AbrirModalReceita;
 
-// ============================================================
-// ===== v76 · DECISÕES PENDENTES (financeiro sem resposta) ===
-// ============================================================
-// Junta tudo que está parado esperando uma decisão sua e que hoje ficava espalhado
-// poluindo as outras abas. Qualquer item que passe de 10 dias sem resposta é
-// escalado automaticamente para cá — e continua assim para sempre, sem precisar
-// configurar nada de novo.
-const V76_DIAS_PARA_ESCALAR = 10;
-
-function v76DiasParados(dataRef){
-  if(!dataRef) return 0;
-  const hoje = parseDate(todayKey());
-  const ref = parseDate(String(dataRef).substring(0,10));
-  return Math.max(0, Math.round((hoje - ref) / 86400000));
-}
-
-// Marca uma decisão como resolvida (fica registrado para não voltar a aparecer)
-function v76Resolvidas(){
-  if(!state.configs) state.configs = {};
-  if(!state.configs.decisoesResolvidas) state.configs.decisoesResolvidas = {};
-  return state.configs.decisoesResolvidas;
-}
-
-function v76ColetarDecisoes(){
-  const itens = [];
-  const resolvidas = v76Resolvidas();
-
-  // 1) Contas vencidas e ainda não pagas — quanto mais tempo, mais crítico
-  (state.despesas || []).forEach(d => {
-    if(statusDespesaCalculado(d) !== 'atrasado') return;
-    const dias = v76DiasParados(d.dataVencimento);
-    itens.push({
-      id: 'dec-desp-' + d.id,
-      tipo: 'Conta atrasada',
-      icone: '🚨',
-      cor: '#B91C1C',
-      titulo: d.descricao || '(sem descrição)',
-      detalhe: 'Venceu em ' + dayShort(d.dataVencimento) + ' · ' + formatBRL(d.valor || 0),
-      dias,
-      valor: d.valor || 0,
-      acao: () => editDespesa(d.id),
-      acaoLabel: 'Abrir conta'
-    });
-  });
-
-  // 2) Hóspedes que já saíram devendo — saldo não cobrado
-  (state.reservas || []).forEach(r => {
-    if(r.tipo !== 'reserva') return;
-    const saldo = Math.max(0, (Number(r.valorTotal) || 0) - (Number(r.valorPago) || 0));
-    if(saldo <= 0) return;
-    if(!r.dataSaida || r.dataSaida >= todayKey()) return; // ainda hospedado ou sem data válida
-    const dias = v76DiasParados(r.dataSaida);
-    itens.push({
-      id: 'dec-res-' + r.id,
-      reservaId: r.id,
-      tipo: 'Saldo não recebido',
-      icone: '💰',
-      cor: '#D97706',
-      titulo: (r.hospede || '(sem nome)') + ' · ' + (UNIT_MAP[r.unitId] ? UNIT_MAP[r.unitId].label : r.unitId),
-      detalhe: 'Saiu em ' + dayShort(r.dataSaida) + ' devendo ' + formatBRL(saldo) +
-               (!(r.checkinRealizadoEm || r.checkoutRealizadoEm) ? ' · sem check-in/check-out registrado' : ''),
-      dias,
-      valor: saldo,
-      acao: () => openReservaEditModal(r.id),
-      acaoLabel: 'Abrir reserva'
-    });
-  });
-
-  // 3) Entradas manuais marcadas como "a receber" que já passaram da data
-  (state.receitas || []).forEach(rc => {
-    if(rc.status === 'recebido') return;
-    if(rc.data >= todayKey()) return;
-    const dias = v76DiasParados(rc.data);
-    itens.push({
-      id: 'dec-rec-' + rc.id,
-      tipo: 'Entrada não confirmada',
-      icone: '💵',
-      cor: '#0F766E',
-      titulo: rc.descricao || '(sem descrição)',
-      detalhe: 'Previsto para ' + dayShort(rc.data) + ' · ' + formatBRL(rc.valor || 0),
-      dias,
-      valor: rc.valor || 0,
-      acao: () => v75AbrirModalReceita(rc.id),
-      acaoLabel: 'Abrir entrada'
-    });
-  });
-
-  // 4) Reservas que ficaram sem definição operacional (nem check-in nem no-show tratado)
-  // v78 fix: antes, uma reserva que devia dinheiro E estava sem check-in aparecia DUAS vezes
-  // na lista (uma por saldo, outra por falta de definição) — justamente na tela criada para
-  // reduzir bagunça. Agora só entra aqui se ainda não tiver sido listada acima.
-  const reservasJaListadas = new Set(itens.filter(i => i.reservaId).map(i => i.reservaId));
-  (state.reservas || []).forEach(r => {
-    if(r.tipo !== 'reserva') return;
-    if(reservasJaListadas.has(r.id)) return;
-    if(!r.dataSaida || r.dataSaida >= todayKey()) return;
-    if(r.checkinRealizadoEm || r.checkoutRealizadoEm) return;
-    const dias = v76DiasParados(r.dataSaida);
-    if(dias < V76_DIAS_PARA_ESCALAR) return; // só vira decisão depois do prazo
-    itens.push({
-      id: 'dec-mov-' + r.id,
-      reservaId: r.id,
-      tipo: 'Reserva sem definição',
-      icone: '❓',
-      cor: '#6B7280',
-      titulo: (r.hospede || '(sem nome)') + ' · ' + (UNIT_MAP[r.unitId] ? UNIT_MAP[r.unitId].label : r.unitId),
-      detalhe: 'Estadia ' + dayShort(r.dataEntrada) + ' → ' + dayShort(r.dataSaida) + ' sem check-in nem check-out registrado',
-      dias,
-      valor: 0,
-      acao: () => openReservaEditModal(r.id),
-      acaoLabel: 'Abrir reserva'
-    });
-  });
-
-  return itens
-    .filter(i => !resolvidas[i.id])
-    .sort((a,b) => b.dias - a.dias);
-}
-window.v76ColetarDecisoes = v76ColetarDecisoes;
-
-// Quantas decisões já passaram do prazo (usado no contador da aba)
-function v76ContarUrgentes(){
-  return v76ColetarDecisoes().filter(i => i.dias >= V76_DIAS_PARA_ESCALAR).length;
-}
-window.v76ContarUrgentes = v76ContarUrgentes;
-
-function v76MarcarResolvida(id){
-  const res = v76Resolvidas();
-  res[id] = { resolvidoEm: new Date().toISOString() };
-  try { saveConfigsToFirebase(); } catch(e){}
-  renderPainelDecisoesV76();
-  showToast('Decisão arquivada');
-}
-window.v76MarcarResolvida = v76MarcarResolvida;
-
-function v76ReabrirTodas(){
-  if(!confirm('Trazer de volta todas as decisões que você já arquivou?')) return;
-  if(state.configs) state.configs.decisoesResolvidas = {};
-  try { saveConfigsToFirebase(); } catch(e){}
-  renderPainelDecisoesV76();
-}
-window.v76ReabrirTodas = v76ReabrirTodas;
-
-// Guarda as ações num mapa para os botões conseguirem chamá-las
-let v76AcoesCache = {};
-function v76ExecutarAcao(id){
-  const fn = v76AcoesCache[id];
-  if(typeof fn === 'function') fn();
-}
-window.v76ExecutarAcao = v76ExecutarAcao;
-
-function renderPainelDecisoesV76(){
-  const cont = document.getElementById('painel-decisoes');
-  if(!cont) return;
-  const itens = v76ColetarDecisoes();
-  v76AcoesCache = {};
-  itens.forEach(i => { v76AcoesCache[i.id] = i.acao; });
-
-  const escalados = itens.filter(i => i.dias >= V76_DIAS_PARA_ESCALAR);
-  const recentes = itens.filter(i => i.dias < V76_DIAS_PARA_ESCALAR);
-  const totalParado = itens.reduce((s,i) => s + (i.valor || 0), 0);
-  const totalEscalado = escalados.reduce((s,i) => s + (i.valor || 0), 0);
-
-  const linha = (i) => `
-    <div class="fin-row" style="align-items:flex-start;${i.dias >= V76_DIAS_PARA_ESCALAR ? 'background:#FEF2F2;border-left:3px solid ' + i.cor + ';' : ''}">
-      <div class="fin-row-cat">
-        <div class="fin-row-ico" style="background:${i.cor};">${i.icone}</div>
-        <div class="fin-row-info">
-          <div class="fin-row-desc">${escapeHtml(i.titulo)}</div>
-          <div class="fin-row-meta">${escapeHtml(i.tipo)} · ${escapeHtml(i.detalhe)}</div>
-          <div class="fin-row-meta" style="color:${i.dias >= V76_DIAS_PARA_ESCALAR ? '#B91C1C' : '#6B6B66'};font-weight:${i.dias >= V76_DIAS_PARA_ESCALAR ? '800' : '600'};">
-            ⏱ ${i.dias} dia(s) sem decisão${i.dias >= V76_DIAS_PARA_ESCALAR ? ' · PASSOU DO PRAZO' : ''}
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center;">
-        ${i.valor > 0 ? '<div class="fin-row-valor" style="color:' + i.cor + ';">' + formatBRL(i.valor) + '</div>' : ''}
-        <button class="btn" style="font-size:11px;padding:6px 9px;" onclick="v76ExecutarAcao('${i.id}')">${escapeHtml(i.acaoLabel)}</button>
-        <button class="btn" style="font-size:11px;padding:6px 9px;background:#15803D;color:#fff;border-color:#14532D;" onclick="v76MarcarResolvida('${i.id}')">✓ Resolvido</button>
-      </div>
-    </div>`;
-
-  cont.innerHTML = `
-    <div class="fin-card" style="border:2px solid #1a1a18;">
-      <p class="fin-card-title" style="margin-bottom:4px;">📌 Decisões pendentes</p>
-      <div style="font-size:12px;color:#6B6B66;margin-bottom:12px;line-height:1.45;">
-        Tudo que está parado esperando uma decisão sua. O que passa de <b>${V76_DIAS_PARA_ESCALAR} dias</b> sem resposta
-        sobe automaticamente para o topo desta lista e sai das outras abas — assim o dia a dia fica limpo
-        e nada importante se perde.
-      </div>
-      <div class="fin-kpi-grid">
-        <div class="fin-kpi" style="border-left:4px solid #B91C1C;">
-          <p class="fin-kpi-label">Passou do prazo</p>
-          <p class="fin-kpi-value" style="color:#B91C1C;">${escalados.length}</p>
-          <p class="fin-kpi-sub">${formatBRL(totalEscalado)} parado</p>
-        </div>
-        <div class="fin-kpi" style="border-left:4px solid #D97706;">
-          <p class="fin-kpi-label">Ainda no prazo</p>
-          <p class="fin-kpi-value" style="color:#D97706;">${recentes.length}</p>
-          <p class="fin-kpi-sub">menos de ${V76_DIAS_PARA_ESCALAR} dias</p>
-        </div>
-        <div class="fin-kpi" style="border-left:4px solid #1a1a18;">
-          <p class="fin-kpi-label">Valor total parado</p>
-          <p class="fin-kpi-value">${formatBRL(totalParado)}</p>
-          <p class="fin-kpi-sub">esperando decisão</p>
-        </div>
-      </div>
-      <div style="margin-top:10px;">
-        <button class="btn" style="font-size:11px;padding:6px 9px;" onclick="v76ReabrirTodas()">↺ Ver arquivadas de novo</button>
-      </div>
-    </div>
-
-    ${escalados.length ? `
-      <div class="fin-card" style="border-color:#B91C1C;">
-        <p class="fin-card-title">🚨 Passaram de ${V76_DIAS_PARA_ESCALAR} dias — decidir agora</p>
-        ${escalados.map(linha).join('')}
-      </div>` : ''}
-
-    ${recentes.length ? `
-      <div class="fin-card">
-        <p class="fin-card-title">⏳ Ainda dentro do prazo</p>
-        ${recentes.map(linha).join('')}
-      </div>` : ''}
-
-    ${!itens.length ? '<div class="fin-card"><p style="font-size:14px;color:#15803D;font-weight:800;margin:0;">✅ Nenhuma decisão pendente. Tudo em dia.</p></div>' : ''}`;
-}
-window.renderPainelDecisoesV76 = renderPainelDecisoesV76;
-
 function renderPainelFinanceiro(){
   const cont = document.getElementById('painel-financeiro');
   if(!cont) return;
@@ -9994,8 +9616,8 @@ function renderPainelFinanceiro(){
     <div class="fin-card" style="border:2px solid #15803D;">
       <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;">
         <div>
-          <p class="fin-card-title" style="margin-bottom:4px;">📄 Contas a pagar e a receber</p>
-          <p style="font-size:13px;color:#6B6B66;margin:0;">${periodo.label} · Boletos, despesas fixas e valores que hóspedes/empresas devem.</p>
+          <p class="fin-card-title" style="margin-bottom:4px;">💰 Detalhamento por canal e conciliação</p>
+          <p style="font-size:13px;color:#6B6B66;margin:0;">${periodo.label} · Receita líquida, comissões OTA, cobranças e decisões.</p>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
           <button class="btn" onclick="v20CopiarRelatorioFinanceiro()" style="padding:8px 10px;font-size:12px;">📋 Copiar relatório</button>
@@ -10016,8 +9638,30 @@ function renderPainelFinanceiro(){
     </div>
 
     <div class="fin-card">
+      <p class="fin-card-title">📌 Resumo executivo</p>
+      <div class="fin-kpi-grid">
+        <div class="fin-kpi" style="background:#DCFCE7;"><p class="fin-kpi-label">Receita bruta hospedagem</p><p class="fin-kpi-value" style="color:#15803D;">${formatBRL(dados.receitaHospedagem)}</p><p class="fin-kpi-sub">${dados.reservasFiltradas.length} reserva(s) no filtro</p></div>
+        <div class="fin-kpi" style="background:#FEE2E2;"><p class="fin-kpi-label">Comissões OTA</p><p class="fin-kpi-value" style="color:#B91C1C;">${formatBRL(dados.comissoes)}</p><p class="fin-kpi-sub">Booking, Expedia, Airbnb, Decolar etc.</p></div>
+        <div class="fin-kpi" style="background:#DBEAFE;"><p class="fin-kpi-label">Receita líquida hospedagem</p><p class="fin-kpi-value" style="color:#1E40AF;">${formatBRL(dados.receitaLiquidaHospedagem)}</p><p class="fin-kpi-sub">Bruto − comissões</p></div>
+        <div class="fin-kpi" style="background:#EDE9FE;"><p class="fin-kpi-label">Serviços extras</p><p class="fin-kpi-value" style="color:#6D28D9;">${formatBRL(dados.servicosTotal)}</p><p class="fin-kpi-sub">Recebido ${formatBRL(dados.servicosRecebido)}</p></div>
+        <div class="fin-kpi" style="background:#FEF3C7;"><p class="fin-kpi-label">A receber</p><p class="fin-kpi-value" style="color:#92400E;">${formatBRL(dados.aReceberTotal)}</p><p class="fin-kpi-sub">Saldos e serviços pendentes</p></div>
+        <div class="fin-kpi" style="background:${dados.lucroOperacional>=0?'#DCFCE7':'#FEE2E2'};"><p class="fin-kpi-label">Lucro operacional estimado</p><p class="fin-kpi-value" style="color:${dados.lucroOperacional>=0?'#15803D':'#B91C1C'};">${formatBRL(dados.lucroOperacional)}</p><p class="fin-kpi-sub">Líquida + serviços − despesas</p></div>
+      </div>
+    </div>
+
+    <div class="fin-card">
+      <p class="fin-card-title">⚠️ Decisões e alertas financeiros</p>
+      ${v20RenderAlertas(dados)}
+    </div>
+
+    <div class="fin-card">
+      <p class="fin-card-title">📡 Ranking de canais por receita líquida</p>
+      ${v20RenderCanais(dados.canais)}
+    </div>
+
+    <div class="fin-card">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-        <p class="fin-card-title" style="margin:0;">📥 Contas a receber · ${formatBRL(dados.aReceberTotal)}</p>
+        <p class="fin-card-title" style="margin:0;">📥 Contas a receber e cobranças · ${formatBRL(dados.aReceberTotal)}</p>
         <button class="btn" onclick="v20CopiarListaCobrancas()" style="font-size:12px;padding:8px 10px;background:#FEF3C7;border-color:#D97706;color:#78350F;">💰 Copiar lista de cobranças</button>
       </div>
       ${dados.aReceber.length === 0 ? '<p style="font-size:13px;color:#888;">Nenhum saldo a receber no período selecionado.</p>' : dados.aReceber.map(item => {
@@ -10037,6 +9681,11 @@ function renderPainelFinanceiro(){
             </div>
           </div>`;
       }).join('')}
+    </div>
+
+    <div class="fin-card">
+      <p class="fin-card-title">🏨 Reservas do período · visão de conciliação</p>
+      ${dados.reservasFiltradas.length === 0 ? '<p style="font-size:13px;color:#888;">Sem reservas no período/filtro selecionado.</p>' : dados.reservasFiltradas.sort((a,b)=>a.dataEntrada.localeCompare(b.dataEntrada)).map(v20LinhaReservaFinanceira).join('')}
     </div>
 
     <div class="fin-card">
@@ -10060,6 +9709,16 @@ function renderPainelFinanceiro(){
           <div style="display:flex;align-items:center;gap:6px;"><div class="fin-row-valor" style="color:#B91C1C;">${formatBRL(d.valor)}</div><button onclick="event.stopPropagation();marcarDespesaPaga('${d.id}')" style="background:#15803D;color:#fff;border:none;padding:6px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">✓ Pagar</button></div>
         </div>`;
       }).join('')}
+    </div>
+
+    <div class="fin-card">
+      <p class="fin-card-title">📊 Indicadores hoteleiros do mês · ${v20MesLabel((currentDay || todayKey()).substring(0,7))}</p>
+      <div class="fin-kpi-grid">
+        <div class="fin-kpi"><p class="fin-kpi-label">Ocupação</p><p class="fin-kpi-value">${indMes.taxaOcup.toFixed(1)}%</p><p class="fin-kpi-sub">${indMes.diariasVendidas}/${indMes.diasDisponiveis} diárias</p></div>
+        <div class="fin-kpi"><p class="fin-kpi-label">ADR</p><p class="fin-kpi-value">${formatBRL(indMes.adr)}</p><p class="fin-kpi-sub">Diária média</p></div>
+        <div class="fin-kpi"><p class="fin-kpi-label">RevPAR</p><p class="fin-kpi-value">${formatBRL(indMes.revPar)}</p><p class="fin-kpi-sub">Receita por unidade disponível</p></div>
+        <div class="fin-kpi"><p class="fin-kpi-label">TRevPAR</p><p class="fin-kpi-value">${formatBRL(indMes.trevPar)}</p><p class="fin-kpi-sub">Hospedagem + serviços</p></div>
+      </div>
     </div>
   `;
 }
@@ -10868,7 +10527,7 @@ function v23ChecarFuncoes(){
     ['Financeiro avançado', 'renderPainelFinanceiro'],
     ['Segurança/Backup', 'renderPainelSegurancaV21'],
     ['Comercial/CRM', 'renderPainelComercialV22'],
-    ['Diagnóstico v78', 'renderPainelPublicacaoV23']
+    ['Diagnóstico v66', 'renderPainelPublicacaoV23']
   ];
   return funcoes.map(([nome, fn]) => ({ nome, fn, ok: typeof window[fn] === 'function' || typeof eval('typeof ' + fn) === 'function' }));
 }
@@ -10909,7 +10568,7 @@ function gerarTextoPublicacaoV23(){
   const telas = v23ChecarTelas();
   const statsHoje = getDayStats(currentDay);
   const sep = '━━━━━━━━━━━━━━━━━━';
-  let txt = '🚀 *RELATÓRIO DE DIAGNÓSTICO v78*\n';
+  let txt = '🚀 *RELATÓRIO DE DIAGNÓSTICO v66*\n';
   txt += '🏨 Pousada das Cores\n';
   txt += '📅 Data base: ' + dayShort(currentDay) + '\n';
   txt += '🕒 Gerado: ' + v23Now() + '\n\n';
@@ -10971,7 +10630,7 @@ function v23CopiarRelatorio(){
 window.v23CopiarRelatorio = v23CopiarRelatorio;
 
 function v23EnviarWhatsRelatorio(){
-  oferecerEnvioRelatorio('gerencial', gerarTextoPublicacaoV23(), '🚀 Relatório de Diagnóstico v78');
+  oferecerEnvioRelatorio('gerencial', gerarTextoPublicacaoV23(), '🚀 Relatório de Diagnóstico v66');
 }
 window.v23EnviarWhatsRelatorio = v23EnviarWhatsRelatorio;
 
@@ -11027,7 +10686,7 @@ window.v23CriarBackupAgora = v23CriarBackupAgora;
 
 function v23AbrirModalRelatorio(){
   const texto = gerarTextoPublicacaoV23();
-  document.getElementById('modal-title').textContent = '🚀 Relatório de Diagnóstico v78';
+  document.getElementById('modal-title').textContent = '🚀 Relatório de Diagnóstico v66';
   document.getElementById('modal-content').innerHTML = `
     <div style="background:#F3F4F6;border:1.5px solid #9CA3AF;border-radius:10px;padding:10px 12px;margin-bottom:12px;">
       <div style="font-size:13px;font-weight:900;margin-bottom:4px;color:#111827;">Revisão final antes de liberar</div>
@@ -11212,7 +10871,7 @@ function v24FuncExiste(nome){
 function v24Autoteste(){
   const checks = [];
   function add(grupo, item, ok, detalhe){ checks.push({grupo, item, ok: !!ok, detalhe: detalhe || ''}); }
-  add('Base', 'Versão visual atualizada para v78', /v78/.test((document.querySelector('h1')||{}).textContent || ''), 'Cabeçalho deve mostrar v78.');
+  add('Base', 'Versão visual atualizada para v66', /v66/.test((document.querySelector('h1')||{}).textContent || ''), 'Cabeçalho deve mostrar v66.');
   add('Base', 'Firebase SDK disponível', typeof firebase !== 'undefined', 'Biblioteca Firebase carregada.');
   add('Base', 'Conexão Firebase online', !!window.v21FirebaseOnline, window.v21FirebaseOnline ? 'Online.' : 'Offline ou ainda conectando.');
   add('Base', 'PDF disponível', typeof window.jspdf !== 'undefined', 'jsPDF carregado.');
@@ -11226,7 +10885,7 @@ function v24Autoteste(){
   add('Módulos', 'Financeiro', v24FuncExiste('renderPainelFinanceiro'), 'Financeiro avançado.');
   add('Módulos', 'Segurança', v24FuncExiste('renderPainelSegurancaV21'), 'Backup/lixeira/auditoria.');
   add('Módulos', 'Comercial', v24FuncExiste('renderPainelComercialV22'), 'CRM e tarifas.');
-  add('Módulos', 'Diagnóstico v78', v24FuncExiste('renderPainelPublicacaoV23'), 'Painel de diagnóstico com extensão v78.');
+  add('Módulos', 'Diagnóstico v66', v24FuncExiste('renderPainelPublicacaoV23'), 'Painel de diagnóstico com extensão v66.');
   add('Mobile', 'Largura detectada', true, window.innerWidth + 'px x ' + window.innerHeight + 'px.');
   add('Mobile', 'Abas com rolagem horizontal', true, 'Ajuste CSS v48 aplicado para celular.');
   add('Erros', 'Sem erro runtime capturado', v24GetErros().length === 0, v24GetErros().length + ' erro(s) registrado(s) neste navegador.');
@@ -11243,7 +10902,7 @@ function v24ExportarDiagnostico(){
   let diagnostico = {};
   try{ diagnostico = typeof v23DiagnosticoDados === 'function' ? v23DiagnosticoDados() : {}; }catch(e){ diagnostico = {erro:String(e)}; }
   const payload = {
-    versao: 'v78',
+    versao: 'v66',
     geradoEm: new Date().toISOString(),
     pagina: location.href,
     userAgent: navigator.userAgent,
@@ -11273,7 +10932,7 @@ function v24ExportarDiagnostico(){
   document.body.appendChild(a);
   a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
-  showToast('⬇️ Diagnóstico v78 baixado');
+  showToast('⬇️ Diagnóstico v66 baixado');
 }
 window.v24ExportarDiagnostico = v24ExportarDiagnostico;
 
@@ -11288,7 +10947,7 @@ window.v24LimparErros = v24LimparErros;
 function v24TextoResumoTeste(){
   const t = window.v24UltimoTeste || v24Autoteste();
   const sep = '━━━━━━━━━━━━━━━━━━';
-  let txt = '🧪 *TESTE FINAL v78 — POUSADA DAS CORES*\n';
+  let txt = '🧪 *TESTE FINAL v66 — POUSADA DAS CORES*\n';
   txt += '🕒 Gerado: ' + new Date().toLocaleString('pt-BR') + '\n';
   txt += '☁️ Firebase: ' + (window.v21FirebaseOnline ? 'online' : 'offline/verificar') + '\n';
   txt += '📱 Tela: ' + window.innerWidth + 'x' + window.innerHeight + '\n\n';
@@ -11323,7 +10982,7 @@ function v24AppendPainelPublicacao(){
     <div class="fin-card" style="border:2px solid #185FA5;background:#EFF6FF;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
         <div>
-          <h3 style="margin:0 0 4px;font-size:18px;font-weight:900;color:#0C3D7F;">🧪 v78 · Teste real, mobile e diagnóstico final</h3>
+          <h3 style="margin:0 0 4px;font-size:18px;font-weight:900;color:#0C3D7F;">🧪 v66 · Teste real, mobile e diagnóstico final</h3>
           <p style="margin:0;color:#1E40AF;font-size:13px;font-weight:600;line-height:1.4;">Camada final para testar no navegador/celular, capturar erros, baixar diagnóstico e deixar o arquivo pronto para validação assistida.</p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -11335,7 +10994,7 @@ function v24AppendPainelPublicacao(){
       </div>
     </div>
     <div class="fin-kpi-grid" style="margin-bottom:14px;">
-      <div class="fin-kpi" style="background:${t.falhas ? '#FEF3C7' : '#DCFCE7'};"><p class="fin-kpi-label">Autoteste v78</p><p class="fin-kpi-value">${t.falhas ? 'Revisar' : 'OK'}</p><p class="fin-kpi-sub">${t.falhas} falha(s)</p></div>
+      <div class="fin-kpi" style="background:${t.falhas ? '#FEF3C7' : '#DCFCE7'};"><p class="fin-kpi-label">Autoteste v66</p><p class="fin-kpi-value">${t.falhas ? 'Revisar' : 'OK'}</p><p class="fin-kpi-sub">${t.falhas} falha(s)</p></div>
       <div class="fin-kpi" style="background:${t.criticas ? '#FEE2E2' : '#DCFCE7'};"><p class="fin-kpi-label">Falhas críticas</p><p class="fin-kpi-value">${t.criticas}</p><p class="fin-kpi-sub">base/dados</p></div>
       <div class="fin-kpi" style="background:${erros.length ? '#FEE2E2' : '#DCFCE7'};"><p class="fin-kpi-label">Erros capturados</p><p class="fin-kpi-value">${erros.length}</p><p class="fin-kpi-sub">neste navegador</p></div>
       <div class="fin-kpi"><p class="fin-kpi-label">Tela</p><p class="fin-kpi-value" style="font-size:18px;">${window.innerWidth}×${window.innerHeight}</p><p class="fin-kpi-sub">ajustes mobile ativos</p></div>
@@ -11346,7 +11005,7 @@ function v24AppendPainelPublicacao(){
         ${grupos[g].map(c => `<div class="alerta-financeiro ${c.ok ? 'alerta-azul' : 'alerta-amarelo'}"><b>${c.ok ? '✅' : '⚠️'} ${escapeHtml(c.item)}</b><br><span style="font-weight:500;">${escapeHtml(c.detalhe)}</span></div>`).join('')}
       </div>`).join('')}
     <div class="fin-card">
-      <h3 class="fin-card-title">📱 Checklist prático v78 no celular</h3>
+      <h3 class="fin-card-title">📱 Checklist prático v66 no celular</h3>
       <div class="alerta-financeiro alerta-azul">☐ Abrir no celular pelo link oficial, não pelo arquivo baixado.</div>
       <div class="alerta-financeiro alerta-azul">☐ Confirmar que as abas rolam horizontalmente sem cortar botões.</div>
       <div class="alerta-financeiro alerta-azul">☐ Abrir modal de reserva e confirmar que os botões aparecem no final.</div>
@@ -11385,19 +11044,31 @@ const V25_PROFILE_KEY = 'mapa-auth-profile-v25';
 const V25_AUTH_KEY = 'mapa-auth';
 let v25CurrentProfile = null;
 
-// v76: login único. Antes havia dois perfis (admin e recepção); agora existe só o principal,
-// com acesso a tudo. As senhas antigas de recepção continuam entrando neste mesmo perfil,
-// para ninguém ficar de fora do sistema por causa da mudança.
 const V25_PROFILES = {
   admin: {
     id: 'admin',
-    label: 'Pousada das Cores',
+    label: 'Administrativo Geral',
     emoji: '👑',
-    passwords: ['admin','administrativo','geral','gerente','pousada2026','recepcao','recepção','rec'],
+    passwords: ['admin','administrativo','geral','gerente','pousada2026'],
     defaultView: 'mapa',
-    allowedViews: ['mapa','governanca','financeiro','decisoes','clientes','relatorios','seguranca','publicacao','ajuda'],
+    // v75: Operação foi unificada dentro do Mapa; RH e Comercial foram removidas.
+    // Acesso total: mapa+operação, governança, financeiro, estoque, IA, clientes, relatórios, segurança e diagnóstico.
+    allowedViews: ['mapa','governanca','financeiro','estoque','ia-geral','clientes','relatorios','seguranca','publicacao','ajuda'],
     allowedReports: 'all',
     color: '#1a1a18'
+  },
+  recepcao: {
+    id: 'recepcao',
+    label: 'Recepção',
+    emoji: '🛎️',
+    passwords: ['recepcao','recepção','rec'],
+    // v75 fix: antes abria em 'operacao', uma aba que não existe mais — a recepção caía numa
+    // tela vazia ao entrar. Agora abre no Mapa, onde a operação do dia agora vive.
+    defaultView: 'mapa',
+    // Recepção: mapa+operação, clientes, relatórios operacionais e ajuda. Sem financeiro/segurança.
+    allowedViews: ['mapa','clientes','relatorios','ajuda'],
+    allowedReports: ['recepcao','checkin','checkout','camareira','restaurante','servicos','manutencao'],
+    color: '#B45309'
   }
 };
 window.V25_PROFILES = V25_PROFILES;
@@ -11565,7 +11236,7 @@ function renderPainelRelatoriosV25(){
   const perfilMsg = p ? `${p.emoji} Acesso ${p.label}: exibindo somente relatórios permitidos para este setor.` : 'Acesso por perfil ativo.';
   cont.innerHTML = `
     <div class="fin-card" style="border-color:${p ? p.color : '#1a1a18'};">
-      <p class="fin-card-title">📋 Central de Relatórios · v78 por perfil</p>
+      <p class="fin-card-title">📋 Central de Relatórios · v66 por perfil</p>
       <div class="v25-role-note">${perfilMsg}</div>
       <div style="font-size:13px;color:#6B6B66;margin-bottom:12px;">Data selecionada: <b>${dayShort(currentDay)}</b>.</div>
       <div class="fin-kpi-grid">
@@ -11710,10 +11381,6 @@ function bootApp(){
   load(); // só define currentDay/currentMonth — dados vêm via Firebase
   atualizarRotuloPeriodoCalendario();
 
-  // v78: checa se sobrou algum salvamento incompleto de uma queda de internet anterior.
-  // Espera o Firebase carregar primeiro para não confundir o usuário com dados ainda chegando.
-  setTimeout(() => { try { v78VerificarPendenciasDeSalvamento(); } catch(e){ console.warn('[v78]', e); } }, 4000);
-
   // Setas laterais: andam 1 dia por clique, cruzando de mês automaticamente quando precisa,
   // sem deixar passar dos limites do calendário dinâmico (START_KEY/END_KEY).
   const setaEsq = document.getElementById('dia-seta-esq');
@@ -11839,7 +11506,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
     const p = v26PerfilAtual();
     const id = perfilId || (p ? p.id : 'admin');
     const data = new Date().toLocaleString('pt-BR');
-    const baseHeader = `🏨 POUSADA DAS CORES\nMANUAL RÁPIDO DO SISTEMA · v78\nPerfil: ${p ? p.label : id}\nAtualizado em: ${data}\n`;
+    const baseHeader = `🏨 POUSADA DAS CORES\nMANUAL RÁPIDO DO SISTEMA · v66\nPerfil: ${p ? p.label : id}\nAtualizado em: ${data}\n`;
     const comum = `\nREGRAS GERAIS\n1. Use sempre o link oficial online.\n2. Não abra o arquivo HTML baixado como operação principal.\n3. Antes de grandes alterações, o gerente deve criar backup.\n4. Se aparecer Firebase offline, não feche a tela até sincronizar.\n5. Ao finalizar uma ação, confira se o sistema mostrou salvo/sincronizado.\n`;
     const manuais = {
       admin: `\nROTINA DO GERENTE / ADMIN\n1. Entrar com senha de administrativo geral.\n2. Conferir a aba Diagnóstico para ver pendências críticas.\n3. Criar backup na aba Segurança antes de operar.\n4. Conferir Operação do dia: check-ins, check-outs, saldos e governança.\n5. Conferir Financeiro: saldos, OTA, despesas e canais.\n6. Conferir Relatórios: gerencial, camareira e restaurante.\n7. Conferir Comercial: oportunidades de venda direta e datas fortes.\n8. No fim do dia, baixar backup JSON se houver muitas alterações.\n\nAÇÕES CRÍTICAS DO ADMIN\n• Configurações\n• Lixeira e restauração\n• Limpar tudo\n• Backup/restauração\n• Financeiro completo\n• Diagnóstico e validação\n`,
@@ -11878,7 +11545,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
     doc.setFontSize(16);
     doc.text('POUSADA DAS CORES', W/2, 12, {align:'center'});
     doc.setFontSize(10);
-    doc.text('Manual rápido do sistema · v78', W/2, 20, {align:'center'});
+    doc.text('Manual rápido do sistema · v66', W/2, 20, {align:'center'});
     y = 38;
     doc.setTextColor(30,30,30);
     doc.setFont('helvetica','normal');
@@ -11889,7 +11556,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
       doc.text(line, 15, y);
       y += 4.3;
     });
-    doc.save('Manual_Sistema_Pousada_v78.pdf');
+    doc.save('Manual_Sistema_Pousada_v66.pdf');
     showToast('📄 Manual PDF gerado');
   }
   window.v26GerarPDFManual = v26GerarPDFManual;
@@ -11898,7 +11565,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
     const p = v26PerfilAtual();
     const txt = v26ManualTexto();
     try{
-      if(typeof oferecerEnvioRelatorio === 'function') oferecerEnvioRelatorio('gerencial', txt, '❓ Manual rápido v78');
+      if(typeof oferecerEnvioRelatorio === 'function') oferecerEnvioRelatorio('gerencial', txt, '❓ Manual rápido v66');
       else v26CopiarManual();
     }catch(e){ v26CopiarManual(); }
   }
@@ -11918,7 +11585,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
     const manual = v26ManualTexto(p.id);
     cont.innerHTML = `
       <div class="v26-help-hero">
-        <h2>❓ Ajuda e Manual do Sistema · v78</h2>
+        <h2>❓ Ajuda e Manual do Sistema · v66</h2>
         <p>${p.emoji} Você está logado como <b>${p.label}</b>. Esta tela reúne o passo a passo do setor, regras de uso e atalhos para treinamento da equipe.</p>
       </div>
       <div class="v26-help-grid">
@@ -11951,7 +11618,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
         <div style="margin:12px 0;display:flex;gap:6px;flex-wrap:wrap;">
           <span class="v26-pill">Perfil: ${p.label}</span>
           <span class="v26-pill">Data: ${dayShort(currentDay)}</span>
-          <span class="v26-pill">Versão: v78</span>
+          <span class="v26-pill">Versão: v66</span>
         </div>
         <div class="v26-manual-box">${escapeHtml(manual)}</div>
       </div>
@@ -12294,7 +11961,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
 <script id="v48-arquitetura-segura">
 // v49 · Camada leve de arquitetura: constantes globais e autoteste não invasivo.
 (function(){
-  window.APP_VERSION = 'v78';
+  window.APP_VERSION = 'v66';
   window.POUSADA_WIFI_INFO = window.POUSADA_WIFI_INFO || [
     { rede: 'Pousada guest', senha: 'Pousada@4188' },
     { rede: 'Pousada piscina', senha: 'Pousada@4188' }
@@ -12647,7 +12314,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
 // valores ou estadia grava diretamente a reserva no Firebase e atualiza todas as telas.
 (function(){
   'use strict';
-  window.APP_VERSION = 'v78';
+  window.APP_VERSION = 'v66';
   function plain(obj){ try { return JSON.parse(JSON.stringify(obj)); } catch(e){ return obj; } }
   function byId(id){ return ((window.state && state.reservas) || []).find(function(r){ return r && r.id === id; }); }
   function currentEstado(r){ try { return getEstado(r.unitId, currentDay).estado; } catch(e){ return null; } }
@@ -12849,7 +12516,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
 // e autoteste não invasivo para faturamento/financeiro.
 (function(){
   'use strict';
-  window.APP_VERSION = 'v78';
+  window.APP_VERSION = 'v66';
 
   function dataISOValida(v){ return /^\d{4}-\d{2}-\d{2}$/.test(String(v||'')); }
   function overlap(aIni,aFim,bIni,bFim){ return !!(aIni && aFim && bIni && bFim && aIni < bFim && aFim > bIni); }
@@ -12912,7 +12579,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
 // A tela principal não deve somar o valor total de reservas longas.
 // Ela mostra apenas a diária/noite do dia selecionado, com saída exclusiva.
 (function(){
-  window.APP_VERSION = 'v78';
+  window.APP_VERSION = 'v66';
 
   function num(v){ v = Number(v); return isFinite(v) ? v : 0; }
   function dparse(s){
@@ -13056,7 +12723,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
 // Camada segura: substitui apenas as ações de faturamento/cobrança sem mexer no mapa/Firebase base.
 (function(){
   'use strict';
-  window.APP_VERSION = 'v78';
+  window.APP_VERSION = 'v66';
 
   function q(id){ return document.getElementById(id); }
   function num(v){ v = Number(v); return isFinite(v) ? v : 0; }
@@ -13552,11 +13219,11 @@ window.v56RenderIAGeralPanel = window.v57RenderIAGeralPanel = function(){
 };
 window.v57BuildSystemContext=buildSystemContext;
 function atualizarVersaoV57(){
-  try{ document.title = 'Pousada das Cores · Sistema de Gestão v78'; }catch(e){}
+  try{ document.title = 'Pousada das Cores · Sistema de Gestão v66'; }catch(e){}
   try{ var h=document.querySelector('.header h1'); if(h) h.textContent='Pousada das Cores · v58'; }catch(e){}
-  try{ document.querySelectorAll('button, h3, .fin-card-title, .sub').forEach(function(el){ if(el && el.childNodes.length===1 && el.textContent) el.textContent=el.textContent.replace(/Diagnóstico v\d+/g,'Diagnóstico v78').replace(/Sistema de Gestão v\d+/g,'Sistema de Gestão v78'); }); }catch(e){}
+  try{ document.querySelectorAll('button, h3, .fin-card-title, .sub').forEach(function(el){ if(el && el.childNodes.length===1 && el.textContent) el.textContent=el.textContent.replace(/Diagnóstico v\d+/g,'Diagnóstico v66').replace(/Sistema de Gestão v\d+/g,'Sistema de Gestão v66'); }); }catch(e){}
 }
-function init(){ atualizarVersaoV57(); /* v76: IA Geral removida — bolha flutuante e painel não são mais criados */ }
+function init(){ atualizarVersaoV57(); renderFloatingIA(); setTimeout(function(){ try{ window.v56RenderIAGeralPanel(); }catch(e){} },500); }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
 window.v57HealthCheck=function(){
   var result={version:'v57', estoqueFrame:!!document.getElementById('estoque-frame-v56'), iaPanel:!!document.getElementById('v56-ia-panel-root'), iaFab:!!document.getElementById('v56-ia-fab'), stockLoader:typeof window.v56CarregarEstoque==='function', iaRenderer:typeof window.v56RenderIAGeralPanel==='function'};
@@ -13697,11 +13364,11 @@ function criarAtalhosMobile(){
   bar.addEventListener('click',function(e){var b=e.target.closest('[data-view]'); if(!b) return; if(typeof trocarVista==='function') trocarVista(b.dataset.view);});
 }
 function corrigirMenuMais(){
-  // v76: Estoque e IA Geral foram removidos do sistema. Este bloco reinjetava os dois botões
-  // no menu "Mais" a cada carregamento — as abas removidas voltavam sozinhas. Agora, além de
-  // não injetar mais nada, ele limpa qualquer resquício que tenha ficado salvo na tela.
   var menu=byId('more-menu'); if(!menu) return;
-  menu.querySelectorAll('.v58-more, [data-view="estoque"], [data-view="ia-geral"], [data-view="rh"], [data-view="comercial"], [data-view="operacao"]').forEach(function(el){ el.remove(); });
+  if(!menu.querySelector('[data-view="estoque"].v58-more')){
+    menu.insertAdjacentHTML('afterbegin','<button class="more-item v58-more" data-view="ia-geral"><span class="more-ico">🤖</span> IA Geral</button><button class="more-item v58-more" data-view="estoque"><span class="more-ico">📦</span> Estoque</button>');
+    menu.querySelectorAll('.v58-more').forEach(function(item){item.onclick=function(){if(typeof trocarVista==='function') trocarVista(item.dataset.view);};});
+  }
 }
 function patchTrocarVista(){
   var old=window.trocarVista;
@@ -13726,10 +13393,10 @@ function patchFaturaGeradores(){
   });
 }
 function atualizarVersao(){
-  try{document.title='Pousada das Cores · Sistema de Gestão v78';}catch(e){}
+  try{document.title='Pousada das Cores · Sistema de Gestão v66';}catch(e){}
   try{var h=document.querySelector('.header h1'); if(h) h.textContent='Pousada das Cores · v58';}catch(e){}
-  try{document.querySelectorAll('button, h3, .fin-card-title, .sub').forEach(function(el){ if(el&&el.childNodes.length===1&&el.textContent) el.textContent=el.textContent.replace(/Diagnóstico v\d+/g,'Diagnóstico v78').replace(/Sistema de Gestão v\d+/g,'Sistema de Gestão v78').replace(/v57/g,'v78');});}catch(e){}
-  try{window.APP_VERSION='v78';}catch(e){}
+  try{document.querySelectorAll('button, h3, .fin-card-title, .sub').forEach(function(el){ if(el&&el.childNodes.length===1&&el.textContent) el.textContent=el.textContent.replace(/Diagnóstico v\d+/g,'Diagnóstico v66').replace(/Sistema de Gestão v\d+/g,'Sistema de Gestão v66').replace(/v57/g,'v66');});}catch(e){}
+  try{window.APP_VERSION='v66';}catch(e){}
 }
 function init(){
   atualizarVersao(); criarAtalhosMobile(); corrigirMenuMais(); patchTrocarVista(); patchAlertas(); patchRender(); patchContadores(); patchFaturaGeradores(); sincronizarStatusLocal();
@@ -14263,7 +13930,7 @@ function criarBarraMapa(){
 function patchTrocarVista(){var old=window.trocarVista;if(typeof old==='function'&&!old.__v63Patched){var wrap=function(v){var ret=old.apply(this,arguments);setTimeout(function(){criarBarraMapa();limparFinanceiroForaDoFinanceiro();},80);return ret;};wrap.__v63Patched=true;window.trocarVista=wrap;}}
 function patchRender(){var old=window.render;if(typeof old==='function'&&!old.__v63Patched){var wrap=function(){var ret=old.apply(this,arguments);setTimeout(function(){criarBarraMapa();limparFinanceiroForaDoFinanceiro();},120);return ret;};wrap.__v63Patched=true;window.render=wrap;}}
 function patchAlertas(){var old=window.renderAlertasCriticos;if(typeof old==='function'&&!old.__v63Patched){var wrap=function(){var ret=old.apply(this,arguments);setTimeout(limparFinanceiroForaDoFinanceiro,20);return ret;};wrap.__v63Patched=true;window.renderAlertasCriticos=wrap;}}
-function atualizarVersao(){try{document.title='Pousada das Cores · Sistema de Gestão v78';}catch(e){}try{var h=document.querySelector('.header h1');if(h) h.textContent='Pousada das Cores · v78';}catch(e){}try{document.querySelectorAll('button, h3, .fin-card-title, .sub').forEach(function(el){if(el&&el.childNodes.length===1&&el.textContent) el.textContent=el.textContent.replace(/Diagnóstico v\d+/g,'Diagnóstico v78').replace(/Sistema de Gestão v\d+/g,'Sistema de Gestão v78').replace(/v62/g,'v78');});}catch(e){}try{window.APP_VERSION='v78';}catch(e){}}
+function atualizarVersao(){try{document.title='Pousada das Cores · Sistema de Gestão v66';}catch(e){}try{var h=document.querySelector('.header h1');if(h) h.textContent='Pousada das Cores · v66';}catch(e){}try{document.querySelectorAll('button, h3, .fin-card-title, .sub').forEach(function(el){if(el&&el.childNodes.length===1&&el.textContent) el.textContent=el.textContent.replace(/Diagnóstico v\d+/g,'Diagnóstico v66').replace(/Sistema de Gestão v\d+/g,'Sistema de Gestão v66').replace(/v62/g,'v66');});}catch(e){}try{window.APP_VERSION='v66';}catch(e){}}
 function diagnostico(){var out={version:V63,mapaSemFinanceiro:!!document.querySelector('#v63-mapa-sem-financeiro-style'),barraMapa:!!byId('v63-map-quick-actions'),checarReserva:!!byId('btn-checar-reserva-v66'),importarWhatsApp:!!byId('btn-import-wa-global'),importarOTA:!!byId('btn-import-ota'),clientesEmpresas:!!byId('btn-clientes-empresas-v62'),estoque:!!byId('vista-estoque'),iaGeral:!!byId('vista-ia-geral')};try{console.table(out);}catch(e){console.log(out);}return out;}
 window.v63HealthCheck=diagnostico;
 function init(){atualizarVersao();patchTrocarVista();patchRender();patchAlertas();criarBarraMapa();limparFinanceiroForaDoFinanceiro();setTimeout(function(){criarBarraMapa();limparFinanceiroForaDoFinanceiro();diagnostico();},900);setTimeout(function(){criarBarraMapa();limparFinanceiroForaDoFinanceiro();},1800);}
@@ -14302,10 +13969,10 @@ function currentView(){
   return 'mapa';
 }
 function setVersion(){
-  try{ document.title = 'Pousada das Cores · Sistema de Gestão v78'; }catch(e){}
-  try{ var h = qs('.header h1'); if(h) h.textContent = 'Pousada das Cores · v78'; }catch(e){}
-  try{ qsa('button,h3,.fin-card-title,.sub').forEach(function(el){ if(el && el.childNodes.length === 1 && el.textContent){ el.textContent = el.textContent.replace(/Diagnóstico v\d+/g,'Diagnóstico v78').replace(/Sistema de Gestão v\d+/g,'Sistema de Gestão v78'); } }); }catch(e){}
-  try{ window.APP_VERSION = 'v78'; }catch(e){}
+  try{ document.title = 'Pousada das Cores · Sistema de Gestão v66'; }catch(e){}
+  try{ var h = qs('.header h1'); if(h) h.textContent = 'Pousada das Cores · v66'; }catch(e){}
+  try{ qsa('button,h3,.fin-card-title,.sub').forEach(function(el){ if(el && el.childNodes.length === 1 && el.textContent){ el.textContent = el.textContent.replace(/Diagnóstico v\d+/g,'Diagnóstico v66').replace(/Sistema de Gestão v\d+/g,'Sistema de Gestão v66'); } }); }catch(e){}
+  try{ window.APP_VERSION = 'v66'; }catch(e){}
 }
 function limparFinanceiroForaDoFinanceiro(){
   try{
@@ -14391,7 +14058,7 @@ if(document.readyState === 'loading') document.addEventListener('DOMContentLoade
 <script id="v65-reconhecimento-zap-2-quartos-auditado-script">
 (function(){
 'use strict';
-var V65='v78';
+var V65='v66';
 function byId(id){return document.getElementById(id);} 
 function qs(s){return document.querySelector(s);} 
 function qsa(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
@@ -14473,11 +14140,11 @@ if(typeof oldSalvar==='function'&&!oldSalvar.__v65Patched){
  };
  window.v17SalvarReservaImportada.__v65Patched=true; try{v17SalvarReservaImportada=window.v17SalvarReservaImportada;}catch(e){}
 }
-function setVersion(){try{document.title='Pousada das Cores · Sistema de Gestão v78';}catch(e){}try{var h=qs('.header h1'); if(h)h.textContent='Pousada das Cores · v78';}catch(e){}try{qsa('button,h3,.fin-card-title,.sub').forEach(function(el){if(el&&el.childNodes.length===1&&el.textContent){el.textContent=el.textContent.replace(/Diagnóstico v\d+/g,'Diagnóstico v78').replace(/Sistema de Gestão v\d+/g,'Sistema de Gestão v78');}});}catch(e){}try{window.APP_VERSION='v78';}catch(e){}}
+function setVersion(){try{document.title='Pousada das Cores · Sistema de Gestão v66';}catch(e){}try{var h=qs('.header h1'); if(h)h.textContent='Pousada das Cores · v66';}catch(e){}try{qsa('button,h3,.fin-card-title,.sub').forEach(function(el){if(el&&el.childNodes.length===1&&el.textContent){el.textContent=el.textContent.replace(/Diagnóstico v\d+/g,'Diagnóstico v66').replace(/Sistema de Gestão v\d+/g,'Sistema de Gestão v66');}});}catch(e){}try{window.APP_VERSION='v66';}catch(e){}}
 window.v65HealthCheck=function(){
  var sample='[11:02, 09/06/2026] taciovalente: Data: 26/10 (in) a 27/10 (out)\n[11:03, 09/06/2026] taciovalente: 2 quartos, 4 adultos e uma bebê de 1 ano.\n[11:03, 09/06/2026] taciovalente: 1° quarto (Cama de casal)\n2° quarto (camas de solteiro)\n[14:32, 09/06/2026] taciovalente: Tácio Vinícius Gomes Valente Alves \n71 9 9155-8314\nIpatinga - MG\nHóspedes: \nRaissa Gomes Santa Rosa\nGabriel Mascarenhas\nMaria Aurora Mascarenhas Santa Rosa (bebê 1 ano)\nAurizete Almeida Gomes \nTácio Vinícius Gomes Valente Alves\n[14:33, 09/06/2026] taciovalente: 50% no cartão de crédito\n\nvalor 236 solteiro e 270 casal';
  var parsed={}; try{parsed=window.v59ParseReservaReconhecida(sample,'whatsapp','Q1')||{};}catch(e){parsed={erro:e.message};}
- var res={versao:'v78', topo:(qs('.header h1')||{}).textContent||'', reconhecimento:{hospede:parsed.hospede, telefone:parsed.telefone, entrada:parsed.dataEntrada, saida:parsed.dataSaida, quartos:parsed.qtdQuartosSolicitados, adultos:parsed.numAdultos, criancas:parsed.numCriancas, pax:parsed.numPessoas, total:parsed.valorTotal, pago:parsed.valorPago, status:parsed.statusPagamentoImport, tipo:parsed.tipoQuartoOTA}, modulos:{reconhecer:typeof window.abrirReconhecerReservaV59==='function', salvarImportada:typeof window.v17SalvarReservaImportada==='function', multiquarto:document.documentElement.innerHTML.indexOf('Quartos adicionais da mesma reserva')>=0, mapaSemFinanceiro:!qs('#vista-mapa .alerta-financeiro'), estoque:!!byId('vista-estoque'), iaGeral:!!byId('vista-ia-geral'), crm:!!byId('btn-clientes-empresas-v62')}}; try{console.info('[Pousada das Cores] Auditoria profunda v78',res);}catch(e){} return res;
+ var res={versao:'v66', topo:(qs('.header h1')||{}).textContent||'', reconhecimento:{hospede:parsed.hospede, telefone:parsed.telefone, entrada:parsed.dataEntrada, saida:parsed.dataSaida, quartos:parsed.qtdQuartosSolicitados, adultos:parsed.numAdultos, criancas:parsed.numCriancas, pax:parsed.numPessoas, total:parsed.valorTotal, pago:parsed.valorPago, status:parsed.statusPagamentoImport, tipo:parsed.tipoQuartoOTA}, modulos:{reconhecer:typeof window.abrirReconhecerReservaV59==='function', salvarImportada:typeof window.v17SalvarReservaImportada==='function', multiquarto:document.documentElement.innerHTML.indexOf('Quartos adicionais da mesma reserva')>=0, mapaSemFinanceiro:!qs('#vista-mapa .alerta-financeiro'), estoque:!!byId('vista-estoque'), iaGeral:!!byId('vista-ia-geral'), crm:!!byId('btn-clientes-empresas-v62')}}; try{console.info('[Pousada das Cores] Auditoria profunda v66',res);}catch(e){} return res;
 };
 function init(){setVersion();vincularBotaoReconhecer();setTimeout(function(){setVersion();vincularBotaoReconhecer(); if(typeof window.v64HealthCheck==='function')try{window.v64HealthCheck();}catch(e){} window.v65HealthCheck();},900);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init); else init();
