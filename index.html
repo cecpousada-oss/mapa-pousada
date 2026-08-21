@@ -1014,10 +1014,13 @@ input[type=number] {
 <!-- Tabs de Vista (Mapa | Operação | Financeiro | Comercial | RH | Relatórios | Mais ▾) -->
 <!-- Reorganizadas em hierarquia: operacionais (uso constante) | gerenciais (diárias/semanais) | esporádicas (dropdown) -->
 <div class="view-tabs" id="view-tabs">
-  <button class="view-tab tab-op active" data-view="mapa"><span class="tab-emoji">🗓️</span><span class="tab-label">Mapa &amp; Operação</span><span class="tab-counter" id="counter-operacao"></span></button>
+  <button class="view-tab tab-op active" data-view="mapa"><span class="tab-emoji">🗓️</span><span class="tab-label">Mapa</span></button>
+  <button class="view-tab tab-op" data-view="operacao"><span class="tab-emoji">✅</span><span class="tab-label">Operação</span><span class="tab-counter" id="counter-operacao"></span></button>
   <button class="view-tab tab-ger" data-view="financeiro"><span class="tab-emoji">💰</span><span class="tab-label">Financeiro</span><span class="tab-counter" id="counter-financeiro"></span></button>
   <button class="view-tab tab-ger" data-view="estoque"><span class="tab-emoji">📦</span><span class="tab-label">Estoque</span></button>
   <button class="view-tab tab-ger" data-view="ia-geral"><span class="tab-emoji">🤖</span><span class="tab-label">IA Geral</span></button>
+  <button class="view-tab tab-ger" data-view="comercial"><span class="tab-emoji">📈</span><span class="tab-label">Comercial</span></button>
+  <button class="view-tab tab-ger" data-view="rh"><span class="tab-emoji">👥</span><span class="tab-label">RH</span></button>
   <button class="view-tab tab-rel" data-view="relatorios"><span class="tab-emoji">📋</span><span class="tab-label">Relatórios</span></button>
   <button class="view-tab tab-more" id="btn-more-menu" type="button"><span class="tab-emoji">⚙️</span><span class="tab-label">Mais ▾</span></button>
 </div>
@@ -1118,7 +1121,6 @@ input[type=number] {
   <span class="legend-item"><span class="legend-swatch" style="background:#DC2626;border-color:#7F1D1D;"></span><b style="color:#7F1D1D;">Não compareceu</b></span>
   <span class="legend-item" style="margin-left:auto;">❄ Frigobar · 🛋 Sofá-cama · <b style="font-size:10px;">S</b> só solteiros</span>
   <span class="legend-item"><span class="pay-mini pago">✓</span> Pago · <span class="pay-mini parcial">½</span> Parcial · <span class="pay-mini pendente">!</span> Pendente</span>
-  <span class="legend-item"><span style="display:inline-block;background:#15803D;color:#fff;font-size:9px;font-weight:800;border-radius:3px;padding:0 4px;">N</span> No calendário: dia com entrada de hóspede</span>
 </div>
 
 <div class="actions-bottom">
@@ -1126,9 +1128,12 @@ input[type=number] {
   <button class="btn" id="btn-import">📥 Importar pendentes</button>
   <button class="btn" id="btn-import-ota" style="background:#003580;color:#fff;border-color:#003580;">📥 Importar Reserva OTA</button>
   <button class="btn" id="btn-import-wa-global" style="background:#25D366;color:#fff;border-color:#128C7E;">📱 Importar WhatsApp</button>
+  <button class="btn" id="btn-checar-reserva-v66" style="background:#78350F;color:#fff;border-color:#5C2A0B;">🔎 Checar Reserva</button>
+  <button class="btn" id="btn-operacao-hoje" style="background:#B45309;color:#fff;border-color:#92400E;">✅ Operação de Hoje</button>
   <button class="btn" id="btn-governanca" style="background:#0EA5E9;color:#fff;border-color:#0369A1;">🧹 Governança</button>
   <button class="btn" id="btn-financeiro-v20" style="background:#15803D;color:#fff;border-color:#14532D;">💰 Financeiro</button>
   <button class="btn" id="btn-seguranca-v21" style="background:#1E40AF;color:#fff;border-color:#1E3A8A;">🛡️ Segurança</button>
+  <button class="btn" id="btn-comercial-v22" style="background:#BE185D;color:#fff;border-color:#9D174D;">📈 Comercial</button>
   <button class="btn" id="btn-publicacao-v23" style="background:#111827;color:#fff;border-color:#111827;">🚀 Diagnóstico v66</button>
   <button class="btn" id="btn-export">📋 Copiar relatório do dia</button>
   <button class="btn" id="btn-camareira" style="background:#0EA5E9;color:#fff;border-color:#0EA5E9;">🧹 Relatório Camareira</button>
@@ -1137,9 +1142,6 @@ input[type=number] {
 </div>
 
 <div id="servicos-dia-container"></div>
-
-<!-- v75: Operação agora vive dentro da mesma aba do Mapa -->
-<div id="painel-operacao-embutido" style="margin-top:18px;"></div>
 
 </div><!-- /#vista-mapa -->
 
@@ -1271,7 +1273,6 @@ const db = firebase.database();
 const reservasRef = db.ref('reservas');
 const servicosRef = db.ref('servicos');
 const despesasRef = db.ref('despesas');
-const receitasRef = db.ref('receitas'); // v75: entradas manuais de dinheiro (fora das reservas)
 const funcionariosRef = db.ref('funcionarios');
 const configsRef = db.ref('configs');
 const lixeiraRef = db.ref('lixeira');
@@ -3590,7 +3591,7 @@ const PAGAMENTO_STYLE = {
   pendente: {label:'Pendente', short:'!', cls:'pendente'}
 };
 
-let state = { reservas: [], servicos: [], despesas: [], receitas: [], funcionarios: [], configs: {}, lixeira: [], auditoria: [], backups: [] };
+let state = { reservas: [], servicos: [], despesas: [], funcionarios: [], configs: {}, lixeira: [], auditoria: [], backups: [] };
 try { window.state = state; } catch(e){}
 let currentDay = (todayKey() >= START_KEY && todayKey() <= END_KEY) ? todayKey() : START_KEY;
 let currentMonth = currentDay.substring(0, 7);
@@ -3730,20 +3731,6 @@ function setupFirebaseSync(){
     console.error('[Firebase] Erro despesas:', err);
   });
 
-  // v75: Listener para receitas manuais (entradas de dinheiro que não vêm de reserva)
-  receitasRef.on('value', snapshot => {
-    const val = snapshot.val();
-    state.receitas = processSnapshot(val);
-    state.receitas.forEach(r => {
-      if(typeof r.valor !== 'number') r.valor = 0;
-      if(!r.status) r.status = 'recebido';
-      if(!r.categoria) r.categoria = 'outros';
-    });
-    render();
-  }, err => {
-    console.error('[Firebase] Erro receitas:', err);
-  });
-
   // Listener para funcionários (Módulo RH)
   funcionariosRef.on('value', snapshot => {
     const val = snapshot.val();
@@ -3855,8 +3842,6 @@ function v21SalvarRef(ref, obj, label){
 function saveToFirebase(){ return v21SalvarRef(reservasRef, v21ObjetoPorArray(state.reservas), 'reservas'); }
 function saveServicosToFirebase(){ return v21SalvarRef(servicosRef, v21ObjetoPorArray(state.servicos), 'serviços'); }
 function saveDespesasToFirebase(){ return v21SalvarRef(despesasRef, v21ObjetoPorArray(state.despesas), 'despesas'); }
-function saveReceitasToFirebase(){ return v21SalvarRef(receitasRef, v21ObjetoPorArray(state.receitas || []), 'receitas'); }
-window.saveReceitasToFirebase = saveReceitasToFirebase;
 function saveFuncionariosToFirebase(){ return v21SalvarRef(funcionariosRef, v21ObjetoPorArray(state.funcionarios), 'funcionários'); }
 function saveConfigsToFirebase(){ return v21SalvarRef(configsRef, state.configs || {}, 'configurações'); }
 
@@ -3870,7 +3855,6 @@ function v21SnapshotSistema(){
     reservas: JSON.parse(JSON.stringify(state.reservas || [])),
     servicos: JSON.parse(JSON.stringify(state.servicos || [])),
     despesas: JSON.parse(JSON.stringify(state.despesas || [])),
-    receitas: JSON.parse(JSON.stringify(state.receitas || [])),
     funcionarios: JSON.parse(JSON.stringify(state.funcionarios || [])),
     configs: JSON.parse(JSON.stringify(state.configs || {})),
     governanca: JSON.parse(JSON.stringify(state.governanca || {}))
@@ -3989,10 +3973,9 @@ function v21RestaurarBackupFile(input){
       state.reservas = dados.reservas || [];
       state.servicos = dados.servicos || [];
       state.despesas = dados.despesas || [];
-      state.receitas = dados.receitas || [];
       state.funcionarios = dados.funcionarios || [];
       state.configs = dados.configs || {};
-      Promise.all([saveToFirebase(), saveServicosToFirebase(), saveDespesasToFirebase(), saveReceitasToFirebase(), saveFuncionariosToFirebase(), saveConfigsToFirebase()]).then(() => {
+      Promise.all([saveToFirebase(), saveServicosToFirebase(), saveDespesasToFirebase(), saveFuncionariosToFirebase(), saveConfigsToFirebase()]).then(() => {
         v21RegistrarAuditoria('backup_restaurado', 'seguranca', file.name, 'Backup restaurado por arquivo');
         render(); showToast('Backup restaurado');
       });
@@ -4307,24 +4290,13 @@ function buildDayStrip(){
     b.dataset.day = d;
     const especial = nomeDiaEspecial(d);
     const eventos = eventosDoDia(d);
-    // v75: dias que têm ENTRADA de hóspede ganham destaque próprio no calendário,
-    // para bater o olho e já saber onde tem chegada marcada.
-    const entradasNoDia = (state.reservas || []).filter(r => r.tipo === 'reserva' && r.dataEntrada === d).length;
-    if(entradasNoDia > 0){
-      b.style.borderColor = '#15803D';
-      b.style.borderWidth = '2px';
-      b.style.boxShadow = 'inset 0 -3px 0 #15803D';
-    }
     const tooltipParts = [];
-    if(entradasNoDia > 0) tooltipParts.push(entradasNoDia + ' entrada(s) neste dia');
     if(especial) tooltipParts.push(especial);
     eventos.forEach(e => tooltipParts.push(e.nome));
     if(tooltipParts.length) b.title = tooltipParts.join(' · ');
     const starHtml = especial ? '<div class="star">' + (isFeriado(d) ? '★' : '◆') + '</div>' : '';
     const evtIco = eventos.length ? '<div class="evento-ico">' + eventos[0].icone + '</div>' : '';
-    const entradaBadge = entradasNoDia > 0 ? '<div style="position:absolute;top:2px;left:3px;background:#15803D;color:#fff;font-size:9px;font-weight:800;border-radius:3px;padding:0 3px;line-height:1.4;">' + entradasNoDia + '</div>' : '';
-    b.style.position = 'relative';
-    b.innerHTML = entradaBadge + evtIco + '<div class="dow">' + dow + '</div><div class="dnum">' + dnum + '</div>' + starHtml;
+    b.innerHTML = evtIco + '<div class="dow">' + dow + '</div><div class="dnum">' + dnum + '</div>' + starHtml;
     b.onclick = () => { currentDay = d; render(); };
     strip.appendChild(b);
   });
@@ -4838,38 +4810,24 @@ function renderAlertasCriticos(){
   const cont = document.getElementById('alertas-criticos');
   if(!cont) return;
   const alertas = [];
-  const hoje = todayKey();
+
+  // Despesas atrasadas
   const atrasadas = (state.despesas || []).filter(d => statusDespesaCalculado(d) === 'atrasado');
   if(atrasadas.length > 0){
     const total = atrasadas.reduce((s,d) => s + d.valor, 0);
     alertas.push({ tipo: 'vermelho', icone: '🚨', texto: '<b>' + atrasadas.length + ' conta(s) ATRASADA(S)</b> — total ' + formatBRL(total) + '. Pague urgente.' });
   }
 
-  // Vencendo HOJE — máxima urgência, vermelho
-  const vencendoHoje = (state.despesas || []).filter(d => statusDespesaCalculado(d) !== 'pago' && d.dataVencimento === hoje);
-  if(vencendoHoje.length > 0){
-    const total = vencendoHoje.reduce((s,d) => s + d.valor, 0);
-    alertas.push({ tipo: 'vermelho', icone: '🔴', texto: '<b>' + vencendoHoje.length + ' conta(s) VENCENDO HOJE</b> — total ' + formatBRL(total) + '. Pague hoje para não atrasar.' });
-  }
-
-  // Vencendo AMANHÃ — aviso antecipado
-  const amanha = addDays(hoje, 1);
-  const vencendoAmanha = (state.despesas || []).filter(d => statusDespesaCalculado(d) !== 'pago' && d.dataVencimento === amanha);
-  if(vencendoAmanha.length > 0){
-    const total = vencendoAmanha.reduce((s,d) => s + d.valor, 0);
-    alertas.push({ tipo: 'amarelo', icone: '⏳', texto: '<b>' + vencendoAmanha.length + ' conta(s) vencendo amanhã</b> — total ' + formatBRL(total) + '. Separe o pagamento hoje.' });
-  }
-
-  // Vencendo em 2-3 dias (fora hoje/amanhã, que já têm alerta próprio acima)
+  // Vencendo em 3 dias
+  const hoje = todayKey();
   const em3dias = addDays(hoje, 3);
-  const depoisDeAmanha = addDays(hoje, 2);
   const vencendoEmBreve = (state.despesas || []).filter(d => {
     const st = statusDespesaCalculado(d);
-    return st !== 'pago' && st !== 'atrasado' && d.dataVencimento >= depoisDeAmanha && d.dataVencimento <= em3dias;
+    return st !== 'pago' && st !== 'atrasado' && d.dataVencimento >= hoje && d.dataVencimento <= em3dias;
   });
   if(vencendoEmBreve.length > 0){
     const total = vencendoEmBreve.reduce((s,d) => s + d.valor, 0);
-    alertas.push({ tipo: 'amarelo', icone: '⏰', texto: '<b>' + vencendoEmBreve.length + ' conta(s) vencendo nos próximos 2-3 dias</b> — total ' + formatBRL(total) });
+    alertas.push({ tipo: 'amarelo', icone: '⏰', texto: '<b>' + vencendoEmBreve.length + ' conta(s) vencendo em 3 dias</b> — total ' + formatBRL(total) });
   }
 
   // Saldo negativo projetado
@@ -5348,12 +5306,10 @@ function render(){
   // Alertas críticos (sempre visíveis em qualquer vista)
   try { renderAlertasCriticos(); } catch(e){ console.error('Erro render alertas:', e); }
 
-  // v75: as abas Operação, RH e Comercial foram removidas. Operação passou a viver dentro do Mapa
-  // (renderizada mais abaixo). Se algum código/atalho antigo ainda pedir essas vistas, cai no Mapa
-  // em vez de mostrar tela em branco.
-  if(viewAtual === 'operacao' || viewAtual === 'rh' || viewAtual === 'comercial'){
-    viewAtual = 'mapa';
-    try { trocarVista('mapa'); return; } catch(e){ /* segue e renderiza o mapa abaixo */ }
+  // Se estiver na vista de operação, renderiza pendências e ações do dia
+  if(viewAtual === 'operacao'){
+    try { renderPainelOperacaoV18(); } catch(e){ console.error('Erro render operação:', e); }
+    return;
   }
 
   // Se estiver na vista de governança, renderiza fluxo de limpeza/camareira
@@ -5365,6 +5321,12 @@ function render(){
   // Se estiver na vista financeira, renderiza só o painel financeiro
   if(viewAtual === 'financeiro'){
     try { renderPainelFinanceiro(); } catch(e){ console.error('Erro render financeiro:', e); }
+    return;
+  }
+
+  // Se estiver na vista RH, renderiza só o painel de funcionários
+  if(viewAtual === 'rh'){
+    try { renderPainelRH(); } catch(e){ console.error('Erro render RH:', e); }
     return;
   }
 
@@ -5383,6 +5345,12 @@ function render(){
   // Se estiver na vista Segurança, renderiza backup/lixeira/auditoria
   if(viewAtual === 'seguranca'){
     try { renderPainelSegurancaV21(); } catch(e){ console.error('Erro render segurança:', e); }
+    return;
+  }
+
+  // Se estiver na vista Comercial, renderiza CRM, campanhas e tarifas inteligentes
+  if(viewAtual === 'comercial'){
+    try { renderPainelComercialV22(); } catch(e){ console.error('Erro render comercial:', e); }
     return;
   }
 
@@ -5509,9 +5477,6 @@ function render(){
              '</span>';
     }).join('');
   }
-
-  // v75: Operação agora é renderizada dentro da própria aba do Mapa, logo abaixo do mapa de quartos.
-  try { renderPainelOperacaoV18(); } catch(e){ console.error('Erro render operação embutida:', e); }
 }
 
 // ===== MODAL =====
@@ -8458,25 +8423,8 @@ function renderPainelRelatoriosV16(){
   ];
   cont.innerHTML = `
     <div class="fin-card" style="border-color:#1a1a18;">
-      <p class="fin-card-title">📋 Central de Relatórios</p>
-
-      <label class="field-label" style="margin-top:0;">📅 Data do relatório diário</label>
-      <input type="date" id="rel-data-dia" value="${currentDay}" min="${START_KEY}" max="${END_KEY}" style="width:100%;padding:10px;border:1.5px solid #B8B5A8;border-radius:8px;font-family:inherit;font-size:14px;" />
-      <div style="font-size:11px;color:#6B6B66;margin:4px 0 12px;">Os relatórios abaixo (camareira, restaurante, recepção...) usam esta data.</div>
-
-      <div style="background:#F5F1E8;border-radius:8px;padding:12px;margin-bottom:12px;">
-        <p style="margin:0 0 8px;font-size:13px;font-weight:800;color:#1E3A2F;">📆 Relatório por período</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div><label class="field-label" style="margin-top:0;">De</label><input type="date" id="rel-periodo-ini" value="${(currentDay || todayKey()).substring(0,8)}01" style="width:100%;padding:9px;border:1.5px solid #B8B5A8;border-radius:6px;font-family:inherit;font-size:13px;" /></div>
-          <div><label class="field-label" style="margin-top:0;">Até</label><input type="date" id="rel-periodo-fim" value="${currentDay}" style="width:100%;padding:9px;border:1.5px solid #B8B5A8;border-radius:6px;font-family:inherit;font-size:13px;" /></div>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">
-          <button class="btn btn-primary" style="font-size:12px;padding:8px 10px;" onclick="v75RelatorioPeriodo('ver')">👁️ Ver período</button>
-          <button class="btn" style="font-size:12px;padding:8px 10px;" onclick="v75RelatorioPeriodo('whats')">📱 WhatsApp</button>
-          <button class="btn" style="font-size:12px;padding:8px 10px;" onclick="v75RelatorioPeriodo('pdf')">📄 PDF</button>
-        </div>
-      </div>
-
+      <p class="fin-card-title">📋 Central de Relatórios · v48</p>
+      <div style="font-size:13px;color:#6B6B66;margin-bottom:12px;">Relatórios formatados para WhatsApp, PDF e impressão. Data selecionada: <b>${dayShort(currentDay)}</b>.</div>
       <div class="fin-kpi-grid">
         <div class="fin-kpi"><p class="fin-kpi-label">Ocupação</p><p class="fin-kpi-value">${stats.ocupado}/${TOTAL}</p><p class="fin-kpi-sub">${Math.round((stats.ocupado/TOTAL)*100)}% ocupação</p></div>
         <div class="fin-kpi"><p class="fin-kpi-label">Kits toalha</p><p class="fin-kpi-value">${mat.kitsToalhaTotal}</p><p class="fin-kpi-sub">entradas + permanências</p></div>
@@ -8496,105 +8444,8 @@ function renderPainelRelatoriosV16(){
           </div>
         </div>`).join('')}
     </div>`;
-
-  // v75: trocar a data aqui muda o dia usado pelos relatórios diários, sem precisar voltar ao Mapa.
-  const inputDia = document.getElementById('rel-data-dia');
-  if(inputDia){
-    inputDia.onchange = () => {
-      if(!inputDia.value) return;
-      currentDay = inputDia.value;
-      currentMonth = inputDia.value.substring(0,7);
-      render();
-      renderPainelRelatoriosV16();
-    };
-  }
 }
 window.renderPainelRelatoriosV16 = renderPainelRelatoriosV16;
-
-// v75: relatório consolidado de um intervalo de datas (ocupação, receita, despesas e serviços).
-function v75RelatorioPeriodoTexto(inicio, fim){
-  const reservas = (state.reservas || []).filter(r => r.tipo === 'reserva' && r.dataEntrada <= fim && r.dataSaida >= inicio);
-  const entradas = reservas.filter(r => r.dataEntrada >= inicio && r.dataEntrada <= fim);
-  const saidas = reservas.filter(r => r.dataSaida >= inicio && r.dataSaida <= fim);
-  const servicos = (state.servicos || []).filter(s => s.data >= inicio && s.data <= fim);
-  const despesas = (state.despesas || []).filter(d => {
-    const data = d.status === 'pago' && d.dataPagamento ? d.dataPagamento : d.dataVencimento;
-    return data >= inicio && data <= fim;
-  });
-  const receitaBruta = entradas.reduce((s,r) => s + (r.valorTotal || 0), 0);
-  const recebido = entradas.reduce((s,r) => s + (r.valorPago || 0), 0);
-  const aReceber = entradas.reduce((s,r) => s + Math.max(0, (r.valorTotal||0) - (r.valorPago||0)), 0);
-  const comissoes = entradas.reduce((s,r) => s + (typeof v20ComissaoReserva === 'function' ? v20ComissaoReserva(r) : 0), 0);
-  const receitaServicos = servicos.reduce((s,x) => s + (x.valorTotal || 0), 0);
-  const totalDespesas = despesas.reduce((s,d) => s + (d.valor || 0), 0);
-  const despesasPagas = despesas.filter(d => d.status === 'pago').reduce((s,d) => s + (d.valor||0), 0);
-  const despesasAbertas = totalDespesas - despesasPagas;
-  const pax = entradas.reduce((s,r) => s + (r.numPessoas || 0), 0);
-  const noites = entradas.reduce((s,r) => s + (typeof v20NoitesReserva === 'function' ? v20NoitesReserva(r) : 0), 0);
-  const resultado = (receitaBruta - comissoes) + receitaServicos - totalDespesas;
-
-  let txt = '📆 *RELATÓRIO POR PERÍODO — POUSADA DAS CORES*\n';
-  txt += dayShort(inicio) + ' a ' + dayShort(fim) + '\n\n';
-  txt += '*OCUPAÇÃO*\n';
-  txt += '• Entradas no período: ' + entradas.length + '\n';
-  txt += '• Saídas no período: ' + saidas.length + '\n';
-  txt += '• Hóspedes (pax das entradas): ' + pax + '\n';
-  txt += '• Diárias vendidas: ' + noites + '\n\n';
-  txt += '*RECEITAS*\n';
-  txt += '• Hospedagem (bruto): ' + formatBRL(receitaBruta) + '\n';
-  txt += '• Já recebido: ' + formatBRL(recebido) + '\n';
-  txt += '• A receber: ' + formatBRL(aReceber) + '\n';
-  txt += '• Comissões de OTA: -' + formatBRL(comissoes) + '\n';
-  txt += '• Serviços extras (day use etc): ' + formatBRL(receitaServicos) + '\n\n';
-  txt += '*DESPESAS*\n';
-  txt += '• Total no período: ' + formatBRL(totalDespesas) + '\n';
-  txt += '• Já pagas: ' + formatBRL(despesasPagas) + '\n';
-  txt += '• Em aberto: ' + formatBRL(despesasAbertas) + '\n\n';
-  txt += '*RESULTADO DO PERÍODO*\n';
-  txt += (resultado >= 0 ? '✅ ' : '⚠️ ') + formatBRL(resultado) + '\n';
-  txt += '(hospedagem líquida + serviços - despesas)\n\n';
-  if(entradas.length){
-    txt += '*ENTRADAS DETALHADAS*\n';
-    entradas.sort((a,b)=>a.dataEntrada.localeCompare(b.dataEntrada)).forEach(r => {
-      const un = UNIT_MAP[r.unitId];
-      txt += '• ' + dayShort(r.dataEntrada) + ' · ' + (un ? un.label : r.unitId) + ' · ' + (r.hospede || '-') + ' · ' + formatBRL(r.valorTotal || 0) + '\n';
-    });
-  }
-  return txt;
-}
-window.v75RelatorioPeriodoTexto = v75RelatorioPeriodoTexto;
-
-function v75RelatorioPeriodo(acao){
-  const ini = (document.getElementById('rel-periodo-ini') || {}).value;
-  const fim = (document.getElementById('rel-periodo-fim') || {}).value;
-  if(!ini || !fim){ alert('Escolha a data inicial e final do período.'); return; }
-  if(fim < ini){ alert('A data final não pode ser anterior à inicial.'); return; }
-  const txt = v75RelatorioPeriodoTexto(ini, fim);
-  if(acao === 'whats'){
-    window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
-    return;
-  }
-  if(acao === 'pdf'){
-    if(typeof window.jspdf === 'undefined'){ alert('Biblioteca de PDF não carregou.'); return; }
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit:'mm', format:'a4' });
-    doc.setFont('helvetica','normal'); doc.setFontSize(10);
-    const linhas = doc.splitTextToSize(txt.replace(/\*/g,''), 180);
-    let y = 18;
-    linhas.forEach(l => { if(y > 280){ doc.addPage(); y = 18; } doc.text(l, 15, y); y += 5; });
-    doc.save('Relatorio_Periodo_' + ini + '_a_' + fim + '.pdf');
-    return;
-  }
-  // Visualizar em modal
-  document.getElementById('modal-title').textContent = '📆 Relatório do período';
-  document.getElementById('modal-spec').textContent = dayShort(ini) + ' a ' + dayShort(fim);
-  document.getElementById('modal-content').innerHTML =
-    '<pre style="white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.5;background:#F5F1E8;padding:14px;border-radius:8px;">' + escapeHtml(txt) + '</pre>' +
-    '<div class="modal-actions"><button class="btn" onclick="navigator.clipboard && navigator.clipboard.writeText(window.v75RelatorioPeriodoTexto(\'' + ini + '\',\'' + fim + '\')).then(function(){showToast(\'Copiado\');})">📋 Copiar</button></div>';
-  document.getElementById('modal-backdrop').classList.add('open');
-  setTimeout(() => document.getElementById('modal').classList.add('open'), 10);
-}
-window.v75RelatorioPeriodo = v75RelatorioPeriodo;
 
 // Substitui os botões antigos pelos relatórios v16, preservando as funções antigas no código.
 try {
@@ -8761,9 +8612,7 @@ function v18AcaoLinha(texto, tipo='alerta'){
   return '<div style="background:' + bg + ';border-left:4px solid ' + cor + ';border-radius:8px;padding:9px 11px;margin-bottom:6px;font-size:13px;font-weight:700;color:' + cor + ';">' + texto + '</div>';
 }
 function renderPainelOperacaoV18(){
-  // v75: Operação foi unificada dentro da aba do Mapa. Usa o container embutido; mantém o antigo
-  // como reserva caso algum ponto do sistema ainda o crie.
-  const cont = document.getElementById('painel-operacao-embutido') || document.getElementById('painel-operacao');
+  const cont = document.getElementById('painel-operacao');
   if(!cont) return;
   const p = v18PendenciasDoDia(currentDay);
   const stats = getDayStats(currentDay);
@@ -9306,14 +9155,7 @@ function v20AgruparFinanceiro(inicio, fim){
     return data >= inicio && data <= fim;
   });
   const aReceber = getContasReceber().filter(r => r.dataPrevista >= inicio && r.dataPrevista <= fim);
-  // v74 fix: uma despesa atrasada, cujo vencimento cai dentro do período consultado, estava sendo
-  // contada em DOBRO — uma vez em "despesasAbertas" e outra vez em "atrasadas" — porque
-  // despesasAbertas não excluía o status "atrasado". Isso inflava o total de "Contas a pagar"
-  // exibido na tela (aPagarTotal + atrasadasTotal) e mostrava a mesma conta duas vezes na lista.
-  const despesasAbertas = (state.despesas || []).filter(d => {
-    const st = statusDespesaCalculado(d);
-    return st !== 'pago' && st !== 'atrasado' && d.dataVencimento >= inicio && d.dataVencimento <= fim;
-  });
+  const despesasAbertas = (state.despesas || []).filter(d => statusDespesaCalculado(d) !== 'pago' && d.dataVencimento >= inicio && d.dataVencimento <= fim);
   const atrasadas = (state.despesas || []).filter(d => statusDespesaCalculado(d) === 'atrasado');
   const porCanal = {};
   reservas.forEach(r => {
@@ -9416,193 +9258,6 @@ function v20RenderAlertas(dados){
 }
 
 // Override do painel financeiro existente com a versão v20.
-// ============================================================
-// ===== v75 · CAIXA SIMPLIFICADO: ENTRADAS, SAÍDAS, SALDO ====
-// ============================================================
-// Visão de dono: quanto entrou, quanto saiu, quanto sobrou — juntando o que vem
-// automaticamente das reservas/serviços com o que é lançado à mão.
-
-function v75ReceitasDoPeriodo(inicio, fim){
-  return (state.receitas || []).filter(r => r.data >= inicio && r.data <= fim);
-}
-
-function v75ResumoCaixa(inicio, fim){
-  const dados = v20AgruparFinanceiro(inicio, fim);
-  // Entradas automáticas: o que já foi efetivamente recebido das reservas e serviços do período.
-  const recebidoReservas = dados.receitaRecebida;
-  const recebidoServicos = dados.servicosRecebido;
-  // Entradas manuais lançadas na mão (ex: venda avulsa, aporte, reembolso recebido)
-  const receitasManuais = v75ReceitasDoPeriodo(inicio, fim);
-  const manualRecebido = receitasManuais.filter(r => r.status === 'recebido').reduce((s,r) => s + (r.valor||0), 0);
-  const manualAReceber = receitasManuais.filter(r => r.status !== 'recebido').reduce((s,r) => s + (r.valor||0), 0);
-
-  const totalEntradas = recebidoReservas + recebidoServicos + manualRecebido;
-  // Saídas: despesas efetivamente pagas no período
-  const despesasPagas = (state.despesas || []).filter(d => d.status === 'pago' && d.dataPagamento && d.dataPagamento >= inicio && d.dataPagamento <= fim);
-  const totalSaidas = despesasPagas.reduce((s,d) => s + (d.valor||0), 0);
-  const saldo = totalEntradas - totalSaidas;
-
-  // A receber e a pagar (ainda em aberto)
-  const aReceber = dados.aReceberTotal + manualAReceber;
-  const aPagar = dados.aPagarTotal + dados.atrasadasTotal;
-
-  return { recebidoReservas, recebidoServicos, manualRecebido, manualAReceber, totalEntradas,
-           totalSaidas, saldo, aReceber, aPagar, atrasadasTotal: dados.atrasadasTotal, receitasManuais };
-}
-window.v75ResumoCaixa = v75ResumoCaixa;
-
-function v75CardResumoCaixa(periodo, dados){
-  const c = v75ResumoCaixa(periodo.inicio, periodo.fim);
-  const corSaldo = c.saldo >= 0 ? '#15803D' : '#B91C1C';
-  return `
-    <div class="fin-card" style="border:2px solid #1a1a18;">
-      <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px;">
-        <div>
-          <p class="fin-card-title" style="margin-bottom:4px;">💵 Caixa da pousada · ${periodo.label}</p>
-          <p style="font-size:12px;color:#6B6B66;margin:0;">Entradas e saídas que realmente aconteceram no período.</p>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="v75AbrirModalReceita(null)" style="padding:8px 10px;font-size:12px;background:#15803D;border-color:#14532D;">+ Nova entrada</button>
-          <button class="btn" onclick="openDespesaModal(null)" style="padding:8px 10px;font-size:12px;background:#B91C1C;color:#fff;border-color:#7F1D1D;">+ Nova saída</button>
-        </div>
-      </div>
-      <div class="fin-kpi-grid">
-        <div class="fin-kpi" style="border-left:4px solid #15803D;">
-          <p class="fin-kpi-label">↗ Entradas</p>
-          <p class="fin-kpi-value" style="color:#15803D;">${formatBRL(c.totalEntradas)}</p>
-          <p class="fin-kpi-sub">Reservas ${formatBRL(c.recebidoReservas)} · Serviços ${formatBRL(c.recebidoServicos)}${c.manualRecebido ? ' · Manual ' + formatBRL(c.manualRecebido) : ''}</p>
-        </div>
-        <div class="fin-kpi" style="border-left:4px solid #B91C1C;">
-          <p class="fin-kpi-label">↘ Saídas</p>
-          <p class="fin-kpi-value" style="color:#B91C1C;">${formatBRL(c.totalSaidas)}</p>
-          <p class="fin-kpi-sub">contas pagas no período</p>
-        </div>
-        <div class="fin-kpi" style="border-left:4px solid ${corSaldo};">
-          <p class="fin-kpi-label">= Saldo do período</p>
-          <p class="fin-kpi-value" style="color:${corSaldo};">${formatBRL(c.saldo)}</p>
-          <p class="fin-kpi-sub">${c.saldo >= 0 ? 'entrou mais do que saiu' : 'saiu mais do que entrou'}</p>
-        </div>
-        <div class="fin-kpi" style="border-left:4px solid #D97706;">
-          <p class="fin-kpi-label">Ainda em aberto</p>
-          <p class="fin-kpi-value" style="font-size:18px;">A receber ${formatBRL(c.aReceber)}</p>
-          <p class="fin-kpi-sub">A pagar ${formatBRL(c.aPagar)}${c.atrasadasTotal ? ' · atrasado ' + formatBRL(c.atrasadasTotal) : ''}</p>
-        </div>
-      </div>
-      ${c.receitasManuais.length ? `
-        <div style="margin-top:12px;">
-          <p style="font-size:12px;font-weight:800;color:#1E3A2F;margin:0 0 6px;">Entradas lançadas à mão no período</p>
-          ${c.receitasManuais.sort((a,b)=>a.data.localeCompare(b.data)).map(r => `
-            <div class="fin-row" onclick="v75AbrirModalReceita('${r.id}')" style="cursor:pointer;">
-              <div class="fin-row-cat">
-                <div class="fin-row-ico" style="background:#15803D;">💵</div>
-                <div class="fin-row-info">
-                  <div class="fin-row-desc">${escapeHtml(r.descricao || '(sem descrição)')}</div>
-                  <div class="fin-row-meta">${dayShort(r.data)} · ${r.status === 'recebido' ? v20Badge('Recebido','#15803D') : v20Badge('A receber','#D97706')}${r.formaPagamento ? ' · ' + escapeHtml(r.formaPagamento) : ''}</div>
-                </div>
-              </div>
-              <div class="fin-row-valor" style="color:#15803D;">${formatBRL(r.valor)}</div>
-            </div>`).join('')}
-        </div>` : ''}
-    </div>`;
-}
-
-// Modal de entrada manual de dinheiro (única ou recorrente)
-function v75AbrirModalReceita(receitaId){
-  const r = receitaId ? (state.receitas || []).find(x => x.id === receitaId) : null;
-  const d = r || { descricao:'', valor:'', data: currentDay || todayKey(), status:'recebido', formaPagamento:'', observacao:'' };
-  const isNew = !r;
-  document.getElementById('modal-title').textContent = isNew ? '💵 Nova entrada de dinheiro' : '💵 Editar entrada';
-  document.getElementById('modal-spec').textContent = 'Use para dinheiro que entra fora das reservas (venda avulsa, aporte, reembolso recebido...).';
-  document.getElementById('modal-content').innerHTML = `
-    <label class="field-label" style="margin-top:0;">Descrição</label>
-    <input type="text" id="rec-desc" value="${escapeHtml(d.descricao)}" placeholder="Ex: Venda de artesanato · Aporte do sócio" />
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <div><label class="field-label">Valor (R$)</label><input type="number" step="0.01" id="rec-valor" value="${d.valor}" /></div>
-      <div><label class="field-label">Data</label><input type="date" id="rec-data" value="${d.data}" /></div>
-    </div>
-
-    <label class="field-label">Situação</label>
-    <select id="rec-status" style="width:100%;padding:12px;border:1.5px solid #B8B5A8;border-radius:8px;font-family:inherit;font-size:14px;background:#fff;">
-      <option value="recebido" ${d.status === 'recebido' ? 'selected' : ''}>✅ Já recebido (entrou no caixa)</option>
-      <option value="a_receber" ${d.status !== 'recebido' ? 'selected' : ''}>⏳ A receber (ainda não entrou)</option>
-    </select>
-
-    <label class="field-label">Forma de pagamento (opcional)</label>
-    <input type="text" id="rec-forma" value="${escapeHtml(d.formaPagamento || '')}" placeholder="PIX, dinheiro, cartão..." />
-
-    <label class="field-label">Observação (opcional)</label>
-    <input type="text" id="rec-obs" value="${escapeHtml(d.observacao || '')}" />
-
-    ${isNew ? `
-      <label class="field-label">Repetir nos próximos meses?</label>
-      <select id="rec-recor" style="width:100%;padding:12px;border:1.5px solid #B8B5A8;border-radius:8px;font-family:inherit;font-size:14px;background:#fff;">
-        <option value="0">Não repetir (entrada única)</option>
-        <option value="3">Repetir por 3 meses</option>
-        <option value="6">Repetir por 6 meses</option>
-        <option value="12">Repetir por 12 meses</option>
-      </select>` : ''}
-
-    <div class="modal-actions">
-      <button class="btn btn-primary" id="rec-salvar">💾 Salvar entrada</button>
-      ${!isNew ? '<button class="btn btn-danger" id="rec-excluir">🗑 Excluir</button>' : ''}
-    </div>`;
-
-  document.getElementById('rec-salvar').onclick = () => {
-    const descricao = document.getElementById('rec-desc').value.trim();
-    const valor = parseFloat(document.getElementById('rec-valor').value) || 0;
-    const data = document.getElementById('rec-data').value;
-    const status = document.getElementById('rec-status').value;
-    const formaPagamento = document.getElementById('rec-forma').value.trim();
-    const observacao = document.getElementById('rec-obs').value.trim();
-    if(!descricao){ alert('Descrição obrigatória'); return; }
-    if(!data){ alert('Data obrigatória'); return; }
-    if(valor <= 0){ alert('Valor deve ser maior que zero'); return; }
-
-    if(!state.receitas) state.receitas = [];
-    if(r){
-      Object.assign(r, { descricao, valor, data, status, formaPagamento, observacao });
-    } else {
-      const base = { id: 'rec-' + uid(), descricao, valor, data, status, formaPagamento, observacao, categoria:'outros' };
-      state.receitas.push(base);
-      const repetir = parseInt((document.getElementById('rec-recor') || {}).value || '0') || 0;
-      for(let i = 1; i <= repetir; i++){
-        const [y, m, dia] = data.split('-').map(Number);
-        const dt = new Date(y, m - 1 + i, dia);
-        const novaData = dt.getFullYear() + '-' + pad(dt.getMonth()+1) + '-' + pad(dt.getDate());
-        if(novaData > END_KEY) break;
-        state.receitas.push(Object.assign({}, base, {
-          id: 'rec-' + uid() + '-' + i,
-          data: novaData,
-          status: 'a_receber', // as futuras entram como previstas, não como já recebidas
-          descricao: descricao + ' (mês ' + (i+1) + ')',
-          recorrenciaParent: base.id
-        }));
-      }
-    }
-    saveReceitasToFirebase();
-    closeModal();
-    render();
-    showToast('Entrada salva');
-  };
-
-  const btnExcl = document.getElementById('rec-excluir');
-  if(btnExcl){
-    btnExcl.onclick = () => {
-      if(!confirm('Excluir esta entrada?')) return;
-      state.receitas = (state.receitas || []).filter(x => x.id !== r.id);
-      saveReceitasToFirebase();
-      closeModal();
-      render();
-      showToast('Entrada excluída');
-    };
-  }
-
-  document.getElementById('modal-backdrop').classList.add('open');
-  setTimeout(() => document.getElementById('modal').classList.add('open'), 10);
-}
-window.v75AbrirModalReceita = v75AbrirModalReceita;
-
 function renderPainelFinanceiro(){
   const cont = document.getElementById('painel-financeiro');
   if(!cont) return;
@@ -9612,11 +9267,10 @@ function renderPainelFinanceiro(){
   const indMes = calcularIndicadores((currentDay || todayKey()).substring(0,7));
 
   cont.innerHTML = `
-    ${v75CardResumoCaixa(periodo, dados)}
     <div class="fin-card" style="border:2px solid #15803D;">
       <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;">
         <div>
-          <p class="fin-card-title" style="margin-bottom:4px;">💰 Detalhamento por canal e conciliação</p>
+          <p class="fin-card-title" style="margin-bottom:4px;">💰 Financeiro Avançado v20</p>
           <p style="font-size:13px;color:#6B6B66;margin:0;">${periodo.label} · Receita líquida, comissões OTA, cobranças e decisões.</p>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
@@ -9696,16 +9350,8 @@ function renderPainelFinanceiro(){
       ${(dados.atrasadas.concat(dados.despesasAbertas)).length === 0 ? '<p style="font-size:13px;color:#888;">Nenhuma conta aberta no período.</p>' : dados.atrasadas.concat(dados.despesasAbertas).sort((a,b)=>a.dataVencimento.localeCompare(b.dataVencimento)).map(d => {
         const cat = categoriaInfo(d.categoria);
         const st = statusDespesaCalculado(d);
-        const hojeKey = todayKey();
-        // v74: diferencia "vence hoje" (vermelho, mais urgente que "a pagar" comum) e "vence amanhã",
-        // em vez de mostrar o mesmo badge laranja "A pagar" pra tudo que ainda não atrasou.
-        let badge;
-        if(st === 'atrasado') badge = v20Badge('Atrasada', '#B91C1C');
-        else if(d.dataVencimento === hojeKey) badge = v20Badge('VENCE HOJE', '#DC2626');
-        else if(d.dataVencimento === addDays(hojeKey, 1)) badge = v20Badge('Vence amanhã', '#D97706');
-        else badge = v20Badge('A pagar', '#6B7280');
-        return `<div class="fin-row" onclick="editDespesa('${d.id}')" style="cursor:pointer;${d.dataVencimento === hojeKey && st !== 'atrasado' ? 'background:#FEF2F2;border-left:3px solid #DC2626;' : ''}">
-          <div class="fin-row-cat"><div class="fin-row-ico" style="background:${cat.cor};">${cat.icone}</div><div class="fin-row-info"><div class="fin-row-desc">${escapeHtml(d.descricao)}</div><div class="fin-row-meta">${cat.nome} · Venc: ${dayShort(d.dataVencimento)} · ${badge}</div></div></div>
+        return `<div class="fin-row" onclick="editDespesa('${d.id}')" style="cursor:pointer;">
+          <div class="fin-row-cat"><div class="fin-row-ico" style="background:${cat.cor};">${cat.icone}</div><div class="fin-row-info"><div class="fin-row-desc">${escapeHtml(d.descricao)}</div><div class="fin-row-meta">${cat.nome} · Venc: ${dayShort(d.dataVencimento)} · ${st === 'atrasado' ? v20Badge('Atrasada','#B91C1C') : v20Badge('A pagar','#D97706')}</div></div></div>
           <div style="display:flex;align-items:center;gap:6px;"><div class="fin-row-valor" style="color:#B91C1C;">${formatBRL(d.valor)}</div><button onclick="event.stopPropagation();marcarDespesaPaga('${d.id}')" style="background:#15803D;color:#fff;border:none;padding:6px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">✓ Pagar</button></div>
         </div>`;
       }).join('')}
@@ -11051,9 +10697,8 @@ const V25_PROFILES = {
     emoji: '👑',
     passwords: ['admin','administrativo','geral','gerente','pousada2026'],
     defaultView: 'mapa',
-    // v75: Operação foi unificada dentro do Mapa; RH e Comercial foram removidas.
-    // Acesso total: mapa+operação, governança, financeiro, estoque, IA, clientes, relatórios, segurança e diagnóstico.
-    allowedViews: ['mapa','governanca','financeiro','estoque','ia-geral','clientes','relatorios','seguranca','publicacao','ajuda'],
+    // Acesso total: reservas, operação, governança, financeiro, RH, relatórios, segurança, comercial e diagnóstico.
+    allowedViews: ['mapa','operacao','governanca','financeiro','rh','relatorios','seguranca','comercial','publicacao','ajuda'],
     allowedReports: 'all',
     color: '#1a1a18'
   },
@@ -11062,11 +10707,9 @@ const V25_PROFILES = {
     label: 'Recepção',
     emoji: '🛎️',
     passwords: ['recepcao','recepção','rec'],
-    // v75 fix: antes abria em 'operacao', uma aba que não existe mais — a recepção caía numa
-    // tela vazia ao entrar. Agora abre no Mapa, onde a operação do dia agora vive.
-    defaultView: 'mapa',
-    // Recepção: mapa+operação, clientes, relatórios operacionais e ajuda. Sem financeiro/segurança.
-    allowedViews: ['mapa','clientes','relatorios','ajuda'],
+    defaultView: 'operacao',
+    // Recepção: operação, mapa, relatórios operacionais e ajuda. Sem financeiro/RH/segurança/comercial/governança.
+    allowedViews: ['mapa','operacao','relatorios','ajuda'],
     allowedReports: ['recepcao','checkin','checkout','camareira','restaurante','servicos','manutencao'],
     color: '#B45309'
   }
@@ -11967,7 +11610,7 @@ if(sessionStorage.getItem(V25_AUTH_KEY) === 'ok' && savedProfileV25 && V25_PROFI
     { rede: 'Pousada piscina', senha: 'Pousada@4188' }
   ];
   window.v48HealthCheck = function(){
-    var requiredIds = ['login-overlay','login-btn','login-pwd','app-content','btn-import-ota','btn-import-wa-global','btn-today','sections-container','modal','modal-content'];
+    var requiredIds = ['login-overlay','login-btn','login-pwd','app-content','btn-import-ota','btn-checar-reserva-v66','btn-import-wa-global','btn-today','sections-container','modal','modal-content'];
     var missingIds = requiredIds.filter(function(id){ return !document.getElementById(id); });
     var requiredFns = ['gerarVoucherPDF','abrirImportadorWhatsAppGlobal','openModal','render','saveToFirebase'];
     var missingFns = requiredFns.filter(function(fn){ return typeof window[fn] !== 'function' && typeof self[fn] !== 'function'; });
@@ -13359,7 +13002,7 @@ function criarAtalhosMobile(){
   if(byId('v58-mobile-shortcuts')) return;
   var header=document.querySelector('.header'); if(!header) return;
   var bar=document.createElement('div'); bar.id='v58-mobile-shortcuts'; bar.className='v58-mobile-shortcuts';
-  bar.innerHTML='<button class="v58-shortcut" data-view="mapa">🗓️ Mapa &amp; Operação</button><button class="v58-shortcut" data-view="financeiro">💰 Financeiro</button><button class="v58-shortcut" data-view="estoque">📦 Estoque</button><button class="v58-shortcut" data-view="relatorios">📋 Relatórios</button><button class="v58-shortcut" data-view="ia-geral">🤖 IA Geral</button>';
+  bar.innerHTML='<button class="v58-shortcut" data-view="mapa">🗓️ Mapa</button><button class="v58-shortcut" data-view="financeiro">💰 Financeiro</button><button class="v58-shortcut" data-view="estoque">📦 Estoque</button><button class="v58-shortcut" data-view="ia-geral">🤖 IA Geral</button><button class="v58-shortcut" data-view="operacao">✅ Operação</button>';
   header.insertAdjacentElement('afterend',bar);
   bar.addEventListener('click',function(e){var b=e.target.closest('[data-view]'); if(!b) return; if(typeof trocarVista==='function') trocarVista(b.dataset.view);});
 }
